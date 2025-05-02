@@ -199,17 +199,16 @@ function generateBoard() {
             cell.className = 'cell';
             cell.dataset.row = row;
             cell.dataset.col = col;
+
+            cell.addEventListener('dragover', handleDragOver);
+            cell.addEventListener('dragenter', handleDragEnter);
+            cell.addEventListener('dragleave', handleDragLeave);
+            cell.addEventListener('drop', handleDrop);
+            cell.addEventListener('click', () => handleCellClick(row, col));
             
             // 配置不可能なセルかどうかをチェック
             if (isNotPlaceableCell(row, col)) {
                 cell.classList.add('not-placeable');
-            } else {
-                // 配置可能なセルにのみイベントリスナーを追加
-                cell.addEventListener('dragover', handleDragOver);
-                cell.addEventListener('dragenter', handleDragEnter);
-                cell.addEventListener('dragleave', handleDragLeave);
-                cell.addEventListener('drop', handleDrop);
-                cell.addEventListener('click', () => handleCellClick(row, col));
             }
             
             elements.gameBoard.appendChild(cell);
