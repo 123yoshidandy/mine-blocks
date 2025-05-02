@@ -22,8 +22,7 @@ const elements = {
     newGameButton: document.getElementById('newGame'),
     hintButton: document.getElementById('hint'),
     clearModal: document.getElementById('clearModal'),
-    nextLevelButton: document.getElementById('nextLevel'),
-    tryAnotherSolutionButton: document.getElementById('tryAnotherSolution')
+    nextLevelButton: document.getElementById('nextLevel')
 };
 
 // ゲーム初期化
@@ -762,15 +761,6 @@ function setupEventListeners() {
         gameState.level++;
         elements.clearModal.classList.remove('active');
         generateLevel();
-    });
-    
-    // 別の解答を探すボタン
-    elements.tryAnotherSolutionButton.addEventListener('click', () => {
-        elements.clearModal.classList.remove('active');
-        clearBoard();
-        generateBoard();
-        renderBoard();
-        renderBlocks();
     });
 }
 
