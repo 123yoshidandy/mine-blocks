@@ -376,9 +376,21 @@ function handleDragStart(e) {
     e.dataTransfer.setData('text/plain', blockIndex);
     e.dataTransfer.effectAllowed = 'move';
     
-    // ドラッグ中のブロックを半透明にする
+    // ブラウザのデフォルトドラッグ画像を非表示にする
+    // 空の透明な要素を作成して、ドラッグ画像として設定
+    const emptyElement = document.createElement('div');
+    emptyElement.style.width = '1px';
+    emptyElement.style.height = '1px';
+    emptyElement.style.position = 'absolute';
+    emptyElement.style.top = '-1000px';
+    document.body.appendChild(emptyElement);
+    
+    // setDragImage(要素, X座標オフセット, Y座標オフセット)
+    e.dataTransfer.setDragImage(emptyElement, 0, 0);
+    
+    // 次のイベントループで要素を削除
     setTimeout(() => {
-        blockElement.classList.add('dragging');
+        document.body.removeChild(emptyElement);
     }, 0);
 }
 
@@ -389,7 +401,6 @@ function handleDragEnd(e) {
     
     // ドラッグ終了時の状態をリセット
     dragState.isDragging = false;
-    blockElement.classList.remove('dragging');
     
     // ホバープレビューをクリア
     clearHoverPreview();

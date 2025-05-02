@@ -132,11 +132,6 @@ header h1 {
     box-shadow: 0 0 0 2px #3498db;
 }
 
-.block.dragging {
-    opacity: 0.6;
-    transform: scale(1.05);
-}
-
 .block.used {
     opacity: 0.5;
     cursor: not-allowed;
