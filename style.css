@@ -238,3 +238,94 @@ footer {
     color: #7f8c8d;
     font-size: 0.9rem;
 }
+
+/* レスポンシブデザイン */
+@media (max-width: 768px) {
+    .container {
+        max-width: 100%;
+        padding: 10px;
+    }
+    
+    header h1 {
+        font-size: 1.8rem;
+    }
+    
+    .stats {
+        margin-bottom: 15px;
+        font-size: 1rem;
+    }
+    
+    .game-board {
+        max-width: 100%;
+    }
+    
+    .cell {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+    }
+    
+    .blocks-container {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 15px;
+    }
+    
+    .block {
+        margin-bottom: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    header {
+        display: none;
+    }
+    
+    .stats {
+        display: none;
+    }
+    
+    .game-container {
+        padding: 10px;
+    }
+    
+    .cell {
+        width: 35px;
+        height: 35px;
+        font-size: 0.9rem;
+    }
+    
+    .controls {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    button {
+        width: 100%;
+        padding: 12px;
+    }
+    
+    .block-cell {
+        width: 18px;
+        height: 18px;
+    }
+    
+    /* ゲームコンテンツを上に詰める */
+    .game-board {
+        margin-top: 0;
+        margin-bottom: 15px;
+    }
+    
+    /* モバイルでブロックを2行で表示 */
+    .blocks-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        justify-items: center;
+    }
+    
+    .block {
+        margin: 0 auto 10px;
+    }
+}

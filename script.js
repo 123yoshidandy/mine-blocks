@@ -22,6 +22,18 @@ const elements = {
     nextGameButton: document.getElementById('nextGame')
 };
 
+// タッチ関連の状態を保持するオブジェクト
+const touchState = {
+    isTouching: false,
+    selectedBlockIndex: -1,
+    startX: 0,
+    startY: 0,
+    lastX: 0,
+    lastY: 0,
+    isMoving: false,  // スワイプ中かどうかを示すフラグ
+    targetCell: null  // 現在ターゲットしているセル
+};
+
 // ゲーム初期化
 function initGame() {
     gameState.score = 0;
@@ -200,9 +212,16 @@ function generateBoard() {
             cell.dataset.row = row;
             cell.dataset.col = col;
 
-            // ドラッグ操作に必要なイベントリスナーのみを追加
+            // ドラッグ操作に必要なイベントリスナーのみを追加（デスクトップ用）
             cell.addEventListener('dragover', handleDragOver);
             cell.addEventListener('drop', handleDrop);
+            
+            // タッチイベントを追加（モバイル用）
+            cell.addEventListener('touchstart', handleCellTouchStart);
+            cell.addEventListener('touchmove', handleCellTouchMove);
+            cell.addEventListener('touchend', handleCellTouchEnd);
+            
+            // クリックイベントを追加
             cell.addEventListener('click', () => handleCellClick(row, col));
             
             // 配置不可能なセルかどうかをチェック
@@ -475,6 +494,143 @@ function handleDrop(e) {
             checkBoardCompletion();
         }
     }
+}
+
+// ブロックのタッチ開始
+function handleTouchStart(e) {
+    // デフォルトのスクロール動作を防止
+    e.preventDefault();
+    
+    const blockElement = e.target.closest('.block');
+    if (!blockElement) return;
+    
+    // すでに使用済みのブロックは選択不可
+    if (blockElement.classList.contains('used')) return;
+    
+    // タッチしたブロックを選択
+    const blockIndex = parseInt(blockElement.dataset.index);
+    selectBlock(blockIndex);
+    
+    // タッチ状態を記録
+    touchState.isTouching = true;
+    touchState.selectedBlockIndex = blockIndex;
+    touchState.isMoving = false;
+    
+    // タッチ開始位置を記録
+    const touch = e.touches[0];
+    touchState.startX = touch.clientX;
+    touchState.startY = touch.clientY;
+    touchState.lastX = touch.clientX;
+    touchState.lastY = touch.clientY;
+    
+    // スワイプ操作のために、touchmoveイベントをbodyに追加
+    document.body.addEventListener('touchmove', handleBodyTouchMove, { passive: false });
+    document.body.addEventListener('touchend', handleBodyTouchEnd);
+}
+
+// ブロックのタッチ終了（ブロック上で終了した場合のみ）
+function handleTouchEnd(e) {
+    // タッチがブロック上で終了した場合は、ブロックの選択だけして配置はしない
+    e.preventDefault();
+}
+
+// ボディ全体でのタッチ移動（スワイプ）
+function handleBodyTouchMove(e) {
+    // ブロックが選択されていない場合は通常のスクロールを許可
+    if (gameState.selectedBlockIndex === -1) return;
+    
+    // デフォルト動作（スクロール）を防止
+    e.preventDefault();
+    
+    // タッチ位置を取得
+    const touch = e.touches[0];
+    const x = touch.clientX;
+    const y = touch.clientY;
+    
+    // 開始位置からある程度動いたらスワイプ操作と見なす
+    const moveDist = Math.sqrt(Math.pow(x - touchState.startX, 2) + Math.pow(y - touchState.startY, 2));
+    if (moveDist > 10) {
+        touchState.isMoving = true;
+    }
+    
+    // 前回の位置からほとんど動いていなければ処理をスキップ（パフォーマンス最適化）
+    if (Math.abs(x - touchState.lastX) < 5 && Math.abs(y - touchState.lastY) < 5) {
+        return;
+    }
+    
+    // 現在位置を更新
+    touchState.lastX = x;
+    touchState.lastY = y;
+    
+    // タッチ位置の下にあるセルを取得
+    const element = document.elementFromPoint(x, y);
+    const cell = element ? element.closest('.cell') : null;
+    
+    if (cell) {
+        touchState.targetCell = cell;
+        
+        // 前回のホバープレビューをクリア
+        clearHoverPreview();
+        
+        // タッチ位置のセル座標を取得
+        const row = parseInt(cell.dataset.row);
+        const col = parseInt(cell.dataset.col);
+        
+        // 新しい位置にプレビューを表示
+        if (!isNaN(row) && !isNaN(col)) {
+            dragState.hoverCells = []; // ドラッグ状態の配列を使用
+            showBlockPreview(row, col, gameState.blocks[gameState.selectedBlockIndex]);
+        }
+    }
+}
+
+// ボディ全体でのタッチ終了（スワイプ操作の終了）
+function handleBodyTouchEnd(e) {
+    // ブロックが選択されていない場合は何もしない
+    if (gameState.selectedBlockIndex === -1) {
+        touchState.isTouching = false;
+        return;
+    }
+    
+    // イベントリスナーを削除
+    document.body.removeEventListener('touchmove', handleBodyTouchMove);
+    document.body.removeEventListener('touchend', handleBodyTouchEnd);
+    
+    // スワイプ操作が行われ、かつターゲットセルがある場合
+    if (touchState.isMoving && touchState.targetCell) {
+        const row = parseInt(touchState.targetCell.dataset.row);
+        const col = parseInt(touchState.targetCell.dataset.col);
+        
+        // ホバープレビューをクリア
+        clearHoverPreview();
+        
+        // ブロックを配置
+        const block = gameState.blocks[gameState.selectedBlockIndex];
+        if (!isNaN(row) && !isNaN(col) && canPlaceBlock(row, col, block)) {
+            placeBlock(row, col, block);
+            selectBlock(-1);
+            checkBoardCompletion();
+        }
+    }
+    
+    // タッチ状態をリセット
+    touchState.isTouching = false;
+    touchState.isMoving = false;
+    touchState.targetCell = null;
+}
+
+// セルのタッチイベントは単純化（スワイプ操作はボディで処理するため）
+function handleCellTouchStart(e) {
+    // セル上でのタッチ開始は特に何もしない
+}
+
+function handleCellTouchMove(e) {
+    // セル上でのタッチ移動は特に何もしない
+}
+
+function handleCellTouchEnd(e) {
+    // セル上でのタッチ終了は特に何もしない
+    // 代わりにボディ全体でのタッチ終了で処理
 }
 
 // ブロックのプレビューを表示
@@ -798,10 +954,14 @@ function renderBlocks() {
             }
         }
         
-        // ドラッグ機能を追加
+        // ドラッグ機能を追加（デスクトップ用）
         blockElement.setAttribute('draggable', 'true');
         blockElement.addEventListener('dragstart', handleDragStart);
         blockElement.addEventListener('dragend', handleDragEnd);
+        
+        // タッチイベントを追加（モバイル用）
+        blockElement.addEventListener('touchstart', handleTouchStart);
+        blockElement.addEventListener('touchend', handleTouchEnd);
         
         // クリックイベントを追加
         blockElement.addEventListener('click', () => selectBlock(index));
