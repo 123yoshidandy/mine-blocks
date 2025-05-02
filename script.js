@@ -111,9 +111,12 @@ function generateBlocks() {
             }
         }
         
-        // ブロックのセルの20%〜50%をマインにする
-        const minMines = Math.max(1, Math.ceil(filledCells.length * 0.2));
-        const maxMines = Math.ceil(filledCells.length * 0.5);
+        // 修正: マイン数を1以上、ブロックの大きさ（セル数）未満に設定
+        const totalCells = filledCells.length;
+        const minMines = 1; // 最低1つのマイン
+        const maxMines = Math.max(1, totalCells - 1); // 最大でブロックのセル数-1個のマイン
+        
+        // マイン数をminとmaxの間でランダムに決定
         const numMines = minMines + Math.floor(Math.random() * (maxMines - minMines + 1));
         
         // ランダムにマインを配置
@@ -556,7 +559,7 @@ function checkBoardCompletion() {
 function renderBoard() {
     const size = gameState.boardSize;
     
-    // 盤面にランダムに数字を配置 (ヒントとして機能)
+    // すべてのマスに数字またはマインを表示するように修正
     for (let row = 0; row < size; row++) {
         for (let col = 0; col < size; col++) {
             // 配置不可能なセルには数字を表示しない
@@ -564,17 +567,12 @@ function renderBoard() {
                 continue;
             }
             
-            // 40%の確率で数字を表示
-            if (Math.random() < 0.4) {
-                // ソリューションからマイン数を算出
-                let mineCount = calculateMineCountFromSolution(row, col);
-                
-                // マイン数が0の場合は表示しない
-                if (mineCount > 0) {
-                    const cell = document.querySelector(`.cell[data-row="${row}"][data-col="${col}"]`);
-                    cell.textContent = mineCount;
-                }
-            }
+            // ソリューションからマイン数を算出
+            let mineCount = calculateMineCountFromSolution(row, col);
+            
+            // マイン数が0の場合でも表示する
+            const cell = document.querySelector(`.cell[data-row="${row}"][data-col="${col}"]`);
+            cell.textContent = mineCount;
         }
     }
 }
