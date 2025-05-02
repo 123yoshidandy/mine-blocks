@@ -752,9 +752,14 @@ function placeBlock(startRow, startCol, block) {
     }
     
     // ブロックを使用済みにする
-    elements.blocksContainer.children[blockIndex].classList.add('used');
-    elements.blocksContainer.children[blockIndex].style.pointerEvents = 'none';
-    elements.blocksContainer.children[blockIndex].style.opacity = '0.5';
+    const blockElement = elements.blocksContainer.children[blockIndex];
+    blockElement.classList.add('used');
+    
+    // 完全に非表示にする（透明度を下げる代わりに）
+    blockElement.style.display = 'none';
+    
+    // 操作できないようにする（念のため）
+    blockElement.style.pointerEvents = 'none';
 }
 
 // ブロックを選択
