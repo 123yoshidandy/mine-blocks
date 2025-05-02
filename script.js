@@ -567,28 +567,39 @@ function renderBoard() {
                 continue;
             }
             
-            // ソリューションからマイン数を算出
-            let mineCount = calculateMineCountFromSolution(row, col);
-            
-            // マイン数が0の場合でも表示する
             const cell = document.querySelector(`.cell[data-row="${row}"][data-col="${col}"]`);
-            cell.textContent = mineCount;
+            
+            // ソリューションからマイン情報を取得
+            const mineInfo = getMineInfoFromSolution(row, col);
+            
+            if (mineInfo.hasMine) {
+                // マインがある場合は、数字ではなく色で表現
+                cell.classList.add('solution-mine');
+                cell.style.backgroundColor = '#e74c3c'; // 赤色でマインを表示
+                cell.textContent = '';  // 数字は表示しない
+            } else if (mineInfo.mineCount > 0) {
+                // マインがない場合は数字を表示
+                cell.textContent = mineInfo.mineCount;
+            } else {
+                // マインもなく、重なるブロックもない場合
+                cell.textContent = '';
+            }
         }
     }
 }
 
-// ソリューションからマイン数を計算
-function calculateMineCountFromSolution(row, col) {
-    // ソリューションがない場合はランダムな数字を生成
+// ソリューションからマイン情報を取得
+function getMineInfoFromSolution(row, col) {
+    // ソリューションがない場合
     if (!gameState.solution) {
-        return Math.floor(Math.random() * 3) + 1;
+        return { hasMine: false, mineCount: Math.floor(Math.random() * 3) + 1 };
     }
     
-    // ソリューションでこの位置に配置されるブロックのマイン数をカウント
+    // この位置に重なるブロックとマイン情報を取得
     const solution = gameState.solution;
     let mineCount = 0;
+    let hasMine = false;
     
-    // この位置を覆うブロックを特定し、そのブロック全体のマイン数を取得
     for (const placedBlock of solution) {
         const blockIndex = placedBlock.blockIndex;
         const block = gameState.blocks[blockIndex];
@@ -596,6 +607,7 @@ function calculateMineCountFromSolution(row, col) {
         
         // このブロックがこのセルをカバーしているかチェック
         let isCoveredByThisBlock = false;
+        let isMineCellInThisBlock = false;
         
         for (let r = 0; r < blockSize; r++) {
             for (let c = 0; c < blockSize; c++) {
@@ -605,7 +617,11 @@ function calculateMineCountFromSolution(row, col) {
                     
                     // このセルに位置するかチェック
                     if (boardRow === row && boardCol === col) {
-                        // このブロックはセルをカバーしている
+                        // マインかどうかをチェック
+                        if (block.mines.some(mine => mine.row === r && mine.col === c)) {
+                            hasMine = true;
+                            isMineCellInThisBlock = true;
+                        }
                         isCoveredByThisBlock = true;
                         break;
                     }
@@ -615,13 +631,14 @@ function calculateMineCountFromSolution(row, col) {
         }
         
         // このブロックがセルをカバーしている場合、ブロック全体のマイン数を加算
-        if (isCoveredByThisBlock) {
+        if (isCoveredByThisBlock && !isMineCellInThisBlock) {
+            // マインセルでない場合のみマイン数をカウント
             // ブロック全体のマイン数をカウント
             mineCount += block.mines.length;
         }
     }
     
-    return mineCount;
+    return { hasMine, mineCount };
 }
 
 // ブロックを描画
