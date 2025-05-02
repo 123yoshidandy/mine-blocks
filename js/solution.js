@@ -55,7 +55,7 @@ function generateSolutionAndNotPlaceableCells() {
             // 2つ目以降のブロックは、既存のブロックと接するように配置
             
             // 既に配置されたブロックの周囲のセルをチェック
-            const adjacentPositions = findAdjacentPositions(solutionBoard, block.grid.length);
+            const adjacentPositions = findAdjacentPositions(solutionBoard, block);
             
             // ランダム順にアクセス可能な隣接位置を試す
             const shuffledPositions = adjacentPositions.sort(() => 0.5 - Math.random());
@@ -96,8 +96,9 @@ function generateSolutionAndNotPlaceableCells() {
 }
 
 // ソリューションボードで既存のブロックに隣接する配置可能な位置を探す
-function findAdjacentPositions(solutionBoard, blockSize) {
+function findAdjacentPositions(solutionBoard, block) {
     const boardSize = solutionBoard.length;
+    const blockSize = block.grid.length;
     const adjacentPositions = [];
     
     // ボード上で既に配置済みのブロックの隣接セルを収集
@@ -122,7 +123,7 @@ function findAdjacentPositions(solutionBoard, blockSize) {
                         adjacentCol >= 0 && adjacentCol < boardSize && 
                         solutionBoard[adjacentRow][adjacentCol] === null) {
                         
-                        // ブロックの左上隅の位置を計算（ブロックサイズを考慮）
+                        // ブロックの左上隅の可能な位置を計算（ブロックサイズを考慮）
                         for (let blockStartRow = Math.max(0, adjacentRow - blockSize + 1); 
                              blockStartRow <= adjacentRow && blockStartRow + blockSize <= boardSize; 
                              blockStartRow++) {
@@ -130,14 +131,20 @@ function findAdjacentPositions(solutionBoard, blockSize) {
                             for (let blockStartCol = Math.max(0, adjacentCol - blockSize + 1); 
                                  blockStartCol <= adjacentCol && blockStartCol + blockSize <= boardSize; 
                                  blockStartCol++) {
-                                 
-                                // 既に追加済みでないことを確認して追加
-                                const existingPosition = adjacentPositions.find(
-                                    pos => pos.row === blockStartRow && pos.col === blockStartCol
-                                );
                                 
-                                if (!existingPosition) {
-                                    adjacentPositions.push({ row: blockStartRow, col: blockStartCol });
+                                // ブロックがこの位置に配置可能かチェック
+                                if (canPlaceBlockOnSolution(blockStartRow, blockStartCol, block, solutionBoard)) {
+                                    // 重要: ブロックを配置した場合に、実際に既存ブロックと隣接するかチェック
+                                    if (wouldBlockBeAdjacentToExisting(blockStartRow, blockStartCol, block, solutionBoard)) {
+                                        // 既に追加済みでないことを確認して追加
+                                        const existingPosition = adjacentPositions.find(
+                                            pos => pos.row === blockStartRow && pos.col === blockStartCol
+                                        );
+                                        
+                                        if (!existingPosition) {
+                                            adjacentPositions.push({ row: blockStartRow, col: blockStartCol });
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -148,6 +155,44 @@ function findAdjacentPositions(solutionBoard, blockSize) {
     }
     
     return adjacentPositions;
+}
+
+// ブロックが既存のブロックと隣接するかをチェック（埋まったセル同士が隣接するかを確認）
+function wouldBlockBeAdjacentToExisting(startRow, startCol, block, solutionBoard) {
+    const boardSize = solutionBoard.length;
+    const blockSize = block.grid.length;
+    const directions = [
+        { dr: -1, dc: 0 }, // 上
+        { dr: 1, dc: 0 },  // 下
+        { dr: 0, dc: -1 }, // 左
+        { dr: 0, dc: 1 }   // 右
+    ];
+    
+    // ブロックの各セルについて確認
+    for (let row = 0; row < blockSize; row++) {
+        for (let col = 0; col < blockSize; col++) {
+            // このセルがブロックの一部（埋まっている）場合
+            if (block.grid[row][col] === 1) {
+                const boardRow = startRow + row;
+                const boardCol = startCol + col;
+                
+                // この埋まったセルの隣接セルを確認
+                for (const { dr, dc } of directions) {
+                    const adjacentRow = boardRow + dr;
+                    const adjacentCol = boardCol + dc;
+                    
+                    // 隣接セルがボード内かつ既に別のブロックが配置されているか確認
+                    if (adjacentRow >= 0 && adjacentRow < boardSize && 
+                        adjacentCol >= 0 && adjacentCol < boardSize && 
+                        solutionBoard[adjacentRow][adjacentCol] !== null) {
+                        return true; // 隣接している
+                    }
+                }
+            }
+        }
+    }
+    
+    return false; // 隣接していない
 }
 
 // ソリューションボード上にブロックを配置できるかチェック
