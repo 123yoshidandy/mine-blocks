@@ -127,8 +127,8 @@ function clearBoard() {
 
 // ブロックの形状を生成
 function generateBlocks() {
-    // 固定で4つのブロックを生成
-    const numBlocks = 4;
+    // ブロック生成数を6個に増加（ダミーを含む）
+    const numBlocks = 6;
     
     for (let i = 0; i < numBlocks; i++) {
         // ブロックの形状をランダムに生成
@@ -289,8 +289,16 @@ function generateSolutionAndNotPlaceableCells() {
     // 空のソリューションボードを作成
     const solutionBoard = Array(size).fill().map(() => Array(size).fill(null));
     
-    // 使用可能なブロックのインデックスを準備
-    const availableBlocks = Array.from({ length: gameState.blocks.length }, (_, i) => i);
+    // 使用するブロック数を決定（生成したブロックの一部だけを使用）
+    const totalBlocks = gameState.blocks.length; // 6個
+    const blocksToUse = 4; // 実際に解答に使用するブロック数
+    
+    // すべてのブロックのインデックス配列をシャッフル
+    const allBlockIndices = Array.from({ length: totalBlocks }, (_, i) => i);
+    const shuffledBlockIndices = [...allBlockIndices].sort(() => 0.5 - Math.random());
+    
+    // 使用するブロックを選択（先頭からblocksToUse個）
+    const selectedBlockIndices = shuffledBlockIndices.slice(0, blocksToUse);
     
     // 想定解を生成する（実際のパズルの解答を一つ生成）
     const placedBlocks = [];
@@ -298,9 +306,8 @@ function generateSolutionAndNotPlaceableCells() {
     // 最初のブロックはランダムな位置に配置（最初のブロックは他のブロックと接する必要はない）
     let firstBlockPlaced = false;
     
-    // ブロックをランダムに配置し、ソリューションを生成
-    while (availableBlocks.length > 0) {
-        const blockIndex = availableBlocks.shift(); // 先頭のブロックを取得
+    // 選択したブロックだけを使用して配置
+    for (const blockIndex of selectedBlockIndices) {
         const block = gameState.blocks[blockIndex];
         
         // ブロックをボード上の適切な位置に配置できるか試みる
