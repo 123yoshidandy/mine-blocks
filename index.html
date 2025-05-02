@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MINE BLOCKS</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>MINE BLOCKS</h1>
+        </header>
+
+        <div class="game-container">
+            <div class="stats">
+                <div class="score">スコア: <span id="score">0</span></div>
+                <div class="level">レベル: <span id="level">1</span></div>
+            </div>
+
+            <div class="game-board" id="gameBoard">
+                <!-- ゲームボードはJavaScriptで動的に生成されます -->
+            </div>
+
+            <div class="blocks-container" id="blocksContainer">
+                <!-- ブロックはJavaScriptで動的に生成されます -->
+            </div>
+
+            <div class="controls">
+                <button id="newGame">新しいゲーム</button>
+                <button id="hint">ヒント</button>
+            </div>
+        </div>
+
+        <div class="modal" id="clearModal">
+            <div class="modal-content">
+                <h2>クリア！</h2>
+                <p>別の解答を見つけてみましょう！</p>
+                <p>現在のスコア: <span id="currentScore">0</span></p>
+                <button id="nextLevel">次のレベル</button>
+                <button id="tryAnotherSolution">別の解答を探す</button>
+            </div>
+        </div>
+
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
