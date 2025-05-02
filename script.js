@@ -736,13 +736,16 @@ function placeBlock(startRow, startCol, block) {
                 const cellElement = document.querySelector(`.cell[data-row="${boardRow}"][data-col="${boardCol}"]`);
                 cellElement.classList.add('filled');
                 
-                // マインの場合はマインクラスを追加し、マインの数を表示
+                // マスに配置した場合は、数字やマイン表示を非表示にする
+                cellElement.textContent = '';
+                cellElement.style.backgroundColor = '';
+                
+                // 元々持っていたsolution-mineクラスがあれば削除
+                cellElement.classList.remove('solution-mine');
+                
+                // マインの場合はマインクラスを追加するが、テキストは表示しない
                 if (isMine) {
                     cellElement.classList.add('mine');
-                    // マインの数値を表示 (セルに既に数字がある場合はその値を使用)
-                    const currentValue = cellElement.textContent ? parseInt(cellElement.textContent) : 0;
-                    // マインが置かれたセルの場合は、そのセルのマイン数を1増やす
-                    cellElement.textContent = currentValue + 1;
                 }
             }
         }
