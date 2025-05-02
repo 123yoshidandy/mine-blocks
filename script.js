@@ -170,10 +170,10 @@ function generateBlocks() {
             }
         }
         
-        // 修正: マイン数を1以上、ブロックの大きさ（セル数）未満に設定
+        // 修正: マイン数を1以上、4以下、かつブロックの大きさ（セル数）未満に設定
         const totalCells = filledCells.length;
         const minMines = 1; // 最低1つのマイン
-        const maxMines = Math.max(1, totalCells - 1); // 最大でブロックのセル数-1個のマイン
+        const maxMines = Math.min(4, totalCells - 1); // 最大4個、ただしブロックのセル数-1個を超えない
         
         // マイン数をminとmaxの間でランダムに決定
         const numMines = minMines + Math.floor(Math.random() * (maxMines - minMines + 1));
