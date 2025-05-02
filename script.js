@@ -1,12 +1,10 @@
 // ゲームの状態を管理するオブジェクト
 const gameState = {
-    level: 1,
     score: 0,
     board: [],
     blocks: [],
     selectedBlockIndex: -1,
-    boardSize: 5, // デフォルトのボードサイズ
-    solutions: [], // 複数の解答を保存
+    boardSize: 6, // ボードサイズを6×6に固定
     foundSolutions: [], // プレイヤーが見つけた解答
     notPlaceableCells: [], // 配置不可能なセル
     solution: null // 想定解
@@ -16,35 +14,29 @@ const gameState = {
 const elements = {
     gameBoard: document.getElementById('gameBoard'),
     blocksContainer: document.getElementById('blocksContainer'),
-    levelDisplay: document.getElementById('level'),
     scoreDisplay: document.getElementById('score'),
     currentScoreDisplay: document.getElementById('currentScore'),
     newGameButton: document.getElementById('newGame'),
     hintButton: document.getElementById('hint'),
     clearModal: document.getElementById('clearModal'),
-    nextLevelButton: document.getElementById('nextLevel')
+    nextGameButton: document.getElementById('nextGame')
 };
 
 // ゲーム初期化
 function initGame() {
-    gameState.level = 1;
     gameState.score = 0;
     updateStats();
-    generateLevel();
+    generateGame();
     setupEventListeners();
 }
 
 // 統計情報の更新
 function updateStats() {
-    elements.levelDisplay.textContent = gameState.level;
     elements.scoreDisplay.textContent = gameState.score;
 }
 
-// レベル生成
-function generateLevel() {
-    // ボードサイズは難易度に応じて変更する可能性がある
-    gameState.boardSize = 5 + Math.min(2, Math.floor(gameState.level / 5));
-    
+// 新しいゲームを生成
+function generateGame() {
     // ブロックとボードをクリア
     clearBoard();
     
@@ -76,8 +68,8 @@ function clearBoard() {
 
 // ブロックの形状を生成
 function generateBlocks() {
-    // レベルに応じてブロックの数と複雑さを調整
-    const numBlocks = 3 + Math.min(2, Math.floor(gameState.level / 3));
+    // 固定で4つのブロックを生成
+    const numBlocks = 4;
     
     for (let i = 0; i < numBlocks; i++) {
         // ブロックの形状をランダムに生成
@@ -136,9 +128,6 @@ function generateBlocks() {
             size: blockSize
         });
     }
-    
-    // 解答を生成
-    generateSolutions();
 }
 
 // ブロックが連結されているかチェック
@@ -550,7 +539,7 @@ function checkBoardCompletion() {
             
             // 別解を見つけた場合はポイント9倍
             const pointMultiplier = gameState.foundSolutions.length > 1 ? 9 : 1;
-            const levelPoints = gameState.level * 100 * pointMultiplier;
+            const levelPoints = 100 * pointMultiplier; // レベルに関係なく固定ポイント
             gameState.score += levelPoints;
             
             // 統計表示を更新
@@ -706,48 +695,13 @@ function handleDragEnd(e) {
     blockElement.classList.remove('dragging');
 }
 
-// 解答を生成
-function generateSolutions() {
-    // ここでは実装を簡略化して、ゲームで生成されたブロックを使って
-    // 複数の解答を見つけるアルゴリズムを実装する代わりに、
-    // 現在のレベルではマインの数だけをボードに表示する簡易版を実装
-    gameState.solutions = [];
-    
-    const cells = document.querySelectorAll('.cell');
-    cells.forEach(cell => {
-        const row = parseInt(cell.dataset.row);
-        const col = parseInt(cell.dataset.col);
-        
-        // 周囲のマイン設置予定地をカウント
-        let count = 0;
-        const size = gameState.boardSize;
-        
-        for (let r = Math.max(0, row - 1); r <= Math.min(size - 1, row + 1); r++) {
-            for (let c = Math.max(0, col - 1); c <= Math.min(size - 1, col + 1); c++) {
-                if (r === row && c === col) continue;
-                
-                // 20%の確率でマインとしてカウント
-                if (Math.random() < 0.2) {
-                    count++;
-                }
-            }
-        }
-        
-        // 40%の確率でヒントを表示
-        if (Math.random() < 0.4 && count > 0) {
-            cell.textContent = count;
-        }
-    });
-}
-
 // イベントリスナーのセットアップ
 function setupEventListeners() {
     // 新しいゲームボタン
     elements.newGameButton.addEventListener('click', () => {
-        gameState.level = 1;
         gameState.score = 0;
         updateStats();
-        generateLevel();
+        generateGame();
     });
     
     // ヒントボタン
@@ -756,11 +710,10 @@ function setupEventListeners() {
         alert('ヒント: 数字はその位置に置かれるブロックに含まれるマインの数を表しています。各数字と一致するようにブロックを配置しましょう！');
     });
     
-    // 次のレベルボタン
-    elements.nextLevelButton.addEventListener('click', () => {
-        gameState.level++;
+    // 次のゲームボタン
+    elements.nextGameButton.addEventListener('click', () => {
         elements.clearModal.classList.remove('active');
-        generateLevel();
+        generateGame();
     });
 }
 
