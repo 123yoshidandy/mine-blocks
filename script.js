@@ -7,7 +7,9 @@ const gameState = {
     selectedBlockIndex: -1,
     boardSize: 5, // デフォルトのボードサイズ
     solutions: [], // 複数の解答を保存
-    foundSolutions: [] // プレイヤーが見つけた解答
+    foundSolutions: [], // プレイヤーが見つけた解答
+    notPlaceableCells: [], // 配置不可能なセル
+    solution: null // 想定解
 };
 
 // DOM要素の参照
@@ -49,6 +51,9 @@ function generateLevel() {
     
     // 新しいブロックを生成
     generateBlocks();
+    
+    // 想定解とそれに基づく配置不可能なセルを生成
+    generateSolutionAndNotPlaceableCells();
     
     // ボードを生成して描画
     generateBoard();
@@ -204,18 +209,133 @@ function generateBoard() {
             cell.dataset.row = row;
             cell.dataset.col = col;
             
-            // ドロップ機能を追加
-            cell.addEventListener('dragover', handleDragOver);
-            cell.addEventListener('dragenter', handleDragEnter);
-            cell.addEventListener('dragleave', handleDragLeave);
-            cell.addEventListener('drop', handleDrop);
-            
-            // クリックイベントも維持
-            cell.addEventListener('click', () => handleCellClick(row, col));
+            // 配置不可能なセルかどうかをチェック
+            if (isNotPlaceableCell(row, col)) {
+                cell.classList.add('not-placeable');
+            } else {
+                // 配置可能なセルにのみイベントリスナーを追加
+                cell.addEventListener('dragover', handleDragOver);
+                cell.addEventListener('dragenter', handleDragEnter);
+                cell.addEventListener('dragleave', handleDragLeave);
+                cell.addEventListener('drop', handleDrop);
+                cell.addEventListener('click', () => handleCellClick(row, col));
+            }
             
             elements.gameBoard.appendChild(cell);
         }
     }
+}
+
+// 想定解と配置不可能なセルを生成
+function generateSolutionAndNotPlaceableCells() {
+    const size = gameState.boardSize;
+    gameState.notPlaceableCells = [];
+    
+    // 空のソリューションボードを作成
+    const solutionBoard = Array(size).fill().map(() => Array(size).fill(null));
+    
+    // 使用可能なブロックのインデックスを準備
+    const availableBlocks = Array.from({ length: gameState.blocks.length }, (_, i) => i);
+    
+    // 想定解を生成する（実際のパズルの解答を一つ生成）
+    const placedBlocks = [];
+    
+    // ブロックをランダムに配置し、ソリューションを生成
+    while (availableBlocks.length > 0) {
+        const blockIndex = availableBlocks.shift(); // 先頭のブロックを取得
+        const block = gameState.blocks[blockIndex];
+        
+        // ブロックをボード上のランダムな位置に配置できるか試みる
+        let placed = false;
+        
+        // ランダムな開始位置を試行 (最大100回)
+        for (let attempt = 0; attempt < 100 && !placed; attempt++) {
+            const startRow = Math.floor(Math.random() * (size - block.grid.length + 1));
+            const startCol = Math.floor(Math.random() * (size - block.grid.length + 1));
+            
+            // このブロックをこの位置に配置できるかチェック
+            if (canPlaceBlockOnSolution(startRow, startCol, block, solutionBoard)) {
+                // ブロックを配置
+                placeBlockOnSolution(startRow, startCol, blockIndex, block, solutionBoard);
+                placedBlocks.push({ row: startRow, col: startCol, blockIndex });
+                placed = true;
+            }
+        }
+        
+        // 配置できなかった場合、このブロックはスキップ
+        // 実際のゲームでは全てのブロックを使用する必要があるため
+        // このケースはありえないが、理論上はあり得る
+        if (!placed) {
+            console.warn('ブロック配置エラー：想定解の生成に失敗しました。');
+        }
+    }
+    
+    // 生成されたソリューションを保存
+    gameState.solution = placedBlocks;
+    
+    // 配置不可能なセルを設定
+    // ソリューションで使用されていないセルを配置不可能にする
+    for (let row = 0; row < size; row++) {
+        for (let col = 0; col < size; col++) {
+            if (solutionBoard[row][col] === null) {
+                gameState.notPlaceableCells.push({ row, col });
+            }
+        }
+    }
+}
+
+// ソリューションボード上にブロックを配置できるかチェック
+function canPlaceBlockOnSolution(startRow, startCol, block, solutionBoard) {
+    const boardSize = solutionBoard.length;
+    const blockSize = block.grid.length;
+    
+    // ボードの範囲外にはみ出ないかチェック
+    if (startRow + blockSize > boardSize || startCol + blockSize > boardSize) {
+        return false;
+    }
+    
+    // 既に配置されているブロックと重ならないかチェック
+    for (let row = 0; row < blockSize; row++) {
+        for (let col = 0; col < blockSize; col++) {
+            if (block.grid[row][col] === 1) {
+                const boardRow = startRow + row;
+                const boardCol = startCol + col;
+                
+                if (solutionBoard[boardRow][boardCol] !== null) {
+                    return false;
+                }
+            }
+        }
+    }
+    
+    return true;
+}
+
+// ソリューションボード上にブロックを配置
+function placeBlockOnSolution(startRow, startCol, blockIndex, block, solutionBoard) {
+    const blockSize = block.grid.length;
+    
+    for (let row = 0; row < blockSize; row++) {
+        for (let col = 0; col < blockSize; col++) {
+            if (block.grid[row][col] === 1) {
+                const boardRow = startRow + row;
+                const boardCol = startCol + col;
+                
+                // マインかどうかをチェック
+                const isMine = block.mines.some(mine => mine.row === row && mine.col === col);
+                
+                solutionBoard[boardRow][boardCol] = {
+                    blockIndex,
+                    isMine
+                };
+            }
+        }
+    }
+}
+
+// 特定のセルが配置不可能かどうかをチェック
+function isNotPlaceableCell(row, col) {
+    return gameState.notPlaceableCells.some(cell => cell.row === row && cell.col === col);
 }
 
 // セルクリックのハンドラ
@@ -303,14 +423,15 @@ function canPlaceBlock(startRow, startCol, block) {
         return false;
     }
     
-    // 既に配置されているブロックと重ならないかチェック
+    // 既に配置されているブロックと重ならないか、配置不可能なセルと重ならないかチェック
     for (let row = 0; row < blockSize; row++) {
         for (let col = 0; col < blockSize; col++) {
             if (block.grid[row][col] === 1) {
                 const boardRow = startRow + row;
                 const boardCol = startCol + col;
                 
-                if (gameState.board[boardRow][boardCol] !== null) {
+                if (gameState.board[boardRow][boardCol] !== null || 
+                    isNotPlaceableCell(boardRow, boardCol)) {
                     return false;
                 }
             }
@@ -447,18 +568,66 @@ function checkBoardCompletion() {
 function renderBoard() {
     const size = gameState.boardSize;
     
-    // 盤面にランダムに数字を配置 (これはヒントとして機能)
+    // 盤面にランダムに数字を配置 (ヒントとして機能)
     for (let row = 0; row < size; row++) {
         for (let col = 0; col < size; col++) {
-            // 30%の確率で数字を表示
-            if (Math.random() < 0.3) {
-                // 1〜3の間の数字をランダムに表示 (パズルを解けるようにするため)
-                const hintNumber = 1 + Math.floor(Math.random() * 3);
-                const cell = document.querySelector(`.cell[data-row="${row}"][data-col="${col}"]`);
-                cell.textContent = hintNumber;
+            // 配置不可能なセルには数字を表示しない
+            if (isNotPlaceableCell(row, col)) {
+                continue;
+            }
+            
+            // 40%の確率で数字を表示
+            if (Math.random() < 0.4) {
+                // ソリューションからマイン数を算出
+                let mineCount = calculateMineCountFromSolution(row, col);
+                
+                // マイン数が0の場合は表示しない
+                if (mineCount > 0) {
+                    const cell = document.querySelector(`.cell[data-row="${row}"][data-col="${col}"]`);
+                    cell.textContent = mineCount;
+                }
             }
         }
     }
+}
+
+// ソリューションからマイン数を計算
+function calculateMineCountFromSolution(row, col) {
+    // ソリューションがない場合はランダムな数字を生成
+    if (!gameState.solution) {
+        return Math.floor(Math.random() * 3) + 1;
+    }
+    
+    // ソリューションでこの位置に配置されるブロックのマイン数をカウント
+    const solution = gameState.solution;
+    let mineCount = 0;
+    
+    for (const placedBlock of solution) {
+        const blockIndex = placedBlock.blockIndex;
+        const block = gameState.blocks[blockIndex];
+        const blockSize = block.grid.length;
+        
+        // このブロックがこのセルをカバーしているかチェック
+        for (let r = 0; r < blockSize; r++) {
+            for (let c = 0; c < blockSize; c++) {
+                if (block.grid[r][c] === 1) {
+                    const boardRow = placedBlock.row + r;
+                    const boardCol = placedBlock.col + c;
+                    
+                    // このセルに位置するかチェック
+                    if (boardRow === row && boardCol === col) {
+                        // マインかどうかチェック
+                        const isMine = block.mines.some(mine => mine.row === r && mine.col === c);
+                        if (isMine) {
+                            mineCount++;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    return mineCount;
 }
 
 // ブロックを描画
