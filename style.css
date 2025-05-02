@@ -78,13 +78,6 @@ header h1 {
     color: white;
 }
 
-.cell.drag-over {
-    background-color: #e3f2fd;
-    box-shadow: 0 0 0 2px #2196f3 inset;
-    transform: scale(1.05);
-    transition: all 0.2s ease;
-}
-
 .cell.not-placeable {
     background-color: #bdc3c7;
     background-image: repeating-linear-gradient(45deg, #a7a7a7 0, #a7a7a7 5px, #bdc3c7 5px, #bdc3c7 10px);

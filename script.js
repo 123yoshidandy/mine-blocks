@@ -425,18 +425,14 @@ function handleDragOver(e) {
 
 // ドラッグエンターのハンドラ
 function handleDragEnter(e) {
-    const cell = e.target.closest('.cell');
-    if (cell) {
-        cell.classList.add('drag-over');
-    }
+    // ホバープレビューがあるので、drag-overクラスは不要になりました
+    // 何もしない
 }
 
 // ドラッグリーブのハンドラ
 function handleDragLeave(e) {
-    const cell = e.target.closest('.cell');
-    if (cell) {
-        cell.classList.remove('drag-over');
-    }
+    // ホバープレビューがあるので、drag-overクラスは不要になりました
+    // 何もしない
 }
 
 // ドロップのハンドラ
@@ -445,9 +441,6 @@ function handleDrop(e) {
     
     const cell = e.target.closest('.cell');
     if (!cell) return;
-    
-    // ドラッグオーバースタイルを削除
-    cell.classList.remove('drag-over');
     
     // ホバープレビューをクリア
     clearHoverPreview();
