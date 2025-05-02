@@ -7,7 +7,11 @@ const gameState = {
     boardSize: 6, // ボードサイズを6×6に固定
     foundSolutions: [], // プレイヤーが見つけた解答
     notPlaceableCells: [], // 配置不可能なセル
-    solution: null // 想定解
+    solution: null, // 想定解
+    startTime: null, // ゲーム開始時間
+    endTime: null, // ゲーム終了時間
+    elapsedTime: 0, // 経過時間（秒）
+    timerInterval: null // タイマーのインターバルID
 };
 
 // DOM要素の参照
@@ -16,6 +20,9 @@ const elements = {
     blocksContainer: document.getElementById('blocksContainer'),
     scoreDisplay: document.getElementById('score'),
     currentScoreDisplay: document.getElementById('currentScore'),
+    earnedScoreDisplay: document.getElementById('earnedScore'),
+    clearTimeDisplay: document.getElementById('clearTime'),
+    timerDisplay: document.getElementById('timerDisplay'),
     newGameButton: document.getElementById('newGame'),
     hintButton: document.getElementById('hint'),
     clearModal: document.getElementById('clearModal'),
@@ -47,6 +54,47 @@ function updateStats() {
     elements.scoreDisplay.textContent = gameState.score;
 }
 
+// タイマーを開始
+function startTimer() {
+    // 既存のタイマーがあれば停止
+    stopTimer();
+    
+    // 開始時間を記録
+    gameState.startTime = new Date();
+    gameState.elapsedTime = 0;
+    
+    // タイマーを開始（1秒ごとに更新）
+    gameState.timerInterval = setInterval(() => {
+        const now = new Date();
+        gameState.elapsedTime = Math.floor((now - gameState.startTime) / 1000);
+        
+        // タイマー表示を更新（必要に応じて要素を追加）
+        updateTimerDisplay();
+    }, 1000);
+}
+
+// タイマーを停止
+function stopTimer() {
+    if (gameState.timerInterval) {
+        clearInterval(gameState.timerInterval);
+        gameState.timerInterval = null;
+    }
+    
+    // 終了時間を記録（タイマーが動いている場合のみ）
+    if (gameState.startTime) {
+        gameState.endTime = new Date();
+        // より正確な経過時間を計算
+        gameState.elapsedTime = Math.floor((gameState.endTime - gameState.startTime) / 1000);
+    }
+}
+
+// タイマー表示を更新
+function updateTimerDisplay() {
+    if (elements.timerDisplay) {
+        elements.timerDisplay.textContent = gameState.elapsedTime;
+    }
+}
+
 // 新しいゲームを生成
 function generateGame() {
     // ブロックとボードをクリア
@@ -67,6 +115,9 @@ function generateGame() {
     
     // 解答をリセット
     gameState.foundSolutions = [];
+    
+    // タイマーをリセットして開始
+    startTimer();
 }
 
 // ボードとブロックコンテナをクリア
@@ -821,6 +872,9 @@ function checkBoardCompletion() {
     }
     
     if (isValid) {
+        // タイマーを停止
+        stopTimer();
+        
         // 現在のボード状態をシリアライズして解答として保存
         const currentSolution = JSON.stringify(gameState.board);
         
@@ -828,16 +882,26 @@ function checkBoardCompletion() {
         if (!gameState.foundSolutions.includes(currentSolution)) {
             gameState.foundSolutions.push(currentSolution);
             
-            // 別解を見つけた場合はポイント9倍
-            const pointMultiplier = gameState.foundSolutions.length > 1 ? 9 : 1;
-            const levelPoints = 100 * pointMultiplier; // レベルに関係なく固定ポイント
+            // 時間に基づいたスコア計算
+            // 300点から経過秒数を引く（最低10点）
+            let timeScore = Math.max(10, 300 - gameState.elapsedTime);
+            
+            // 別解を見つけた場合はポイント3倍
+            const pointMultiplier = gameState.foundSolutions.length > 1 ? 3 : 1;
+            const levelPoints = timeScore * pointMultiplier;
+            
+            // クリアモーダルの内容を更新（経過時間と獲得スコアも表示）
+            elements.clearTimeDisplay.textContent = gameState.elapsedTime;
+            elements.earnedScoreDisplay.textContent = levelPoints;
+            
+            // スコアを加算
             gameState.score += levelPoints;
+            elements.currentScoreDisplay.textContent = gameState.score;
             
             // 統計表示を更新
             updateStats();
             
             // クリアモーダルを表示
-            elements.currentScoreDisplay.textContent = gameState.score;
             elements.clearModal.classList.add('active');
         }
     }
