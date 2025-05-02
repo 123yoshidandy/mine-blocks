@@ -636,6 +636,13 @@ function renderBlocks() {
                 // マインの場合はマークを付ける
                 if (block.mines.some(mine => mine.row === row && mine.col === col)) {
                     cellElement.classList.add('mine');
+                    
+                    // デバッグ用: マインセルの背景色を変更して視覚的に識別しやすくする
+                    cellElement.style.backgroundColor = '#e74c3c'; // 赤色でマインを表示
+                    cellElement.style.color = 'white';
+                    
+                    // デバッグ用: マインの印を表示
+                    cellElement.textContent = 'M';
                 }
                 
                 blockElement.appendChild(cellElement);
