@@ -910,12 +910,28 @@ function selectBlock(index) {
 function checkBoardCompletion() {
     const boardSize = gameState.boardSize;
     
-    // 全てのブロックが使用されたかチェック
-    const allBlocksUsed = gameState.blocks.every((_, index) => {
-        return elements.blocksContainer.children[index].classList.contains('used');
-    });
+    // フィールドがすべて埋まっているかチェック
+    let allCellsFilled = true;
     
-    if (!allBlocksUsed) return;
+    // 配置可能な全てのセルが埋まっているかチェック
+    for (let row = 0; row < boardSize; row++) {
+        for (let col = 0; col < boardSize; col++) {
+            // 配置不可能なセルはスキップ
+            if (isNotPlaceableCell(row, col)) {
+                continue;
+            }
+            
+            // セルが空いている場合はfalse
+            if (gameState.board[row][col] === null) {
+                allCellsFilled = false;
+                break;
+            }
+        }
+        if (!allCellsFilled) break;
+    }
+    
+    // フィールドが埋まっていない場合は終了
+    if (!allCellsFilled) return;
     
     // 各セルのマイン数をチェック
     let isValid = true;
