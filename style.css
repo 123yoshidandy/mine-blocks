@@ -91,6 +91,23 @@ header h1 {
     opacity: 0.8;
 }
 
+/* ブロックのホバープレビュー用スタイル */
+.cell.hover-preview {
+    background-color: rgba(52, 152, 219, 0.3); /* 薄い青色で配置予定位置を表示 */
+    border: 2px dashed #3498db;
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+    transition: all 0.2s ease;
+}
+
+.cell.hover-preview.invalid {
+    background-color: rgba(231, 76, 60, 0.3); /* 薄い赤色で配置不可を表示 */
+    border: 2px dashed #e74c3c;
+}
+
+.cell.hover-preview.mine {
+    background-color: rgba(231, 76, 60, 0.5); /* マイン位置は少し濃い目の赤色で表示 */
+}
+
 /* ブロックコンテナ */
 .blocks-container {
     display: flex;

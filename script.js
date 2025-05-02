@@ -348,11 +348,79 @@ function handleCellClick(row, col) {
     }
 }
 
+// ドラッグ関連の状態を保持するオブジェクト
+const dragState = {
+    isDragging: false,
+    currentBlockIndex: -1,
+    lastHoverRow: -1,
+    lastHoverCol: -1,
+    hoverCells: [] // ホバープレビュー中のセルを追跡
+};
+
+// ドラッグ開始のハンドラ
+function handleDragStart(e) {
+    const blockElement = e.target.closest('.block');
+    if (!blockElement) return;
+    
+    // ドラッグ中のブロックを選択状態にする
+    const blockIndex = parseInt(blockElement.dataset.index);
+    selectBlock(blockIndex);
+    
+    // ドラッグ中の状態を記録
+    dragState.isDragging = true;
+    dragState.currentBlockIndex = blockIndex;
+    dragState.lastHoverRow = -1;
+    dragState.lastHoverCol = -1;
+    dragState.hoverCells = [];
+    
+    // ドラッグ中のブロック画像をセット
+    e.dataTransfer.setData('text/plain', blockIndex);
+    e.dataTransfer.effectAllowed = 'move';
+    
+    // ドラッグ中のブロックを半透明にする
+    setTimeout(() => {
+        blockElement.classList.add('dragging');
+    }, 0);
+}
+
+// ドラッグ終了のハンドラ
+function handleDragEnd(e) {
+    const blockElement = e.target.closest('.block');
+    if (!blockElement) return;
+    
+    // ドラッグ終了時の状態をリセット
+    dragState.isDragging = false;
+    blockElement.classList.remove('dragging');
+    
+    // ホバープレビューをクリア
+    clearHoverPreview();
+}
+
 // ドラッグオーバーのハンドラ
 function handleDragOver(e) {
     // デフォルトの動作をキャンセルしてドロップを許可
     e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
+    
+    // ドラッグ中のブロックのプレビューを表示
+    const cell = e.target.closest('.cell');
+    if (cell && dragState.isDragging && dragState.currentBlockIndex !== -1) {
+        const row = parseInt(cell.dataset.row);
+        const col = parseInt(cell.dataset.col);
+        
+        // 同じセル上にとどまっている場合は再計算しない
+        if (row === dragState.lastHoverRow && col === dragState.lastHoverCol) {
+            return;
+        }
+        
+        // 前回のホバープレビューをクリア
+        clearHoverPreview();
+        
+        // 新しい位置にプレビューを表示
+        dragState.lastHoverRow = row;
+        dragState.lastHoverCol = col;
+        showBlockPreview(row, col, gameState.blocks[dragState.currentBlockIndex]);
+    }
 }
 
 // ドラッグエンターのハンドラ
@@ -381,6 +449,9 @@ function handleDrop(e) {
     // ドラッグオーバースタイルを削除
     cell.classList.remove('drag-over');
     
+    // ホバープレビューをクリア
+    clearHoverPreview();
+    
     // ドロップ先のセル座標を取得
     const row = parseInt(cell.dataset.row);
     const col = parseInt(cell.dataset.col);
@@ -401,6 +472,57 @@ function handleDrop(e) {
             checkBoardCompletion();
         }
     }
+}
+
+// ブロックのプレビューを表示
+function showBlockPreview(startRow, startCol, block) {
+    const blockSize = block.grid.length;
+    const canPlace = canPlaceBlock(startRow, startCol, block);
+    
+    // ブロックのプレビューを表示
+    for (let row = 0; row < blockSize; row++) {
+        for (let col = 0; col < blockSize; col++) {
+            if (block.grid[row][col] === 1) {
+                const boardRow = startRow + row;
+                const boardCol = startCol + col;
+                
+                // ボード内かつ空いているセルのみ処理
+                if (boardRow >= 0 && boardRow < gameState.boardSize && 
+                    boardCol >= 0 && boardCol < gameState.boardSize) {
+                    
+                    const cellElement = document.querySelector(`.cell[data-row="${boardRow}"][data-col="${boardCol}"]`);
+                    if (cellElement) {
+                        // セルをホバープレビューリストに追加
+                        dragState.hoverCells.push(cellElement);
+                        
+                        // ホバープレビュークラスを追加
+                        cellElement.classList.add('hover-preview');
+                        
+                        // 配置できない場合は無効スタイルを追加
+                        if (!canPlace) {
+                            cellElement.classList.add('invalid');
+                        }
+                        
+                        // マインセルの場合はマインクラスを追加
+                        const isMine = block.mines.some(mine => mine.row === row && mine.col === col);
+                        if (isMine) {
+                            cellElement.classList.add('mine');
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+// ホバープレビューをクリア
+function clearHoverPreview() {
+    dragState.hoverCells.forEach(cell => {
+        cell.classList.remove('hover-preview', 'invalid', 'mine');
+    });
+    dragState.hoverCells = [];
+    dragState.lastHoverRow = -1;
+    dragState.lastHoverCol = -1;
 }
 
 // ブロックを配置できるかチェック
@@ -683,45 +805,6 @@ function renderBlocks() {
         
         elements.blocksContainer.appendChild(blockElement);
     });
-}
-
-// ドラッグ関連の状態を保持するオブジェクト
-const dragState = {
-    isDragging: false,
-    currentBlockIndex: -1,
-};
-
-// ドラッグ開始のハンドラ
-function handleDragStart(e) {
-    const blockElement = e.target.closest('.block');
-    if (!blockElement) return;
-    
-    // ドラッグ中のブロックを選択状態にする
-    const blockIndex = parseInt(blockElement.dataset.index);
-    selectBlock(blockIndex);
-    
-    // ドラッグ中の状態を記録
-    dragState.isDragging = true;
-    dragState.currentBlockIndex = blockIndex;
-    
-    // ドラッグ中のブロック画像をセット
-    e.dataTransfer.setData('text/plain', blockIndex);
-    e.dataTransfer.effectAllowed = 'move';
-    
-    // ドラッグ中のブロックを半透明にする
-    setTimeout(() => {
-        blockElement.classList.add('dragging');
-    }, 0);
-}
-
-// ドラッグ終了のハンドラ
-function handleDragEnd(e) {
-    const blockElement = e.target.closest('.block');
-    if (!blockElement) return;
-    
-    // ドラッグ終了時の状態をリセット
-    dragState.isDragging = false;
-    blockElement.classList.remove('dragging');
 }
 
 // イベントリスナーのセットアップ
