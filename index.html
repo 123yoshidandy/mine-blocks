@@ -17,6 +17,7 @@
                 <div class="stats">
                     <div class="score">スコア: <span id="score">0</span></div>
                     <div class="timer">経過時間: <span id="timerDisplay">0</span>秒</div>
+                    <div class="clear-count">クリア回数: <span id="clearCount">0</span></div>
                 </div>
                 <div class="buttons">
                     <button id="newGame">新しいゲーム</button>
@@ -44,6 +45,13 @@
         </div>
     </div>
     
-    <script src="script.js"></script>
+    <!-- モジュール分割したJSファイル -->
+    <script src="js/game-state.js"></script>
+    <script src="js/board.js"></script>
+    <script src="js/block.js"></script>
+    <script src="js/solution.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/interaction.js"></script>
+    <script src="js/main.js"></script>
 </body>
 </html>
