@@ -86,19 +86,34 @@ header h1 {
 
 /* ブロックのホバープレビュー用スタイル */
 .cell.hover-preview {
-    background-color: rgba(52, 152, 219, 0.3); /* 薄い青色で配置予定位置を表示 */
-    border: 2px dashed #3498db;
-    box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+    background-color: rgba(52, 152, 219, 0.5); /* 青色の透明度を上げて濃くする */
+    border: 3px dashed #3498db; /* 境界線を太くする */
+    box-shadow: 0 0 8px rgba(52, 152, 219, 0.8); /* 影を大きく、より濃く */
     transition: all 0.2s ease;
+    transform: scale(1.05); /* わずかに大きく表示 */
+    z-index: 10; /* 他の要素より前面に表示 */
 }
 
 .cell.hover-preview.invalid {
-    background-color: rgba(231, 76, 60, 0.3); /* 薄い赤色で配置不可を表示 */
-    border: 2px dashed #e74c3c;
+    background-color: rgba(231, 76, 60, 0.5); /* 赤色の透明度を上げて濃くする */
+    border: 3px dashed #e74c3c; /* 境界線を太くする */
+    box-shadow: 0 0 8px rgba(231, 76, 60, 0.8); /* 影を大きく、より濃く */
 }
 
 .cell.hover-preview.mine {
-    background-color: rgba(231, 76, 60, 0.5); /* マイン位置は少し濃い目の赤色で表示 */
+    background-color: rgba(231, 76, 60, 0.7); /* マイン位置はさらに濃い赤色で */
+    box-shadow: 0 0 10px rgba(231, 76, 60, 1); /* マインは特に目立つ影を付ける */
+    animation: pulseMine 1.5s infinite alternate; /* マインには点滅アニメーションを追加 */
+}
+
+/* マイン表示用のアニメーション */
+@keyframes pulseMine {
+    from {
+        box-shadow: 0 0 10px rgba(231, 76, 60, 0.8);
+    }
+    to {
+        box-shadow: 0 0 15px rgba(231, 76, 60, 1);
+    }
 }
 
 /* ブロックコンテナ */
