@@ -5,7 +5,6 @@ const gameState = {
     blocks: [],
     selectedBlockIndex: -1,
     boardSize: 6, // ボードサイズを6×6に固定
-    foundSolutions: [], // プレイヤーが見つけた解答
     notPlaceableCells: [], // 配置不可能なセル
     solution: null, // 想定解
     startTime: null, // ゲーム開始時間
@@ -112,9 +111,6 @@ function generateGame() {
     
     // ブロックを描画
     renderBlocks();
-    
-    // 解答をリセット
-    gameState.foundSolutions = [];
     
     // タイマーをリセットして開始
     startTimer();
@@ -875,35 +871,23 @@ function checkBoardCompletion() {
         // タイマーを停止
         stopTimer();
         
-        // 現在のボード状態をシリアライズして解答として保存
-        const currentSolution = JSON.stringify(gameState.board);
+        // 時間に基づいたスコア計算
+        // 300点から経過秒数を引く（最低10点）
+        let timeScore = Math.max(10, 300 - gameState.elapsedTime);
         
-        // 既に見つけた解答かチェック
-        if (!gameState.foundSolutions.includes(currentSolution)) {
-            gameState.foundSolutions.push(currentSolution);
-            
-            // 時間に基づいたスコア計算
-            // 300点から経過秒数を引く（最低10点）
-            let timeScore = Math.max(10, 300 - gameState.elapsedTime);
-            
-            // 別解を見つけた場合はポイント3倍
-            const pointMultiplier = gameState.foundSolutions.length > 1 ? 3 : 1;
-            const levelPoints = timeScore * pointMultiplier;
-            
-            // クリアモーダルの内容を更新（経過時間と獲得スコアも表示）
-            elements.clearTimeDisplay.textContent = gameState.elapsedTime;
-            elements.earnedScoreDisplay.textContent = levelPoints;
-            
-            // スコアを加算
-            gameState.score += levelPoints;
-            elements.currentScoreDisplay.textContent = gameState.score;
-            
-            // 統計表示を更新
-            updateStats();
-            
-            // クリアモーダルを表示
-            elements.clearModal.classList.add('active');
-        }
+        // クリアモーダルの内容を更新（経過時間と獲得スコアも表示）
+        elements.clearTimeDisplay.textContent = gameState.elapsedTime;
+        elements.earnedScoreDisplay.textContent = timeScore;
+        
+        // スコアを加算
+        gameState.score += timeScore;
+        elements.currentScoreDisplay.textContent = gameState.score;
+        
+        // 統計表示を更新
+        updateStats();
+        
+        // クリアモーダルを表示
+        elements.clearModal.classList.add('active');
     }
 }
 
