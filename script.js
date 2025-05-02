@@ -200,9 +200,8 @@ function generateBoard() {
             cell.dataset.row = row;
             cell.dataset.col = col;
 
+            // ドラッグ操作に必要なイベントリスナーのみを追加
             cell.addEventListener('dragover', handleDragOver);
-            cell.addEventListener('dragenter', handleDragEnter);
-            cell.addEventListener('dragleave', handleDragLeave);
             cell.addEventListener('drop', handleDrop);
             cell.addEventListener('click', () => handleCellClick(row, col));
             
