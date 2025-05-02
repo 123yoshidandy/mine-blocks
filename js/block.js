@@ -13,27 +13,40 @@ function generateBlocks() {
         const blockSize = 3
         let block = Array(blockSize).fill().map(() => Array(blockSize).fill(0));
         
-        // ブロックにランダムにセルを配置（最低2つ、最大blockSize*blockSize-1個）
+        // 連結を保証しながらセルを配置
         const minCells = 2;
         const maxCells = blockSize * blockSize - 1;
         const numCells = minCells + Math.floor(Math.random() * (maxCells - minCells + 1));
         
-        let cellsPlaced = 0;
-        while (cellsPlaced < numCells) {
-            const row = Math.floor(Math.random() * blockSize);
-            const col = Math.floor(Math.random() * blockSize);
-            
-            if (block[row][col] === 0) {
-                block[row][col] = 1;
-                cellsPlaced++;
-            }
-        }
+        // 最初のセルをランダムに配置
+        let row = Math.floor(Math.random() * blockSize);
+        let col = Math.floor(Math.random() * blockSize);
+        block[row][col] = 1;
         
-        // ブロックが連結されているか確認
-        if (!isConnected(block)) {
-            // 連結されていない場合は作り直し
-            i--;
-            continue;
+        // 連結セルの候補リスト（現在のセルに隣接する空のセル）
+        let candidates = getAdjacentEmptyCells(block, row, col);
+        let cellsPlaced = 1; // 最初のセルは既に配置済み
+        
+        // 必要なセル数に達するまで連結セルを追加
+        while (cellsPlaced < numCells && candidates.length > 0) {
+            // 候補リストからランダムに選択
+            const randomIndex = Math.floor(Math.random() * candidates.length);
+            const nextCell = candidates[randomIndex];
+            
+            // 選択したセルを配置
+            block[nextCell.row][nextCell.col] = 1;
+            cellsPlaced++;
+            
+            // 候補リストを更新（選択したセルを削除し、その隣接セルを追加）
+            candidates.splice(randomIndex, 1);
+            const newCandidates = getAdjacentEmptyCells(block, nextCell.row, nextCell.col);
+            
+            // 重複を避けて候補リストに追加
+            for (const newCell of newCandidates) {
+                if (!candidates.some(c => c.row === newCell.row && c.col === newCell.col)) {
+                    candidates.push(newCell);
+                }
+            }
         }
         
         // マインをランダムに配置（ブロックのセルの一部）
@@ -70,7 +83,33 @@ function generateBlocks() {
     }
 }
 
-// ブロックが連結されているかチェック
+// 指定されたセルに隣接する空のセルを取得
+function getAdjacentEmptyCells(block, row, col) {
+    const size = block.length;
+    const adjacentCells = [];
+    const directions = [
+        {dr: -1, dc: 0}, // 上
+        {dr: 1, dc: 0},  // 下
+        {dr: 0, dc: -1}, // 左
+        {dr: 0, dc: 1}   // 右
+    ];
+    
+    for (const dir of directions) {
+        const newRow = row + dir.dr;
+        const newCol = col + dir.dc;
+        
+        // 盤面内かつ空のセルであることを確認
+        if (newRow >= 0 && newRow < size && 
+            newCol >= 0 && newCol < size && 
+            block[newRow][newCol] === 0) {
+            adjacentCells.push({row: newRow, col: newCol});
+        }
+    }
+    
+    return adjacentCells;
+}
+
+// ブロックが連結されているかチェック（検証用に残しておく）
 function isConnected(block) {
     const size = block.length;
     const visited = Array(size).fill().map(() => Array(size).fill(false));
