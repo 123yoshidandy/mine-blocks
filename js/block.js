@@ -5,12 +5,12 @@
 
 // ブロックの形状を生成
 function generateBlocks() {
-    // ブロック生成数を6個に増加（ダミーを含む）
+    // ブロック生成数(ダミーを含む)
     const numBlocks = 6;
     
     for (let i = 0; i < numBlocks; i++) {
         // ブロックの形状をランダムに生成
-        const blockSize = 2 + Math.floor(Math.random() * 2); // 2x2 または 3x3
+        const blockSize = 3
         let block = Array(blockSize).fill().map(() => Array(blockSize).fill(0));
         
         // ブロックにランダムにセルを配置（最低2つ、最大blockSize*blockSize-1個）
@@ -142,13 +142,6 @@ function renderBlocks() {
                 // マインの場合はマークを付ける
                 if (block.mines.some(mine => mine.row === row && mine.col === col)) {
                     cellElement.classList.add('mine');
-                    
-                    // デバッグ用: マインセルの背景色を変更して視覚的に識別しやすくする
-                    cellElement.style.backgroundColor = '#e74c3c'; // 赤色でマインを表示
-                    cellElement.style.color = 'white';
-                    
-                    // デバッグ用: マインの印を表示
-                    cellElement.textContent = 'M';
                 }
                 
                 blockElement.appendChild(cellElement);

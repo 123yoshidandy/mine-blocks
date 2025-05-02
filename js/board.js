@@ -135,7 +135,7 @@ function placeBlock(startRow, startCol, block) {
     const blockElement = elements.blocksContainer.children[blockIndex];
     blockElement.classList.add('used');
     
-    // 完全に非表示にする（透明度を下げる代わりに）
+    // 完全に非表示にする
     blockElement.style.display = 'none';
     
     // 操作できないようにする（念のため）

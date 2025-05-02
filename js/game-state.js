@@ -10,7 +10,7 @@ const gameState = {
     board: [],
     blocks: [],
     selectedBlockIndex: -1,
-    boardSize: 6, // ボードサイズを6×6に固定
+    boardSize: 7, // ボードサイズ
     notPlaceableCells: [], // 配置不可能なセル
     solution: null, // 想定解
     startTime: null, // ゲーム開始時間
