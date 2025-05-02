@@ -29,20 +29,53 @@ header h1 {
     margin-bottom: 5px;
 }
 
+/* 上部コントロール */
+.top-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.stats {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+.buttons {
+    display: flex;
+    gap: 10px;
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.2s;
+}
+
+button:hover {
+    background-color: #2980b9;
+}
+
+button:disabled {
+    background-color: #95a5a6;
+    cursor: not-allowed;
+}
+
 /* ゲームエリア */
 .game-container {
     background-color: #fff;
     border-radius: 10px;
     padding: 20px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.stats {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 20px;
-    font-size: 1.2rem;
-    font-weight: bold;
 }
 
 /* ゲームボード */
@@ -171,26 +204,6 @@ header h1 {
     margin-top: 20px;
 }
 
-button {
-    padding: 10px 20px;
-    background-color: #3498db;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1rem;
-    transition: background-color 0.2s;
-}
-
-button:hover {
-    background-color: #2980b9;
-}
-
-button:disabled {
-    background-color: #95a5a6;
-    cursor: not-allowed;
-}
-
 /* モーダル */
 .modal {
     display: none;
@@ -279,15 +292,33 @@ footer {
 
 @media (max-width: 480px) {
     header {
-        display: none;
+        display: none; /* 元のヘッダーは非表示にする */
+    }
+    
+    .game-container {
+        padding: 10px;
+    }
+    
+    .top-controls {
+        justify-content: space-between;
+        margin-bottom: 15px;
+    }
+    
+    /* タイトルを追加 */
+    .top-controls:before {
+        content: "MINE BLOCKS";
+        font-weight: bold;
+        font-size: 1.2rem;
+        color: #2c3e50;
     }
     
     .stats {
         display: none;
     }
     
-    .game-container {
-        padding: 10px;
+    .buttons {
+        width: 100%;
+        justify-content: flex-end;
     }
     
     .cell {
@@ -302,8 +333,9 @@ footer {
     }
     
     button {
-        width: 100%;
-        padding: 12px;
+        width: auto;
+        padding: 10px 15px;
+        font-size: 0.9rem;
     }
     
     .block-cell {

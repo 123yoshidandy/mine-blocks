@@ -13,9 +13,15 @@
         </header>
 
         <div class="game-container">
-            <div class="stats">
-                <div class="score">スコア: <span id="score">0</span></div>
-                <div class="timer">経過時間: <span id="timerDisplay">0</span>秒</div>
+            <div class="top-controls">
+                <div class="stats">
+                    <div class="score">スコア: <span id="score">0</span></div>
+                    <div class="timer">経過時間: <span id="timerDisplay">0</span>秒</div>
+                </div>
+                <div class="buttons">
+                    <button id="newGame">新しいゲーム</button>
+                    <button id="hint">ヒント</button>
+                </div>
             </div>
 
             <div class="game-board" id="gameBoard">
@@ -24,11 +30,6 @@
 
             <div class="blocks-container" id="blocksContainer">
                 <!-- ブロックはJavaScriptで動的に生成されます -->
-            </div>
-
-            <div class="controls">
-                <button id="newGame">新しいゲーム</button>
-                <button id="hint">ヒント</button>
             </div>
         </div>
 
