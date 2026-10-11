@@ -16,6 +16,12 @@ function generateBlocks() {
     while (gameState.blocks.length < numBlocks) {
         const block = createRandomBlock();
         
+        // 3×3の枠が必要な大きなピースは、形が特徴的で置き場所がほぼ1か所に決まり
+        // ダミーなら形だけで見分けられて問題が易しくなるため、乱数列の続きで作り直す
+        if (block.rows === 3 && block.cols === 3) {
+            continue;
+        }
+
         // 既存のピースと同じ形なら、乱数列の続きで作り直す
         const key = getBlockKey(block);
         if (blockKeys.has(key)) {
@@ -92,10 +98,12 @@ function createRandomBlock() {
         }
     }
     
-    // 修正: マイン数を1以上、4以下、かつブロックの大きさ（セル数）未満に設定
+    // マイン数をセル数の1/3〜1/2（切り捨て、最低1個）に設定
+    // 盤面のマインが全体の3分の1程度になり、多すぎず少なすぎない
+    // 例: 2〜3マス→1個、4〜5マス→1〜2個、6マス→2〜3個（いずれもマインでないマスが必ず残る）
     const totalCells = filledCells.length;
-    const minMines = 1; // 最低1つのマイン
-    const maxMines = Math.min(4, totalCells - 1); // 最大4個、ただしブロックのセル数-1個を超えない
+    const minMines = Math.max(1, Math.floor(totalCells / 3));
+    const maxMines = Math.max(1, Math.floor(totalCells / 2));
     
     // マイン数をminとmaxの間でランダムに決定
     const numMines = minMines + Math.floor(random() * (maxMines - minMines + 1));
