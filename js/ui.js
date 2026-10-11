@@ -23,6 +23,9 @@ function setupEventListeners() {
         }
     });
 
+    // オンライン対戦（部屋を作る・参加する）
+    setupOnline();
+
     // チャレンジ結果画面のボタン
     elements.challengeRetryButton.addEventListener('click', startChallenge);
     elements.challengeExitButton.addEventListener('click', exitChallenge);
@@ -37,6 +40,12 @@ function setupEventListeners() {
 // 今の問題番号のURLを共有する
 // スマホでは共有シート、パソコンではクリップボードへのコピー、どちらも使えなければダイアログで表示
 async function shareGame() {
+    // オンライン対戦中は、部屋に招待するURLを共有する
+    if (isOnlineActive()) {
+        shareOnlineInvite();
+        return;
+    }
+
     // チャレンジ中は、同じ問題の列で挑戦できるよう開始した問題番号を共有する
     const seed = challengeState.active ? challengeState.startSeed : gameState.seed;
     const url = new URL(location.href);

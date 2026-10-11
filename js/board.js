@@ -277,6 +277,12 @@ function checkBoardCompletion() {
     }
     
     if (isValid) {
+        // オンライン対戦ではクリア画面を出さず、解けたことをサーバーに知らせる（勝敗は届いた順で決まる）
+        if (isOnlineActive()) {
+            onOnlinePuzzleSolved();
+            return;
+        }
+
         // チャレンジモードではクリア画面を出さず、持ち時間を加算して次の問題へ進む
         if (challengeState.active) {
             onChallengePuzzleSolved();

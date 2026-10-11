@@ -15,6 +15,12 @@ function setupSurrender() {
 // タイマーを止め、想定解を結果画面に表示する（クリア回数には数えない）
 // チャレンジ中の降参はタイムアップと同じく、チャレンジを終えて結果（解いた数と想定解）を表示する
 function surrender() {
+    // オンライン対戦中は、その問題だけ降参する（ほかの人が解き終わるまで想定解を見ながら待つ）
+    if (isOnlineActive()) {
+        onlineSurrender();
+        return;
+    }
+
     if (challengeState.active) {
         finishChallenge();
         return;

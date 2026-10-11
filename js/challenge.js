@@ -131,6 +131,9 @@ function updateModeDisplay() {
     elements.surrenderButton.title = surrenderLabel;
     elements.surrenderButton.setAttribute('aria-label', surrenderLabel);
     elements.challengeStats.hidden = !isChallenge;
+
+    // チャレンジ中はオンライン対戦に入れないようにする
+    elements.onlineButton.disabled = isChallenge;
 }
 
 // チャレンジ中にエンドレスへ切り替えるときは確認する（時間切れ後の結果表示中は確認しない）

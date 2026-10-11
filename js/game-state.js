@@ -51,12 +51,44 @@ const elements = {
     hintPrev: document.getElementById('hintPrev'),
     hintNext: document.getElementById('hintNext'),
     hintDots: document.getElementById('hintDots'),
+    onlineButton: document.getElementById('onlineButton'),
+    onlineModal: document.getElementById('onlineModal'),
+    onlineClose: document.getElementById('onlineClose'),
+    onlineEntry: document.getElementById('onlineEntry'),
+    onlineName: document.getElementById('onlineName'),
+    onlineCreate: document.getElementById('onlineCreate'),
+    onlineCode: document.getElementById('onlineCode'),
+    onlineJoin: document.getElementById('onlineJoin'),
+    onlineLobby: document.getElementById('onlineLobby'),
+    onlineRoomCode: document.getElementById('onlineRoomCode'),
+    onlineInvite: document.getElementById('onlineInvite'),
+    onlinePlayers: document.getElementById('onlinePlayers'),
+    onlineWins: document.getElementById('onlineWins'),
+    onlineStart: document.getElementById('onlineStart'),
+    onlineWaiting: document.getElementById('onlineWaiting'),
+    onlineLeave: document.getElementById('onlineLeave'),
+    onlineError: document.getElementById('onlineError'),
+    onlineResultModal: document.getElementById('onlineResultModal'),
+    onlineResultTitle: document.getElementById('onlineResultTitle'),
+    onlineResultDetail: document.getElementById('onlineResultDetail'),
+    onlineStandings: document.getElementById('onlineStandings'),
+    onlineSolutionBoard: document.getElementById('onlineSolutionBoard'),
+    onlineNext: document.getElementById('onlineNext'),
+    onlineResultLeave: document.getElementById('onlineResultLeave'),
+    onlineCountdown: document.getElementById('onlineCountdown'),
+    onlineCountdownRound: document.getElementById('onlineCountdownRound'),
+    onlineCountdownNumber: document.getElementById('onlineCountdownNumber'),
+    onlineBar: document.getElementById('onlineBar'),
+    toast: document.getElementById('toast'),
     clearModal: document.getElementById('clearModal'),
     nextGameButton: document.getElementById('nextGame')
 };
 
 // URLの問題番号を更新（URLを共有すると同じパズルを遊べる）
+// オンライン対戦中は部屋番号のURLのままにする（再読み込みで部屋に戻れるように）
 function updateSeedUrl() {
+    if (isOnlineActive()) return;
+
     const url = new URL(location.href);
     url.searchParams.set('seed', gameState.seed);
     history.replaceState(null, '', url);

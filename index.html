@@ -16,7 +16,7 @@
                     <rect x="1" y="10.5" width="8.5" height="8.5" rx="1.5" fill="#27ae60"/>
                     <rect x="10.5" y="10.5" width="8.5" height="8.5" rx="1.5" fill="#f39c12"/>
                 </svg>
-                MINE BLOCKS
+                <span class="logo-text">MINE BLOCKS</span>
             </h1>
             <div class="buttons">
                 <button id="surrender" class="icon-button" title="降参して想定解を見る" aria-label="降参">
@@ -32,6 +32,15 @@
                         <polyline points="12 10 12 13.5 14.5 15.5"/>
                         <line x1="9.5" y1="2.5" x2="14.5" y2="2.5"/>
                         <line x1="12" y1="2.5" x2="12" y2="6"/>
+                    </svg>
+                </button>
+                <!-- オンライン対戦：部屋を作る・参加する。部屋に入っている間は強調表示 -->
+                <button id="onlineButton" class="icon-button" title="オンライン対戦" aria-label="オンライン対戦">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <circle cx="9" cy="8" r="3.5"/>
+                        <path d="M2.5 20c0-3.6 2.9-6.5 6.5-6.5s6.5 2.9 6.5 6.5"/>
+                        <path d="M16 4.8a3.5 3.5 0 0 1 0 6.4"/>
+                        <path d="M18 13.8c2.1.9 3.5 3 3.5 5.7"/>
                     </svg>
                 </button>
                 <button id="hint" class="icon-button" title="ヒント" aria-label="ヒント">
@@ -69,6 +78,9 @@
                     <span class="stat-value"><span id="challengeSolved">0</span><small>問</small></span>
                 </div>
             </div>
+
+            <!-- オンライン対戦中だけ、問題の番号と全員の勝ち数を表示 -->
+            <div class="online-bar" id="onlineBar" hidden></div>
 
             <div class="game-board" id="gameBoard">
                 <!-- ゲームボードはJavaScriptで動的に生成されます -->
@@ -119,6 +131,77 @@
                 </div>
             </div>
         </div>
+
+        <!-- オンライン対戦：参加画面（部屋に入る前）と部屋の画面（ロビー） -->
+        <div class="modal" id="onlineModal">
+            <div class="modal-content online-content" role="dialog" aria-labelledby="onlineTitle">
+                <button id="onlineClose" class="hint-close" aria-label="閉じる">×</button>
+                <h2 id="onlineTitle">オンライン対戦</h2>
+
+                <div id="onlineEntry">
+                    <p class="result-note">2〜4人で同じ問題を同時に解き、早く解いた人の勝ちです</p>
+                    <label class="online-field">
+                        <span>名前</span>
+                        <input id="onlineName" type="text" maxlength="12" autocomplete="nickname" placeholder="プレイヤー">
+                    </label>
+                    <button id="onlineCreate" class="primary-button">部屋を作る</button>
+                    <div class="online-divider"><span>または</span></div>
+                    <label class="online-field">
+                        <span>部屋番号</span>
+                        <input id="onlineCode" type="text" inputmode="numeric" maxlength="5" placeholder="数字5桁">
+                    </label>
+                    <button id="onlineJoin" class="secondary-button">参加する</button>
+                </div>
+
+                <div id="onlineLobby" hidden>
+                    <p class="result-label">部屋番号</p>
+                    <p class="online-code" id="onlineRoomCode">-----</p>
+                    <button id="onlineInvite" class="secondary-button online-invite">招待URLを共有</button>
+                    <ul class="online-players" id="onlinePlayers"></ul>
+                    <label class="online-field online-wins">
+                        <span>勝ち抜け</span>
+                        <select id="onlineWins">
+                            <option value="1">1勝</option>
+                            <option value="2">2勝</option>
+                            <option value="3">3勝</option>
+                            <option value="4">4勝</option>
+                            <option value="5">5勝</option>
+                        </select>
+                    </label>
+                    <p class="result-note online-waiting" id="onlineWaiting"></p>
+                    <div class="modal-actions">
+                        <button id="onlineStart" class="primary-button">対戦開始</button>
+                        <button id="onlineLeave" class="secondary-button">部屋を出る</button>
+                    </div>
+                </div>
+
+                <p class="online-error" id="onlineError" aria-live="polite"></p>
+            </div>
+        </div>
+
+        <!-- オンライン対戦の結果画面：問題の勝者・全員の勝ち数・想定解（降参して待っている間も表示） -->
+        <div class="modal" id="onlineResultModal">
+            <div class="modal-content">
+                <h2 id="onlineResultTitle"></h2>
+                <p class="result-note" id="onlineResultDetail"></p>
+                <ul class="online-players" id="onlineStandings"></ul>
+                <p class="result-label">想定解</p>
+                <div class="solution-board" id="onlineSolutionBoard"></div>
+                <div class="modal-actions">
+                    <button id="onlineNext" class="primary-button">次の問題へ</button>
+                    <button id="onlineResultLeave" class="secondary-button">部屋を出る</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- オンライン対戦の開始前のカウントダウン（開始まで盤面を操作できないよう、画面全体を覆う） -->
+        <div class="countdown" id="onlineCountdown" hidden>
+            <p class="countdown-round" id="onlineCountdownRound"></p>
+            <p class="countdown-number" id="onlineCountdownNumber">3</p>
+        </div>
+
+        <!-- 画面下に出す短いお知らせ -->
+        <div class="toast" id="toast" role="status" hidden></div>
 
         <!-- 遊び方：小さな盤面のアニメーションでルールを説明する（盤面はJavaScriptで生成） -->
         <div class="modal" id="hintModal">
@@ -180,6 +263,8 @@
     <script src="js/challenge.js"></script>
     <script src="js/hint.js"></script>
     <script src="js/surrender.js"></script>
+    <script src="js/online-config.js"></script>
+    <script src="js/online.js"></script>
     <script src="js/main.js"></script>
 </body>
 </html>

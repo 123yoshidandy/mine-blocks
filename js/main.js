@@ -11,8 +11,8 @@ function generateGame(seed) {
     // シードを設定（同じシードなら同じパズルになる）
     gameState.seed = seed;
 
-    // エンドレスの問題番号を覚えておき、チャレンジやタイトルから戻ったときに再開する
-    if (!challengeState.active) {
+    // エンドレスの問題番号を覚えておき、チャレンジやオンライン対戦から戻ったときに再開する
+    if (!challengeState.active && !isOnlineActive()) {
         gameState.endlessSeed = seed;
     }
     setSeed(seed);
