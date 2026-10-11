@@ -3,14 +3,17 @@
  * ブロックの生成、描画、操作に関する機能を提供します
  */
 
-// ピースの色（マインや配置不可の赤と区別できる色のみ）
-const PIECE_COLORS = ['#3498db', '#27ae60', '#9b59b6', '#f39c12', '#1abc9c', '#f1c40f'];
+// ピースの色（マインの赤や配置不可の灰色と区別できる色のみ、ピース数と同じ9色）
+const PIECE_COLORS = [
+    '#3498db', '#27ae60', '#9b59b6', '#f39c12', '#1abc9c', '#f1c40f',
+    '#34495e', '#a0522d', '#a3cb38'
+];
 
 // ブロックの形状を生成（同じ形のピースは作り直す）
 // 置き場ではマインが見えないため、同じ形が並ぶと見分けがつかず「置けるはずのピースが置けない」状態になる
 function generateBlocks() {
     // ブロック生成数(ダミーを含む)
-    const numBlocks = 6;
+    const numBlocks = 9;
     const blockKeys = new Set();
     
     while (gameState.blocks.length < numBlocks) {

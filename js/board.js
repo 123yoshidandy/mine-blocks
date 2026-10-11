@@ -161,8 +161,8 @@ function placeBlock(startRow, startCol, block) {
     const blockElement = elements.blocksContainer.children[blockIndex];
     blockElement.classList.add('used');
     
-    // 完全に非表示にする
-    blockElement.style.display = 'none';
+    // 非表示にする（3×3の置き場で他のピースの位置がずれないよう、場所は残す）
+    blockElement.style.visibility = 'hidden';
     
     // 操作できないようにする（念のため）
     blockElement.style.pointerEvents = 'none';
@@ -191,7 +191,7 @@ function removeBlock(blockIndex) {
     // 置き場のブロックを再び表示する
     const blockElement = elements.blocksContainer.children[blockIndex];
     blockElement.classList.remove('used');
-    blockElement.style.display = '';
+    blockElement.style.visibility = '';
     blockElement.style.pointerEvents = '';
 }
 
