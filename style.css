@@ -85,6 +85,7 @@ button:disabled {
     gap: 5px;
     margin-bottom: 30px;
     max-width: 500px;
+    width: fit-content; /* マスの大きさに合わせ、列間に余白が出ないようにする */
     margin: 0 auto 30px;
 }
 
@@ -107,7 +108,7 @@ button:disabled {
 }
 
 .cell.filled {
-    background-color: #3498db;
+    background-color: var(--piece-color, #3498db);
     color: white;
 }
 
@@ -119,9 +120,10 @@ button:disabled {
 
 /* ブロックのホバープレビュー用スタイル */
 .cell.hover-preview {
-    background-color: rgba(52, 152, 219, 0.5); /* 青色の透明度を上げて濃くする */
-    border: 3px dashed #3498db; /* 境界線を太くする */
-    box-shadow: 0 0 8px rgba(52, 152, 219, 0.8); /* 影を大きく、より濃く */
+    --preview: var(--preview-color, #3498db); /* ドラッグ中のピースの色 */
+    background-color: color-mix(in srgb, var(--preview) 50%, transparent);
+    border: 3px dashed var(--preview); /* 境界線を太くする */
+    box-shadow: 0 0 8px color-mix(in srgb, var(--preview) 80%, transparent); /* 影を大きく、より濃く */
     transition: all 0.2s ease;
     transform: scale(1.05); /* わずかに大きく表示 */
     z-index: 10; /* 他の要素より前面に表示 */
@@ -156,13 +158,14 @@ button:disabled {
     gap: 20px;
     margin-bottom: 30px;
     justify-content: center;
+    align-items: center; /* 各ピースの枠をピースの大きさのままにする */
 }
 
 .block {
     display: grid;
     grid-template-columns: repeat(var(--cols, 3), 20px);
     grid-template-rows: repeat(var(--rows, 3), 20px);
-    gap: 2px;
+    gap: 0; /* マス同士をくっつけて1つのピースに見せる */
     cursor: pointer;
     padding: 5px;
     border-radius: 5px;
@@ -177,7 +180,7 @@ button:disabled {
 
 .block.selected {
     background-color: #ddeeff;
-    box-shadow: 0 0 0 2px #3498db;
+    box-shadow: 0 0 0 2px var(--piece-color, #3498db);
 }
 
 .block.used {
@@ -188,8 +191,7 @@ button:disabled {
 .block-cell {
     width: 20px;
     height: 20px;
-    background-color: #3498db;
-    border-radius: 3px;
+    background-color: var(--piece-color, #3498db);
 }
 
 .block-cell.empty {

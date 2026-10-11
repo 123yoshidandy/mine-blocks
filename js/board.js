@@ -9,7 +9,7 @@ function generateBoard() {
     gameState.board = Array(size).fill().map(() => Array(size).fill(null));
     
     // ボードのDOM構造を作成
-    elements.gameBoard.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
+    elements.gameBoard.style.gridTemplateColumns = `repeat(${size}, max-content)`;
     
     for (let row = 0; row < size; row++) {
         for (let col = 0; col < size; col++) {
@@ -120,6 +120,7 @@ function placeBlock(startRow, startCol, block) {
                 // DOM要素を更新
                 const cellElement = document.querySelector(`.cell[data-row="${boardRow}"][data-col="${boardCol}"]`);
                 cellElement.classList.add('filled');
+                cellElement.style.setProperty('--piece-color', block.color);
                 
                 // マスに配置した場合は、数字やマイン表示を非表示にする
                 cellElement.textContent = '';

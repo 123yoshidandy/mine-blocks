@@ -45,8 +45,9 @@ function showBlockPreview(startRow, startCol, block) {
                         // セルをホバープレビューリストに追加
                         dragState.hoverCells.push(cellElement);
                         
-                        // ホバープレビュークラスを追加
+                        // ホバープレビュークラスを追加（色は配置済みピースの色と別の変数で渡す）
                         cellElement.classList.add('hover-preview');
+                        cellElement.style.setProperty('--preview-color', block.color);
                         
                         // 配置できない場合は無効スタイルを追加
                         if (!canPlace) {
@@ -69,6 +70,7 @@ function showBlockPreview(startRow, startCol, block) {
 function clearHoverPreview() {
     dragState.hoverCells.forEach(cell => {
         cell.classList.remove('hover-preview', 'invalid', 'mine');
+        cell.style.removeProperty('--preview-color');
     });
     dragState.hoverCells = [];
     dragState.lastHoverRow = -1;

@@ -3,6 +3,9 @@
  * ブロックの生成、描画、操作に関する機能を提供します
  */
 
+// ピースの色（マインや配置不可の赤と区別できる色のみ）
+const PIECE_COLORS = ['#3498db', '#27ae60', '#9b59b6', '#f39c12', '#1abc9c', '#f1c40f'];
+
 // ブロックの形状を生成
 function generateBlocks() {
     // ブロック生成数(ダミーを含む)
@@ -85,7 +88,8 @@ function generateBlocks() {
             mines: mines,
             rows: rows,
             cols: cols,
-            anchor: getCenterCell(filledCells)
+            anchor: getCenterCell(filledCells),
+            color: PIECE_COLORS[i % PIECE_COLORS.length]
         });
     }
 }
@@ -201,6 +205,7 @@ function renderBlocks() {
         blockElement.className = 'block';
         blockElement.dataset.index = index;
         
+        blockElement.style.setProperty('--piece-color', block.color);
         blockElement.style.setProperty('--cols', block.cols);
         blockElement.style.setProperty('--rows', block.rows);
 
@@ -209,7 +214,7 @@ function renderBlocks() {
             for (let col = 0; col < block.cols; col++) {
                 const cellElement = document.createElement('div');
                 cellElement.className = block.grid[row][col] === 1 ? 'block-cell' : 'block-cell empty';
-                
+
                 // マインの場合はマークを付ける
                 if (block.mines.some(mine => mine.row === row && mine.col === col)) {
                     cellElement.classList.add('mine');
