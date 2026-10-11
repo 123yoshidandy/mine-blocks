@@ -13,6 +13,7 @@ const gameState = {
     boardSize: 7, // ボードサイズ
     notPlaceableCells: [], // 配置不可能なセル
     solution: null, // 想定解
+    seed: null, // パズル生成に使ったシード
     startTime: null, // ゲーム開始時間
     endTime: null, // ゲーム終了時間
     elapsedTime: 0, // 経過時間（秒）
@@ -29,6 +30,7 @@ const elements = {
     earnedScoreDisplay: document.getElementById('earnedScore'),
     clearTimeDisplay: document.getElementById('clearTime'),
     timerDisplay: document.getElementById('timerDisplay'),
+    seedDisplay: document.getElementById('seedDisplay'),
     newGameButton: document.getElementById('newGame'),
     hintButton: document.getElementById('hint'),
     clearModal: document.getElementById('clearModal'),
@@ -39,6 +41,15 @@ const elements = {
 function updateStats() {
     elements.scoreDisplay.textContent = gameState.score;
     elements.clearCountDisplay.textContent = gameState.clearedCount;
+}
+
+// シード表示とURLを更新（URLを共有すると同じパズルを遊べる）
+function updateSeedDisplay() {
+    elements.seedDisplay.textContent = gameState.seed;
+
+    const url = new URL(location.href);
+    url.searchParams.set('seed', gameState.seed);
+    history.replaceState(null, '', url);
 }
 
 // タイマーを開始

@@ -3,16 +3,27 @@
  * ゲームの初期化と全体のフロー管理を行います
  */
 
-// 新しいゲームを生成
-function generateGame() {
+// 新しいゲームを生成（シード省略時は新しいシードを生成）
+function generateGame(seed = generateSeed()) {
     // ボードとブロックをクリア
     clearBoard();
-    
-    // 新しいブロックを生成
-    generateBlocks();
-    
-    // 想定解とそれに基づく配置不可能なセルを生成
-    generateSolutionAndNotPlaceableCells();
+
+    // シードを設定（同じシードなら同じパズルになる）
+    gameState.seed = seed;
+    setSeed(seed);
+    updateSeedDisplay();
+
+
+    // ブロックと想定解（配置不可能なセルを含む）を生成
+    // 想定解を作れなかった場合は、乱数列の続きを使って作り直す（同じシードなら結果も同じ）
+    const maxAttempts = 100;
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+        gameState.blocks = [];
+        generateBlocks();
+        if (generateSolutionAndNotPlaceableCells()) {
+            break;
+        }
+    }
     
     // ボードを生成して描画
     generateBoard();
@@ -30,7 +41,10 @@ function initGame() {
     gameState.score = 0;
     gameState.clearedCount = 0;
     updateStats();
-    generateGame();
+
+    // URLにシードが指定されていればそのパズル、なければ今日の日付のパズルを生成
+    const urlSeed = parseSeed(new URLSearchParams(location.search).get('seed'));
+    generateGame(urlSeed ?? getDailySeed());
     setupEventListeners();
 }
 

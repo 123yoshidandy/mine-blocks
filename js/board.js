@@ -265,7 +265,7 @@ function renderBoard() {
 function getMineInfoFromSolution(row, col) {
     // ソリューションがない場合
     if (!gameState.solution) {
-        return { hasMine: false, mineCount: Math.floor(Math.random() * 3) + 1 };
+        return { hasMine: false, mineCount: Math.floor(random() * 3) + 1 };
     }
     
     // この位置に重なるブロックとマイン情報を取得

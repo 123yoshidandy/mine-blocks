@@ -16,11 +16,11 @@ function generateBlocks() {
         // 連結を保証しながらセルを配置
         const minCells = 2;
         const maxCells = blockSize * blockSize - 1;
-        const numCells = minCells + Math.floor(Math.random() * (maxCells - minCells + 1));
-        
+        const numCells = minCells + Math.floor(random() * (maxCells - minCells + 1));
+
         // 最初のセルをランダムに配置
-        let row = Math.floor(Math.random() * blockSize);
-        let col = Math.floor(Math.random() * blockSize);
+        let row = Math.floor(random() * blockSize);
+        let col = Math.floor(random() * blockSize);
         block[row][col] = 1;
         
         // 連結セルの候補リスト（現在のセルに隣接する空のセル）
@@ -30,7 +30,7 @@ function generateBlocks() {
         // 必要なセル数に達するまで連結セルを追加
         while (cellsPlaced < numCells && candidates.length > 0) {
             // 候補リストからランダムに選択
-            const randomIndex = Math.floor(Math.random() * candidates.length);
+            const randomIndex = Math.floor(random() * candidates.length);
             const nextCell = candidates[randomIndex];
             
             // 選択したセルを配置
@@ -67,10 +67,10 @@ function generateBlocks() {
         const maxMines = Math.min(4, totalCells - 1); // 最大4個、ただしブロックのセル数-1個を超えない
         
         // マイン数をminとmaxの間でランダムに決定
-        const numMines = minMines + Math.floor(Math.random() * (maxMines - minMines + 1));
-        
+        const numMines = minMines + Math.floor(random() * (maxMines - minMines + 1));
+
         // ランダムにマインを配置
-        const shuffled = [...filledCells].sort(() => 0.5 - Math.random());
+        const shuffled = shuffle(filledCells);
         for (let j = 0; j < numMines; j++) {
             mines.push(shuffled[j]);
         }

@@ -3,7 +3,7 @@
  * ゲームの解答（想定解）を生成する機能を提供します
  */
 
-// 想定解と配置不可能なセルを生成
+// 想定解と配置不可能なセルを生成（すべてのブロックを配置できなければfalseを返す）
 function generateSolutionAndNotPlaceableCells() {
     const size = gameState.boardSize;
     gameState.notPlaceableCells = [];
@@ -17,7 +17,7 @@ function generateSolutionAndNotPlaceableCells() {
     
     // すべてのブロックのインデックス配列をシャッフル
     const allBlockIndices = Array.from({ length: totalBlocks }, (_, i) => i);
-    const shuffledBlockIndices = [...allBlockIndices].sort(() => 0.5 - Math.random());
+    const shuffledBlockIndices = shuffle(allBlockIndices);
     
     // 使用するブロックを選択（先頭からblocksToUse個）
     const selectedBlockIndices = shuffledBlockIndices.slice(0, blocksToUse);
@@ -39,8 +39,8 @@ function generateSolutionAndNotPlaceableCells() {
         if (!firstBlockPlaced) {
             // ランダムな開始位置を試行 (最大100回)
             for (let attempt = 0; attempt < 100 && !placed; attempt++) {
-                const startRow = Math.floor(Math.random() * (size - block.grid.length + 1));
-                const startCol = Math.floor(Math.random() * (size - block.grid.length + 1));
+                const startRow = Math.floor(random() * (size - block.grid.length + 1));
+                const startCol = Math.floor(random() * (size - block.grid.length + 1));
                 
                 // このブロックをこの位置に配置できるかチェック
                 if (canPlaceBlockOnSolution(startRow, startCol, block, solutionBoard)) {
@@ -58,7 +58,7 @@ function generateSolutionAndNotPlaceableCells() {
             const adjacentPositions = findAdjacentPositions(solutionBoard, block);
             
             // ランダム順にアクセス可能な隣接位置を試す
-            const shuffledPositions = adjacentPositions.sort(() => 0.5 - Math.random());
+            const shuffledPositions = shuffle(adjacentPositions);
             
             for (const position of shuffledPositions) {
                 const startRow = position.row;
@@ -75,9 +75,9 @@ function generateSolutionAndNotPlaceableCells() {
             }
         }
         
-        // 配置できなかった場合、このブロックはスキップ（通常はここには来ないはず）
+        // 配置できなかった場合は生成失敗（呼び出し側で作り直す）
         if (!placed) {
-            console.warn('ブロック配置エラー：想定解の生成に失敗しました。');
+            return false;
         }
     }
     
@@ -93,6 +93,8 @@ function generateSolutionAndNotPlaceableCells() {
             }
         }
     }
+
+    return true;
 }
 
 // ソリューションボードで既存のブロックに隣接する配置可能な位置を探す
