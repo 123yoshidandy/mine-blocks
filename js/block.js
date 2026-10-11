@@ -101,12 +101,13 @@ function createRandomBlock() {
         }
     }
     
-    // マイン数をセル数の1/3〜1/2（切り捨て、最低1個）に設定
-    // 盤面のマインが全体の3分の1程度になり、多すぎず少なすぎない
-    // 例: 2〜3マス→1個、4〜5マス→1〜2個、6マス→2〜3個（いずれもマインでないマスが必ず残る）
+    // マイン数をセル数の1/3（切り捨て、最低1個）〜セル数-1に設定
+    // 上限を半分にすると数字が「1」に偏り、想定と違う置き方でも解ける問題が増えるため、上限は設けない
+    // ただし、数字のマスが1つもないピースは赤マスの上ならどこにでも置けてしまうため、マインでないマスを必ず1つ残す
+    // 例: 2マス→1個、3マス→1〜2個、4マス→1〜3個、5マス→1〜4個、6マス→2〜5個
     const totalCells = filledCells.length;
     const minMines = Math.max(1, Math.floor(totalCells / 3));
-    const maxMines = Math.max(1, Math.floor(totalCells / 2));
+    const maxMines = totalCells - 1;
     
     // マイン数をminとmaxの間でランダムに決定
     const numMines = minMines + Math.floor(random() * (maxMines - minMines + 1));
