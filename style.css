@@ -82,7 +82,8 @@ button:disabled {
 .game-board {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    gap: 5px;
+    --board-gap: 5px; /* 置いたピースのつなぎ目（JSの影）でも使う */
+    gap: var(--board-gap);
     margin-bottom: 30px;
     max-width: 500px;
     width: fit-content; /* マスの大きさに合わせ、列間に余白が出ないようにする */
@@ -110,6 +111,8 @@ button:disabled {
 .cell.filled {
     background-color: var(--piece-color, #3498db);
     color: white;
+    border-radius: 0;
+    box-shadow: var(--join-shadow, none); /* 同じピースのマス同士の隙間を埋める */
 }
 
 .cell.not-placeable {

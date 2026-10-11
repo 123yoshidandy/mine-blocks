@@ -87,14 +87,25 @@ function canPlaceBlock(startRow, startCol, block) {
                 const boardRow = startRow + row;
                 const boardCol = startCol + col;
                 
-                if (gameState.board[boardRow][boardCol] !== null || 
+                if (gameState.board[boardRow][boardCol] !== null ||
                     isNotPlaceableCell(boardRow, boardCol)) {
+                    return false;
+                }
+
+                // 盤面のヒントと一致するかチェック
+                // 赤いマスにはマイン、数字のマスにはマイン数がその数字のピースの非マインのマスしか置けない
+                const isMine = block.mines.some(mine => mine.row === row && mine.col === col);
+                const clue = getMineInfoFromSolution(boardRow, boardCol);
+                if (clue.hasMine !== isMine) {
+                    return false;
+                }
+                if (!isMine && clue.mineCount !== block.mines.length) {
                     return false;
                 }
             }
         }
     }
-    
+
     return true;
 }
 
@@ -121,6 +132,7 @@ function placeBlock(startRow, startCol, block) {
                 const cellElement = document.querySelector(`.cell[data-row="${boardRow}"][data-col="${boardCol}"]`);
                 cellElement.classList.add('filled');
                 cellElement.style.setProperty('--piece-color', block.color);
+                cellElement.style.setProperty('--join-shadow', getJoinShadow(block.grid, row, col));
                 
                 // マスに配置した場合は、数字やマイン表示を非表示にする
                 cellElement.textContent = '';
@@ -146,6 +158,27 @@ function placeBlock(startRow, startCol, block) {
     
     // 操作できないようにする（念のため）
     blockElement.style.pointerEvents = 'none';
+}
+
+// 同じピースの右・下・右下のマスとの隙間をピースの色で埋める影を返す
+function getJoinShadow(grid, row, col) {
+    const isFilled = (r, c) => grid[r] !== undefined && grid[r][c] === 1;
+    const right = isFilled(row, col + 1);
+    const down = isFilled(row + 1, col);
+    const shadows = [];
+
+    if (right) {
+        shadows.push('var(--board-gap) 0 0 var(--piece-color)');
+    }
+    if (down) {
+        shadows.push('0 var(--board-gap) 0 var(--piece-color)');
+    }
+    // 4マスが田の字に並ぶ場合は、隙間の交差部分も埋める
+    if (right && down && isFilled(row + 1, col + 1)) {
+        shadows.push('var(--board-gap) var(--board-gap) 0 var(--piece-color)');
+    }
+
+    return shadows.length > 0 ? shadows.join(', ') : 'none';
 }
 
 // ボードが完成したかチェック

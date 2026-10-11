@@ -6,92 +6,113 @@
 // ピースの色（マインや配置不可の赤と区別できる色のみ）
 const PIECE_COLORS = ['#3498db', '#27ae60', '#9b59b6', '#f39c12', '#1abc9c', '#f1c40f'];
 
-// ブロックの形状を生成
+// ブロックの形状を生成（形もマインの位置も同じピースは作り直す）
 function generateBlocks() {
     // ブロック生成数(ダミーを含む)
     const numBlocks = 6;
+    const blockKeys = new Set();
     
-    for (let i = 0; i < numBlocks; i++) {
-        // ブロックの形状をランダムに生成
-        const blockSize = 3
-        let block = Array(blockSize).fill().map(() => Array(blockSize).fill(0));
+    while (gameState.blocks.length < numBlocks) {
+        const block = createRandomBlock();
         
-        // 連結を保証しながらセルを配置
-        const minCells = 2;
-        const maxCells = blockSize * blockSize - 1;
-        const numCells = minCells + Math.floor(random() * (maxCells - minCells + 1));
-
-        // 最初のセルをランダムに配置
-        let row = Math.floor(random() * blockSize);
-        let col = Math.floor(random() * blockSize);
-        block[row][col] = 1;
-        
-        // 連結セルの候補リスト（現在のセルに隣接する空のセル）
-        let candidates = getAdjacentEmptyCells(block, row, col);
-        let cellsPlaced = 1; // 最初のセルは既に配置済み
-        
-        // 必要なセル数に達するまで連結セルを追加
-        while (cellsPlaced < numCells && candidates.length > 0) {
-            // 候補リストからランダムに選択
-            const randomIndex = Math.floor(random() * candidates.length);
-            const nextCell = candidates[randomIndex];
-            
-            // 選択したセルを配置
-            block[nextCell.row][nextCell.col] = 1;
-            cellsPlaced++;
-            
-            // 候補リストを更新（選択したセルを削除し、その隣接セルを追加）
-            candidates.splice(randomIndex, 1);
-            const newCandidates = getAdjacentEmptyCells(block, nextCell.row, nextCell.col);
-            
-            // 重複を避けて候補リストに追加
-            for (const newCell of newCandidates) {
-                if (!candidates.some(c => c.row === newCell.row && c.col === newCell.col)) {
-                    candidates.push(newCell);
-                }
-            }
+        // 既存のピースと形・マインの位置がすべて同じなら、乱数列の続きで作り直す
+        const key = getBlockKey(block);
+        if (blockKeys.has(key)) {
+            continue;
         }
+        blockKeys.add(key);
         
-        // 空の行・列を取り除き、ピースが収まる最小サイズにする（例: 2×2のピースは2×2の枠）
-        block = trimToBoundingBox(block);
-        const rows = block.length;
-        const cols = block[0].length;
-
-        // マインをランダムに配置（ブロックのセルの一部）
-        const mines = [];
-        const filledCells = [];
-
-        for (let row = 0; row < rows; row++) {
-            for (let col = 0; col < cols; col++) {
-                if (block[row][col] === 1) {
-                    filledCells.push({ row, col });
-                }
-            }
-        }
-        
-        // 修正: マイン数を1以上、4以下、かつブロックの大きさ（セル数）未満に設定
-        const totalCells = filledCells.length;
-        const minMines = 1; // 最低1つのマイン
-        const maxMines = Math.min(4, totalCells - 1); // 最大4個、ただしブロックのセル数-1個を超えない
-        
-        // マイン数をminとmaxの間でランダムに決定
-        const numMines = minMines + Math.floor(random() * (maxMines - minMines + 1));
-
-        // ランダムにマインを配置
-        const shuffled = shuffle(filledCells);
-        for (let j = 0; j < numMines; j++) {
-            mines.push(shuffled[j]);
-        }
-        
-        gameState.blocks.push({
-            grid: block,
-            mines: mines,
-            rows: rows,
-            cols: cols,
-            anchor: getCenterCell(filledCells),
-            color: PIECE_COLORS[i % PIECE_COLORS.length]
-        });
+        block.color = PIECE_COLORS[gameState.blocks.length % PIECE_COLORS.length];
+        gameState.blocks.push(block);
     }
+}
+
+// 形とマインの位置から、ピースを比較するためのキーを作る
+function getBlockKey(block) {
+    const mineKeys = block.mines.map(mine => `${mine.row},${mine.col}`).sort();
+    return JSON.stringify([block.grid, mineKeys]);
+}
+
+// ランダムな形とマインを持つピースを1つ生成
+function createRandomBlock() {
+    // ブロックの形状をランダムに生成
+    const blockSize = 3
+    let block = Array(blockSize).fill().map(() => Array(blockSize).fill(0));
+    
+    // 連結を保証しながらセルを配置
+    const minCells = 2;
+    const maxCells = blockSize * blockSize - 1;
+    const numCells = minCells + Math.floor(random() * (maxCells - minCells + 1));
+    
+    // 最初のセルをランダムに配置
+    let row = Math.floor(random() * blockSize);
+    let col = Math.floor(random() * blockSize);
+    block[row][col] = 1;
+    
+    // 連結セルの候補リスト（現在のセルに隣接する空のセル）
+    let candidates = getAdjacentEmptyCells(block, row, col);
+    let cellsPlaced = 1; // 最初のセルは既に配置済み
+    
+    // 必要なセル数に達するまで連結セルを追加
+    while (cellsPlaced < numCells && candidates.length > 0) {
+        // 候補リストからランダムに選択
+        const randomIndex = Math.floor(random() * candidates.length);
+        const nextCell = candidates[randomIndex];
+        
+        // 選択したセルを配置
+        block[nextCell.row][nextCell.col] = 1;
+        cellsPlaced++;
+        
+        // 候補リストを更新（選択したセルを削除し、その隣接セルを追加）
+        candidates.splice(randomIndex, 1);
+        const newCandidates = getAdjacentEmptyCells(block, nextCell.row, nextCell.col);
+        
+        // 重複を避けて候補リストに追加
+        for (const newCell of newCandidates) {
+            if (!candidates.some(c => c.row === newCell.row && c.col === newCell.col)) {
+                candidates.push(newCell);
+            }
+        }
+    }
+    
+    // 空の行・列を取り除き、ピースが収まる最小サイズにする（例: 2×2のピースは2×2の枠）
+    block = trimToBoundingBox(block);
+    const rows = block.length;
+    const cols = block[0].length;
+    
+    // マインをランダムに配置（ブロックのセルの一部）
+    const mines = [];
+    const filledCells = [];
+    
+    for (let row = 0; row < rows; row++) {
+        for (let col = 0; col < cols; col++) {
+            if (block[row][col] === 1) {
+                filledCells.push({ row, col });
+            }
+        }
+    }
+    
+    // 修正: マイン数を1以上、4以下、かつブロックの大きさ（セル数）未満に設定
+    const totalCells = filledCells.length;
+    const minMines = 1; // 最低1つのマイン
+    const maxMines = Math.min(4, totalCells - 1); // 最大4個、ただしブロックのセル数-1個を超えない
+    
+    // マイン数をminとmaxの間でランダムに決定
+    const numMines = minMines + Math.floor(random() * (maxMines - minMines + 1));
+    
+    // ランダムにマインを配置
+    const shuffled = shuffle(filledCells);
+    for (let j = 0; j < numMines; j++) {
+        mines.push(shuffled[j]);
+    }
+    
+    return {
+        grid: block,
+        mines: mines,
+        rows: rows,
+        cols: cols,
+        anchor: getCenterCell(filledCells)
+    };
 }
 
 // ピースの重心に最も近いマスを返す（ドラッグ・配置時にカーソルの下に来るマス）
