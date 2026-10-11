@@ -33,6 +33,7 @@ const elements = {
     seedDisplay: document.getElementById('seedDisplay'),
     newGameButton: document.getElementById('newGame'),
     hintButton: document.getElementById('hint'),
+    shareButton: document.getElementById('share'),
     clearModal: document.getElementById('clearModal'),
     nextGameButton: document.getElementById('nextGame')
 };

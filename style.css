@@ -70,6 +70,38 @@ button:disabled {
     cursor: not-allowed;
 }
 
+/* アイコンボタン */
+.icon-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+}
+
+.icon-button svg {
+    width: 22px;
+    height: 22px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.icon-button .icon-dot {
+    fill: currentColor;
+}
+
+/* 共有ボタン：コピー完了時だけチェックマークを表示 */
+.icon-button .icon-done,
+.icon-button.copied .icon-default {
+    display: none;
+}
+
+.icon-button.copied .icon-done {
+    display: block;
+}
+
 /* ゲームエリア */
 .game-container {
     background-color: #fff;

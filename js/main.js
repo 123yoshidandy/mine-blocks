@@ -3,8 +3,8 @@
  * ゲームの初期化と全体のフロー管理を行います
  */
 
-// 新しいゲームを生成（シード省略時は新しいシードを生成）
-function generateGame(seed = generateSeed()) {
+// 指定したシードのゲームを生成
+function generateGame(seed) {
     // ボードとブロックをクリア
     clearBoard();
 
@@ -44,6 +44,7 @@ function initGame() {
 
     // URLにシードが指定されていればそのパズル、なければ今日の日付のパズルを生成
     const urlSeed = parseSeed(new URLSearchParams(location.search).get('seed'));
+    // 以降は「新しいゲーム」「次のゲーム」でこのシードから決まった順に問題が続く
     generateGame(urlSeed ?? getDailySeed());
     setupEventListeners();
 }

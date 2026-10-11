@@ -5,11 +5,11 @@
 
 // イベントリスナーのセットアップ
 function setupEventListeners() {
-    // 新しいゲームボタン
+    // 新しいゲームボタン（次のシードの問題に進む）
     elements.newGameButton.addEventListener('click', () => {
         gameState.score = 0;
         updateStats();
-        generateGame();
+        generateGame(getNextSeed(gameState.seed));
     });
     
     // ヒントボタン
@@ -18,11 +18,54 @@ function setupEventListeners() {
         alert('ヒント: 数字はその位置に置かれるブロックに含まれるマインの数を表しています。各数字と一致するようにブロックを配置しましょう！');
     });
     
-    // 次のゲームボタン
+    // 共有ボタン（今の問題番号から同じ順番で遊べるURLを共有）
+    elements.shareButton.addEventListener('click', shareGame);
+
+    // 次のゲームボタン（次のシードの問題に進む）
     elements.nextGameButton.addEventListener('click', () => {
         elements.clearModal.classList.remove('active');
-        generateGame();
+        generateGame(getNextSeed(gameState.seed));
     });
+}
+
+// 今の問題番号のURLを共有する
+// スマホでは共有シート、パソコンではクリップボードへのコピー、どちらも使えなければダイアログで表示
+async function shareGame() {
+    const url = new URL(location.href);
+    url.searchParams.set('seed', gameState.seed);
+    const shareUrl = url.toString();
+    const isTouchDevice = window.matchMedia('(pointer: coarse)').matches;
+
+    if (isTouchDevice && navigator.share) {
+        try {
+            await navigator.share({
+                title: 'MINE BLOCKS',
+                text: `MINE BLOCKS 問題番号 ${gameState.seed} で勝負！`,
+                url: shareUrl
+            });
+        } catch (e) {
+            // 共有シートをキャンセルした場合などは何もしない
+        }
+        return;
+    }
+
+    try {
+        await navigator.clipboard.writeText(shareUrl);
+        showShareFeedback('コピーしました！');
+    } catch (e) {
+        window.prompt('このURLを共有してください', shareUrl);
+    }
+}
+
+// 共有ボタンのアイコンを一時的にチェックマークに変えて結果を知らせる
+function showShareFeedback(message) {
+    const button = elements.shareButton;
+    button.classList.add('copied');
+    button.title = message;
+    setTimeout(() => {
+        button.classList.remove('copied');
+        button.title = '共有';
+    }, 2000);
 }
 
 // ブロックのプレビューを表示

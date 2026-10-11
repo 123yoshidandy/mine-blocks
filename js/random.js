@@ -3,8 +3,8 @@
  * シード値から再現可能な乱数を生成します（同じシードなら同じパズルになります）
  */
 
-// ランダム生成するシードの上限（共有しやすいよう6桁に収める）
-const MAX_RANDOM_SEED = 1000000;
+// 次の問題のシードの上限（共有しやすいよう6桁に収める）
+const MAX_NEXT_SEED = 1000000;
 
 // 受け付けるシードの上限（32bit符号なし整数）
 const MAX_SEED = 4294967296;
@@ -17,9 +17,14 @@ function setSeed(seed) {
     randomState = seed >>> 0;
 }
 
-// 新しいシードをランダムに生成
-function generateSeed() {
-    return Math.floor(Math.random() * MAX_RANDOM_SEED);
+// 現在のシードから次の問題のシードを決める
+// 同じシードから始めれば、誰が遊んでも同じ順番で問題が続く
+// 周期が最大の線形合同法なので、0〜999999のすべてを1回ずつ通るまで同じ問題に戻らない
+// （MAX_NEXT_SEED = 2^6×5^6 に対し、a-1が4と5の倍数、cが2と5で割り切れない）
+function getNextSeed(seed) {
+    const a = 2654441;
+    const c = 7919;
+    return (a * (seed % MAX_NEXT_SEED) + c) % MAX_NEXT_SEED;
 }
 
 // 今日の日付からシードを生成（例: 2026年10月11日 → 20261011）
