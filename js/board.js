@@ -289,18 +289,10 @@ function checkBoardCompletion() {
         // クリア回数をカウントアップ
         gameState.clearedCount++;
         
-        // 時間に基づいたスコア計算
-        // 300点から経過秒数を引く（最低10点）
-        let timeScore = Math.max(10, 300 - gameState.elapsedTime);
-        
-        // クリアモーダルの内容を更新（経過時間と獲得スコアも表示）
+        // クリアモーダルの内容を更新（クリア時間とクリア回数を表示）
         elements.clearTimeDisplay.textContent = gameState.elapsedTime;
-        elements.earnedScoreDisplay.textContent = timeScore;
-        
-        // スコアを加算
-        gameState.score += timeScore;
-        elements.currentScoreDisplay.textContent = gameState.score;
-        
+        elements.clearCountResultDisplay.textContent = gameState.clearedCount;
+
         // 統計表示を更新
         updateStats();
         

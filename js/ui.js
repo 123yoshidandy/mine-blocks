@@ -7,8 +7,6 @@
 function setupEventListeners() {
     // 新しいゲームボタン（次のシードの問題に進む）
     elements.newGameButton.addEventListener('click', () => {
-        gameState.score = 0;
-        updateStats();
         generateGame(getNextSeed(gameState.seed));
     });
     

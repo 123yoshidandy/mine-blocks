@@ -5,7 +5,6 @@
 
 // ゲームの状態を管理するオブジェクト
 const gameState = {
-    score: 0,
     clearedCount: 0, // クリア回数
     board: [],
     blocks: [],
@@ -28,10 +27,8 @@ const gameState = {
 const elements = {
     gameBoard: document.getElementById('gameBoard'),
     blocksContainer: document.getElementById('blocksContainer'),
-    scoreDisplay: document.getElementById('score'),
     clearCountDisplay: document.getElementById('clearCount'),
-    currentScoreDisplay: document.getElementById('currentScore'),
-    earnedScoreDisplay: document.getElementById('earnedScore'),
+    clearCountResultDisplay: document.getElementById('clearCountResult'),
     clearTimeDisplay: document.getElementById('clearTime'),
     timerDisplay: document.getElementById('timerDisplay'),
     seedDisplay: document.getElementById('seedDisplay'),
@@ -60,7 +57,6 @@ const elements = {
 
 // 統計情報の更新
 function updateStats() {
-    elements.scoreDisplay.textContent = gameState.score;
     elements.clearCountDisplay.textContent = gameState.clearedCount;
 }
 

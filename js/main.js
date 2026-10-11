@@ -43,7 +43,6 @@ function generateGame(seed) {
 
 // ゲーム初期化
 function initGame() {
-    gameState.score = 0;
     gameState.clearedCount = 0;
     updateStats();
 

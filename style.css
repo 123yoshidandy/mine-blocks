@@ -145,7 +145,7 @@ button:focus-visible {
 /* 統計：小さなカードを横に並べる */
 .stats {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1.4fr; /* 問題番号は8桁になるので広めにする */
+    grid-template-columns: 1fr 1fr 1.4fr; /* 問題番号は8桁になるので広めにする */
     gap: 8px;
     margin-bottom: 16px;
 }
