@@ -340,8 +340,8 @@ button:focus-visible {
 
 /* 置き場：8個のピースを4列×2段に並べる。どの形も収まるよう、1枠はピースのマス3つ分＋余白で統一 */
 .blocks-container {
-    --block-cell: 20px; /* ピースの1マスの大きさ（マス目とマスで共通にして隙間を出さない） */
-    --slot: calc(var(--block-cell) * 3 + 24px);
+    --block-cell: 24px; /* ピースの1マスの大きさ（マス目とマスで共通にして隙間を出さない） */
+    --slot: calc(var(--block-cell) * 3 + 20px); /* ピースの余白（上下左右8px）が収まる大きさ */
     display: grid;
     grid-template-columns: repeat(4, var(--slot));
     grid-auto-rows: var(--slot);
@@ -1040,10 +1040,15 @@ button:focus-visible {
     }
 
     .blocks-container {
-        --block-cell: 16px;
-        --slot: calc(var(--block-cell) * 3 + 16px);
+        --block-cell: 21px;
+        --slot: calc(var(--block-cell) * 3 + 10px);
         gap: 6px;
         padding: 8px;
+    }
+
+    /* 4列を横幅に収めるため、ピースの余白（選択時の枠の分）を詰める */
+    .block {
+        padding: 5px;
     }
 }
 
@@ -1069,8 +1074,8 @@ button:focus-visible {
     }
 
     .blocks-container {
-        --block-cell: 14px;
-        --slot: calc(var(--block-cell) * 3 + 12px);
+        --block-cell: 17px;
+        gap: 4px;
     }
 
     /* 7列の盤面でも画面からはみ出さない大きさにする */
@@ -1100,5 +1105,17 @@ button:focus-visible {
         width: 32px;
         height: 32px;
         font-size: 0.95rem;
+    }
+
+    /* 7行の盤面でも1画面に収まる範囲で、ピースをできるだけ大きくする */
+    .blocks-container {
+        --block-cell: 19px;
+    }
+}
+
+/* 幅も高さも小さいスマホ：置き場の4列が横幅に収まる大きさに戻す */
+@media (max-width: 360px) and (max-height: 600px) {
+    .blocks-container {
+        --block-cell: 17px;
     }
 }
