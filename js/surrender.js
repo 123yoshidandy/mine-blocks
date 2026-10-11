@@ -5,17 +5,11 @@
 
 // 降参ボタンと結果画面のボタンを準備する
 function setupSurrender() {
-    elements.surrenderButton.addEventListener('click', requestSurrender);
+    elements.surrenderButton.addEventListener('click', surrender);
     elements.surrenderNextButton.addEventListener('click', () => {
         elements.surrenderModal.classList.remove('active');
         generateGame(getNextSeed(gameState.seed));
     });
-}
-
-// 誤って押したときのために確認してから降参する
-function requestSurrender() {
-    if (!window.confirm('降参して想定解を見ますか？')) return;
-    surrender();
 }
 
 // タイマーを止め、想定解を結果画面に表示する（クリア回数には数えない）
