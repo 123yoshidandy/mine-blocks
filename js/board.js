@@ -161,7 +161,7 @@ function placeBlock(startRow, startCol, block) {
     const blockElement = elements.blocksContainer.children[blockIndex];
     blockElement.classList.add('used');
     
-    // 非表示にする（3×3の置き場で他のピースの位置がずれないよう、場所は残す）
+    // 非表示にする（置き場で他のピースの位置がずれないよう、場所は残す）
     blockElement.style.visibility = 'hidden';
     
     // 操作できないようにする（念のため）

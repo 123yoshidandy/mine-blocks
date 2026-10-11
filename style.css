@@ -338,12 +338,12 @@ button:focus-visible {
     }
 }
 
-/* 置き場：9個のピースを3×3に並べる。どの形も収まるよう、1枠はピースのマス3つ分＋余白で統一 */
+/* 置き場：8個のピースを4列×2段に並べる。どの形も収まるよう、1枠はピースのマス3つ分＋余白で統一 */
 .blocks-container {
     --block-cell: 20px; /* ピースの1マスの大きさ（マス目とマスで共通にして隙間を出さない） */
     --slot: calc(var(--block-cell) * 3 + 24px);
     display: grid;
-    grid-template-columns: repeat(3, var(--slot));
+    grid-template-columns: repeat(4, var(--slot));
     grid-auto-rows: var(--slot);
     gap: 10px;
     justify-content: center;
@@ -1006,19 +1006,24 @@ button:focus-visible {
 
     .stats {
         gap: 6px;
-        margin-bottom: 12px;
+        margin-bottom: 8px;
     }
 
+    /* 縦に収めるため、ラベルと数字を横に並べた細い帯にする */
     .stat {
-        padding: 6px 2px;
+        flex-direction: row;
+        justify-content: center;
+        align-items: baseline;
+        gap: 6px;
+        padding: 4px 6px;
     }
 
     .stat-label {
-        font-size: 0.62rem;
+        font-size: 0.68rem;
     }
 
     .stat-value {
-        font-size: 0.9rem;
+        font-size: 1rem;
     }
 
     .game-board {
@@ -1035,10 +1040,10 @@ button:focus-visible {
     }
 
     .blocks-container {
-        --block-cell: 18px;
-        --slot: calc(var(--block-cell) * 3 + 20px);
-        gap: 8px;
-        padding: 10px;
+        --block-cell: 16px;
+        --slot: calc(var(--block-cell) * 3 + 16px);
+        gap: 6px;
+        padding: 8px;
     }
 }
 
@@ -1063,10 +1068,37 @@ button:focus-visible {
         height: 34px;
     }
 
+    .blocks-container {
+        --block-cell: 14px;
+        --slot: calc(var(--block-cell) * 3 + 12px);
+    }
+
     /* 7列の盤面でも画面からはみ出さない大きさにする */
     .cell {
         width: 34px;
         height: 34px;
+        font-size: 0.95rem;
+    }
+}
+
+/* 背の低いスマホ（iPhone SEなど）：7行の盤面と置き場まで、スクロールせずに1画面に収める */
+@media (max-width: 480px) and (max-height: 600px) {
+    .container {
+        padding-top: 8px;
+        padding-bottom: 8px;
+    }
+
+    .app-header {
+        margin-bottom: 8px;
+    }
+
+    .game-board {
+        margin-bottom: 10px;
+    }
+
+    .cell {
+        width: 32px;
+        height: 32px;
         font-size: 0.95rem;
     }
 }

@@ -12,8 +12,8 @@ function generateSolutionAndNotPlaceableCells() {
     const solutionBoard = Array(size).fill().map(() => Array(size).fill(null));
     
     // 使用するブロック数を決定（生成したブロックの一部だけを使用）
-    const totalBlocks = gameState.blocks.length; // 9個
-    const blocksToUse = 6; // 実際に解答に使用するブロック数（残り3個はダミー）
+    const totalBlocks = gameState.blocks.length; // 8個
+    const blocksToUse = 6; // 実際に解答に使用するブロック数（残り2個はダミー）
     
     // すべてのブロックのインデックス配列をシャッフル
     const allBlockIndices = Array.from({ length: totalBlocks }, (_, i) => i);
