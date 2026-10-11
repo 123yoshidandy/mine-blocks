@@ -21,7 +21,8 @@ const touchState = {
     lastX: 0,
     lastY: 0,
     isMoving: false,  // スワイプ中かどうかを示すフラグ
-    targetCell: null  // 現在ターゲットしているセル
+    targetCell: null, // 現在ターゲットしているセル
+    boardPickIndex: -1 // 盤面上でタッチした配置済みピース（スワイプしたら持ち上げる）
 };
 
 // ドラッグ開始のハンドラ
@@ -176,6 +177,20 @@ function handleTouchEnd(e) {
 
 // ボディ全体でのタッチ移動（スワイプ）
 function handleBodyTouchMove(e) {
+    // 盤面の配置済みピースをタッチ中：ある程度動いたら盤面から外して持ち上げる
+    if (touchState.boardPickIndex !== -1) {
+        e.preventDefault();
+
+        const touch = e.touches[0];
+        const pickDist = Math.sqrt(Math.pow(touch.clientX - touchState.startX, 2) + Math.pow(touch.clientY - touchState.startY, 2));
+        if (pickDist <= 10) return;
+
+        const blockIndex = touchState.boardPickIndex;
+        touchState.boardPickIndex = -1;
+        removeBlock(blockIndex);
+        selectBlock(blockIndex);
+    }
+
     // ブロックが選択されていない場合は通常のスクロールを許可
     if (gameState.selectedBlockIndex === -1) return;
     
@@ -223,21 +238,33 @@ function handleBodyTouchMove(e) {
             const origin = getBlockOrigin(row, col, block);
             showBlockPreview(origin.row, origin.col, block);
         }
+    } else {
+        // 盤面の外ではプレビューを消し、指を離しても配置しない
+        touchState.targetCell = null;
+        clearHoverPreview();
     }
 }
 
 // ボディ全体でのタッチ終了（スワイプ操作の終了）
 function handleBodyTouchEnd(e) {
+    // イベントリスナーを削除
+    document.body.removeEventListener('touchmove', handleBodyTouchMove);
+    document.body.removeEventListener('touchend', handleBodyTouchEnd);
+
+    // 配置済みピースを持ち上げずに指を離した（タップ）場合は、clickイベントで外す処理に任せる
+    touchState.boardPickIndex = -1;
+
     // ブロックが選択されていない場合は何もしない
     if (gameState.selectedBlockIndex === -1) {
         touchState.isTouching = false;
         return;
     }
-    
-    // イベントリスナーを削除
-    document.body.removeEventListener('touchmove', handleBodyTouchMove);
-    document.body.removeEventListener('touchend', handleBodyTouchEnd);
-    
+
+    // スワイプ後に発生するclickで、置いたばかりのピースが外れないようにする
+    if (touchState.isMoving) {
+        e.preventDefault();
+    }
+
     // スワイプ操作が行われ、かつターゲットセルがある場合
     if (touchState.isMoving && touchState.targetCell) {
         const row = parseInt(touchState.targetCell.dataset.row);
@@ -263,8 +290,24 @@ function handleBodyTouchEnd(e) {
 }
 
 // セルのタッチイベント
+// 配置済みピースの上でタッチを始めた場合は、スワイプで持ち上げられるように追跡を始める
 function handleCellTouchStart(e) {
-    // セル上でのタッチ開始は特に何もしない
+    const cell = e.currentTarget;
+    const placed = gameState.board[parseInt(cell.dataset.row)][parseInt(cell.dataset.col)];
+    if (placed === null) return;
+
+    const touch = e.touches[0];
+    touchState.boardPickIndex = placed.blockIndex;
+    touchState.isTouching = true;
+    touchState.isMoving = false;
+    touchState.targetCell = null;
+    touchState.startX = touch.clientX;
+    touchState.startY = touch.clientY;
+    touchState.lastX = touch.clientX;
+    touchState.lastY = touch.clientY;
+
+    document.body.addEventListener('touchmove', handleBodyTouchMove, { passive: false });
+    document.body.addEventListener('touchend', handleBodyTouchEnd);
 }
 
 function handleCellTouchMove(e) {

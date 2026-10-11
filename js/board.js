@@ -48,6 +48,13 @@ function isNotPlaceableCell(row, col) {
 
 // セルクリックのハンドラ
 function handleCellClick(row, col) {
+    // 配置済みのピースをクリックした場合は、そのピースを外して置き場に戻す
+    const placed = gameState.board[row][col];
+    if (placed !== null) {
+        removeBlock(placed.blockIndex);
+        return;
+    }
+
     if (gameState.selectedBlockIndex === -1) return;
 
     const block = gameState.blocks[gameState.selectedBlockIndex];
@@ -79,33 +86,35 @@ function canPlaceBlock(startRow, startCol, block) {
         return false;
     }
 
+    // 盤面のヒントとの一致を調べるため、ピースが覆うマイン（赤いマス）の数と数字を集める
+    // マインは盤面にあるもので、ピース内部のマイン情報は問題生成のためだけに使う
+    let coveredMines = 0;
+    const coveredNumbers = [];
+
     // 既に配置されているブロックと重ならないか、配置不可能なセルと重ならないかチェック
     for (let row = 0; row < block.rows; row++) {
         for (let col = 0; col < block.cols; col++) {
             if (block.grid[row][col] === 1) {
                 const boardRow = startRow + row;
                 const boardCol = startCol + col;
-                
+
                 if (gameState.board[boardRow][boardCol] !== null ||
                     isNotPlaceableCell(boardRow, boardCol)) {
                     return false;
                 }
 
-                // 盤面のヒントと一致するかチェック
-                // 赤いマスにはマイン、数字のマスにはマイン数がその数字のピースの非マインのマスしか置けない
-                const isMine = block.mines.some(mine => mine.row === row && mine.col === col);
                 const clue = getMineInfoFromSolution(boardRow, boardCol);
-                if (clue.hasMine !== isMine) {
-                    return false;
-                }
-                if (!isMine && clue.mineCount !== block.mines.length) {
-                    return false;
+                if (clue.hasMine) {
+                    coveredMines++;
+                } else {
+                    coveredNumbers.push(clue.mineCount);
                 }
             }
         }
     }
 
-    return true;
+    // ピースが覆う数字はすべて、ピースが含むマインの数と一致する必要がある
+    return coveredNumbers.every(number => number === coveredMines);
 }
 
 // ブロックをボードに配置
@@ -119,9 +128,9 @@ function placeBlock(startRow, startCol, block) {
                 const boardRow = startRow + row;
                 const boardCol = startCol + col;
                 
-                // マインかどうかをチェック
-                const isMine = block.mines.some(mine => mine.row === row && mine.col === col);
-                
+                // マインかどうかをチェック（マインは盤面にあるもの）
+                const isMine = getMineInfoFromSolution(boardRow, boardCol).hasMine;
+
                 gameState.board[boardRow][boardCol] = {
                     blockIndex,
                     isMine
@@ -157,6 +166,33 @@ function placeBlock(startRow, startCol, block) {
     
     // 操作できないようにする（念のため）
     blockElement.style.pointerEvents = 'none';
+}
+
+// 配置済みのブロックを盤面から外し、置き場に戻す
+function removeBlock(blockIndex) {
+    for (let row = 0; row < gameState.boardRows; row++) {
+        for (let col = 0; col < gameState.boardCols; col++) {
+            const placed = gameState.board[row][col];
+            if (placed === null || placed.blockIndex !== blockIndex) {
+                continue;
+            }
+
+            gameState.board[row][col] = null;
+
+            // ピースの色・つなぎ目を消し、置く前のヒント（数字・赤いマス）を表示し直す
+            const cellElement = document.querySelector(`.cell[data-row="${row}"][data-col="${col}"]`);
+            cellElement.classList.remove('filled', 'mine');
+            cellElement.style.removeProperty('--piece-color');
+            cellElement.style.removeProperty('--join-shadow');
+            renderCellClue(row, col);
+        }
+    }
+
+    // 置き場のブロックを再び表示する
+    const blockElement = elements.blocksContainer.children[blockIndex];
+    blockElement.classList.remove('used');
+    blockElement.style.display = '';
+    blockElement.style.pointerEvents = '';
 }
 
 // 同じピースの右・下・右下のマスとの隙間をピースの色で埋める影を返す
@@ -276,25 +312,30 @@ function renderBoard() {
             if (isNotPlaceableCell(row, col)) {
                 continue;
             }
-            
-            const cell = document.querySelector(`.cell[data-row="${row}"][data-col="${col}"]`);
-            
-            // ソリューションからマイン情報を取得
-            const mineInfo = getMineInfoFromSolution(row, col);
-            
-            if (mineInfo.hasMine) {
-                // マインがある場合は、数字ではなく色で表現
-                cell.classList.add('solution-mine');
-                cell.style.backgroundColor = '#e74c3c'; // 赤色でマインを表示
-                cell.textContent = '';  // 数字は表示しない
-            } else if (mineInfo.mineCount > 0) {
-                // マインがない場合は数字を表示
-                cell.textContent = mineInfo.mineCount;
-            } else {
-                // マインもなく、重なるブロックもない場合
-                cell.textContent = '';
-            }
+
+            renderCellClue(row, col);
         }
+    }
+}
+
+// 1マス分のヒント（数字または赤いマス）を表示
+function renderCellClue(row, col) {
+    const cell = document.querySelector(`.cell[data-row="${row}"][data-col="${col}"]`);
+
+    // ソリューションからマイン情報を取得
+    const mineInfo = getMineInfoFromSolution(row, col);
+
+    if (mineInfo.hasMine) {
+        // マインがある場合は、数字ではなく色で表現
+        cell.classList.add('solution-mine');
+        cell.style.backgroundColor = '#e74c3c'; // 赤色でマインを表示
+        cell.textContent = '';  // 数字は表示しない
+    } else if (mineInfo.mineCount > 0) {
+        // マインがない場合は数字を表示
+        cell.textContent = mineInfo.mineCount;
+    } else {
+        // マインもなく、重なるブロックもない場合
+        cell.textContent = '';
     }
 }
 

@@ -145,6 +145,7 @@ button:disabled {
     color: white;
     border-radius: 0;
     box-shadow: var(--join-shadow, none); /* 同じピースのマス同士の隙間を埋める */
+    cursor: pointer; /* クリックで外せることを示す */
 }
 
 .cell.not-placeable {

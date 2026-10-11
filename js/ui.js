@@ -97,8 +97,8 @@ function showBlockPreview(startRow, startCol, block) {
                             cellElement.classList.add('invalid');
                         }
                         
-                        // マインセルの場合はマインクラスを追加
-                        const isMine = block.mines.some(mine => mine.row === row && mine.col === col);
+                        // ピースが覆う盤面のマインを強調表示（マインは盤面にあるもの）
+                        const isMine = getMineInfoFromSolution(boardRow, boardCol).hasMine;
                         if (isMine) {
                             cellElement.classList.add('mine');
                         }
