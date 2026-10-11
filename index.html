@@ -119,6 +119,54 @@
                 </div>
             </div>
         </div>
+
+        <!-- 遊び方：小さな盤面のアニメーションでルールを説明する（盤面はJavaScriptで生成） -->
+        <div class="modal" id="hintModal">
+            <div class="modal-content hint-content" role="dialog" aria-labelledby="hintTitle">
+                <button id="hintClose" class="hint-close" aria-label="閉じる">×</button>
+                <h2 id="hintTitle">遊び方</h2>
+
+                <section class="hint-slide">
+                    <div class="demo" data-scene="fill"></div>
+                    <div class="hint-captions">
+                        <p class="hint-caption">青は赤マスを1個覆う → 数字は「1」</p>
+                        <p class="hint-caption">緑は赤マスを2個覆う → 数字は「2」</p>
+                        <p class="hint-caption">すべて埋まったらクリア！</p>
+                    </div>
+                    <h3>ピースで盤面を埋めよう</h3>
+                    <p>下の置き場からピースを選んで盤面に置き、斜線以外のマスをすべて埋めればクリアです。</p>
+                </section>
+
+                <section class="hint-slide">
+                    <div class="demo" data-scene="rule"></div>
+                    <div class="hint-captions">
+                        <p class="hint-caption is-ng">赤マス1個なのに「2」を覆う → 置けない</p>
+                        <p class="hint-caption is-ok">赤マス1個、数字もすべて「1」→ 置ける</p>
+                    </div>
+                    <h3>数字 ＝ ピースが覆う赤マスの数</h3>
+                    <p>ピースが覆う数字が、すべて「そのピースが覆う赤マスの数」と同じときだけ置けます。</p>
+                </section>
+
+                <section class="hint-slide">
+                    <div class="demo" data-scene="move"></div>
+                    <div class="hint-captions">
+                        <p class="hint-caption">ドラッグで置く（タップで選んで盤面をタップでもOK）</p>
+                        <p class="hint-caption">置いたピースはタップで外せる（スワイプで動かせる）</p>
+                    </div>
+                    <ul class="hint-tips">
+                        <li><span class="tip-icon tip-striped"></span>斜線のマスには置けません</li>
+                        <li><span class="tip-icon tip-piece"></span>ピースは9個。使うのはそのうち6個です</li>
+                        <li><span class="tip-icon tip-timer"></span>チャレンジは60秒から。1問解くごとに+20秒</li>
+                    </ul>
+                </section>
+
+                <div class="hint-dots" id="hintDots"></div>
+                <div class="hint-actions">
+                    <button id="hintPrev" class="secondary-button">戻る</button>
+                    <button id="hintNext" class="primary-button">次へ</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- モジュール分割したJSファイル -->
@@ -130,6 +178,7 @@
     <script src="js/ui.js"></script>
     <script src="js/interaction.js"></script>
     <script src="js/challenge.js"></script>
+    <script src="js/hint.js"></script>
     <script src="js/main.js"></script>
 </body>
 </html>

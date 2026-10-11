@@ -555,6 +555,432 @@ button:focus-visible {
     background-color: #e7ebf1;
 }
 
+/* 遊び方 */
+.hint-content {
+    position: relative;
+    max-width: 400px;
+    max-height: calc(100vh - 32px);
+    overflow-y: auto;
+}
+
+.hint-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background-color: var(--surface-sub);
+    color: var(--text-sub);
+    font-size: 1.3rem;
+    line-height: 1;
+}
+
+.hint-close:hover {
+    color: var(--text);
+}
+
+.hint-slide {
+    display: none;
+}
+
+.hint-slide.active {
+    display: block;
+    animation: hintFade 0.25s ease-out;
+}
+
+@keyframes hintFade {
+    from {
+        opacity: 0;
+        transform: translateX(12px);
+    }
+}
+
+.hint-slide h3 {
+    margin: 12px 0 4px;
+    font-size: 1.05rem;
+}
+
+.hint-slide p {
+    font-size: 0.88rem;
+    color: var(--text-sub);
+}
+
+/* アニメーションに合わせて切り替わる説明文（同じ場所に重ねる） */
+.hint-captions {
+    position: relative;
+    height: 2.8em;
+    margin-top: 8px;
+}
+
+.hint-slide .hint-caption {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text);
+    opacity: 0;
+}
+
+.hint-slide .hint-caption.is-ng {
+    color: var(--mine);
+}
+
+.hint-slide .hint-caption.is-ok {
+    color: var(--success);
+}
+
+.hint-tips {
+    list-style: none;
+    margin-top: 10px;
+    text-align: left;
+    font-size: 0.85rem;
+}
+
+.hint-tips li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 0;
+}
+
+.hint-tips li + li {
+    border-top: 1px solid rgba(31, 42, 55, 0.08);
+}
+
+.tip-icon {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+}
+
+.tip-striped {
+    background-color: var(--board-bg);
+    background-image: repeating-linear-gradient(45deg, rgba(31, 42, 55, 0.18) 0, rgba(31, 42, 55, 0.18) 3px, transparent 3px, transparent 6px);
+}
+
+.tip-piece {
+    background:
+        linear-gradient(#3498db, #3498db) 0 0 / 100% 50% no-repeat,
+        linear-gradient(#3498db, #3498db) 0 100% / 50% 50% no-repeat;
+}
+
+.tip-timer {
+    border-radius: 50%;
+    border: 2px solid var(--accent-dark);
+    background:
+        linear-gradient(var(--accent-dark), var(--accent-dark)) 50% 25% / 2px 6px no-repeat,
+        linear-gradient(var(--accent-dark), var(--accent-dark)) 65% 50% / 5px 2px no-repeat;
+}
+
+.hint-dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin: 16px 0 12px;
+}
+
+.hint-dot {
+    width: 8px;
+    height: 8px;
+    padding: 0;
+    border-radius: 999px;
+    background-color: #cfd6e0;
+}
+
+.hint-dot.active {
+    width: 22px;
+    background-color: var(--accent);
+}
+
+.hint-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.hint-actions button {
+    flex: 1;
+}
+
+/* 説明用の小さな盤面：マス40px・隙間4px・余白8px（ピースの位置もこの値から計算する） */
+.demo {
+    --c: 40px;
+    --g: 4px;
+    --p: 8px;
+    --board-gap: var(--g); /* ピースのつなぎ目（getJoinShadow）で使う */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 26px;
+    padding: 18px 0;
+    border-radius: var(--radius-md);
+    background-color: var(--surface-sub);
+}
+
+.demo-board {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(3, var(--c));
+    gap: var(--g);
+    padding: var(--p);
+    border-radius: 10px;
+    background-color: var(--board-bg);
+}
+
+.demo-cell {
+    width: var(--c);
+    height: var(--c);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
+    background-color: var(--cell-bg);
+    box-shadow: inset 0 -2px 0 rgba(31, 42, 55, 0.08);
+    font-weight: 700;
+}
+
+.demo-cell.mine {
+    background-color: var(--mine);
+}
+
+.demo-piece {
+    position: absolute;
+    left: calc(var(--p) + var(--col) * (var(--c) + var(--g)));
+    top: calc(var(--p) + var(--r) * (var(--c) + var(--g)));
+    display: grid;
+    grid-template-columns: repeat(var(--cols), var(--c));
+    grid-auto-rows: var(--c);
+    gap: var(--g);
+    transform-origin: 0 0;
+    opacity: 0;
+    filter: drop-shadow(0 2px 0 rgba(31, 42, 55, 0.2));
+}
+
+/* ピースが覆う数字は白で、覆う赤マスは赤い印で表示する */
+.demo-piece-cell {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--piece-color);
+    color: white;
+    font-weight: 700;
+}
+
+.demo-piece-cell.empty {
+    background-color: transparent;
+}
+
+.demo-piece-cell.on-mine::after {
+    content: "";
+    position: absolute;
+    inset: 10px;
+    border-radius: 4px;
+    background-color: var(--mine);
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.85);
+}
+
+.demo-badge {
+    position: absolute;
+    top: -12px;
+    right: -12px;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    color: white;
+    font-weight: 800;
+    box-shadow: 0 2px 6px rgba(31, 42, 55, 0.25);
+    opacity: 0;
+    z-index: 2;
+}
+
+.demo-badge-ok {
+    background-color: var(--success);
+}
+
+.demo-badge-ng {
+    background-color: var(--mine);
+}
+
+.demo-tray {
+    width: 80px;
+    height: 80px;
+    border-radius: 10px;
+    border: 2px dashed rgba(31, 42, 55, 0.15);
+    background-color: var(--surface);
+}
+
+/* 指の位置：盤面に置いたピースの中心（50px, 50px）を基準に動かす */
+.demo-pointer {
+    position: absolute;
+    left: 50px;
+    top: 50px;
+    width: 28px;
+    height: 28px;
+    margin: -14px 0 0 -14px;
+    border-radius: 50%;
+    border: 2px solid var(--text);
+    background-color: rgba(255, 255, 255, 0.6);
+    box-shadow: 0 2px 6px rgba(31, 42, 55, 0.3);
+    opacity: 0;
+    z-index: 3;
+}
+
+/* 1枚目：ピースが順に入って盤面が埋まる */
+.hint-slide.active [data-scene="fill"] .demo-piece-a { animation: fillA 8s infinite; }
+.hint-slide.active [data-scene="fill"] .demo-piece-b { animation: fillB 8s infinite; }
+.hint-slide.active [data-scene="fill"] .demo-badge-ok { animation: fillOk 8s infinite; }
+.hint-slide.active:has([data-scene="fill"]) .hint-caption:nth-child(1) { animation: fillCap1 8s infinite; }
+.hint-slide.active:has([data-scene="fill"]) .hint-caption:nth-child(2) { animation: fillCap2 8s infinite; }
+.hint-slide.active:has([data-scene="fill"]) .hint-caption:nth-child(3) { animation: fillCap3 8s infinite; }
+
+@keyframes fillA {
+    0%, 8% { opacity: 0; transform: translateY(24px); }
+    18%, 92% { opacity: 1; transform: none; }
+    100% { opacity: 0; }
+}
+
+@keyframes fillB {
+    0%, 42% { opacity: 0; transform: translateY(24px); }
+    52%, 92% { opacity: 1; transform: none; }
+    100% { opacity: 0; }
+}
+
+@keyframes fillOk {
+    0%, 72% { opacity: 0; transform: scale(0.4); }
+    78%, 92% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; }
+}
+
+@keyframes fillCap1 {
+    0%, 16% { opacity: 0; }
+    20%, 40% { opacity: 1; }
+    44%, 100% { opacity: 0; }
+}
+
+@keyframes fillCap2 {
+    0%, 50% { opacity: 0; }
+    54%, 70% { opacity: 1; }
+    74%, 100% { opacity: 0; }
+}
+
+@keyframes fillCap3 {
+    0%, 74% { opacity: 0; }
+    78%, 94% { opacity: 1; }
+    98%, 100% { opacity: 0; }
+}
+
+/* 2枚目：合わないピースは震えて戻り、合うピースは置ける */
+.hint-slide.active [data-scene="rule"] .demo-piece-w { animation: ruleW 8s infinite; }
+.hint-slide.active [data-scene="rule"] .demo-badge-ng { animation: ruleNg 8s infinite; }
+.hint-slide.active [data-scene="rule"] .demo-piece-a { animation: ruleA 8s infinite; }
+.hint-slide.active [data-scene="rule"] .demo-badge-ok { animation: ruleOk 8s infinite; }
+.hint-slide.active:has([data-scene="rule"]) .hint-caption:nth-child(1) { animation: ruleCapNg 8s infinite; }
+.hint-slide.active:has([data-scene="rule"]) .hint-caption:nth-child(2) { animation: ruleCapOk 8s infinite; }
+
+@keyframes ruleW {
+    0%, 6% { opacity: 0; transform: translateY(24px); }
+    14% { opacity: 1; transform: none; }
+    18% { transform: translateX(-5px); }
+    22% { transform: translateX(5px); }
+    26% { transform: translateX(-5px); }
+    30%, 40% { opacity: 1; transform: none; }
+    46%, 100% { opacity: 0; transform: translateY(24px); }
+}
+
+@keyframes ruleNg {
+    0%, 16% { opacity: 0; transform: scale(0.4); }
+    20%, 40% { opacity: 1; transform: scale(1); }
+    44%, 100% { opacity: 0; }
+}
+
+@keyframes ruleA {
+    0%, 50% { opacity: 0; transform: translateY(24px); }
+    60%, 92% { opacity: 1; transform: none; }
+    100% { opacity: 0; }
+}
+
+@keyframes ruleOk {
+    0%, 60% { opacity: 0; transform: scale(0.4); }
+    66%, 92% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; }
+}
+
+@keyframes ruleCapNg {
+    0%, 14% { opacity: 0; }
+    18%, 42% { opacity: 1; }
+    46%, 100% { opacity: 0; }
+}
+
+@keyframes ruleCapOk {
+    0%, 60% { opacity: 0; }
+    64%, 94% { opacity: 1; }
+    98%, 100% { opacity: 0; }
+}
+
+/* 3枚目：置き場からドラッグして置き、タップで外す
+   置き場のピースの中心（210px, 50px）が、盤面に置いたピースの中心（50px, 50px）から160px右になるように動かす */
+.hint-slide.active [data-scene="move"] .demo-piece-a { animation: moveA 8s infinite; }
+.hint-slide.active [data-scene="move"] .demo-pointer { animation: movePointer 8s infinite; }
+.hint-slide.active:has([data-scene="move"]) .hint-caption:nth-child(1) { animation: moveCap1 8s infinite; }
+.hint-slide.active:has([data-scene="move"]) .hint-caption:nth-child(2) { animation: moveCap2 8s infinite; }
+
+@keyframes moveA {
+    0%, 12% { opacity: 1; transform: translate(177px, 17px) scale(0.6); }
+    38%, 66% { opacity: 1; transform: none; }
+    80%, 100% { opacity: 1; transform: translate(177px, 17px) scale(0.6); }
+}
+
+@keyframes movePointer {
+    0% { opacity: 0; transform: translate(160px, 0) scale(1.3); }
+    6% { opacity: 1; transform: translate(160px, 0) scale(1); }
+    10%, 12% { transform: translate(160px, 0) scale(0.8); }
+    38% { transform: translate(0, 0) scale(0.8); }
+    42% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(40px, 30px) scale(1); }
+    58% { transform: translate(0, 0) scale(1); }
+    62% { transform: translate(0, 0) scale(0.8); }
+    66% { opacity: 1; transform: translate(0, 0) scale(1); }
+    74%, 100% { opacity: 0; transform: translate(0, 0) scale(1); }
+}
+
+@keyframes moveCap1 {
+    0%, 2% { opacity: 0; }
+    6%, 49% { opacity: 1; }
+    52%, 100% { opacity: 0; }
+}
+
+@keyframes moveCap2 {
+    0%, 50% { opacity: 0; }
+    53%, 90% { opacity: 1; }
+    94%, 100% { opacity: 0; }
+}
+
+/* 動きを減らす設定の環境では、アニメーションせず置いた状態を表示する */
+@media (prefers-reduced-motion: reduce) {
+    .hint-slide.active .demo-piece,
+    .hint-slide.active .demo-badge,
+    .hint-slide.active .hint-caption {
+        animation: none !important;
+        opacity: 1;
+    }
+
+    .hint-slide.active [data-scene="rule"] .demo-piece-w,
+    .hint-slide.active [data-scene="rule"] .demo-badge-ng,
+    .hint-slide.active:has([data-scene="rule"]) .hint-caption.is-ng,
+    .hint-slide.active:has([data-scene="fill"]) .hint-caption:not(:last-child),
+    .hint-slide.active:has([data-scene="move"]) .hint-caption:last-child {
+        opacity: 0;
+    }
+}
+
 /* レスポンシブデザイン */
 @media (max-width: 480px) {
     .container {

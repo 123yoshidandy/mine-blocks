@@ -12,11 +12,8 @@ function setupEventListeners() {
         generateGame(getNextSeed(gameState.seed));
     });
     
-    // ヒントボタン
-    elements.hintButton.addEventListener('click', () => {
-        // ヒントを表示
-        alert('ヒント: 数字はその位置に置かれるブロックに含まれるマインの数を表しています。各数字と一致するようにブロックを配置しましょう！');
-    });
+    // ヒントボタン（遊び方をアニメーションで説明する）
+    setupHint();
     
     // 共有ボタン（今の問題番号から同じ順番で遊べるURLを共有）
     elements.shareButton.addEventListener('click', shareGame);

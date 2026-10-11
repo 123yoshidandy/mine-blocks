@@ -49,6 +49,11 @@ const elements = {
     challengeStartSeed: document.getElementById('challengeStartSeed'),
     challengeRetryButton: document.getElementById('challengeRetry'),
     challengeExitButton: document.getElementById('challengeExit'),
+    hintModal: document.getElementById('hintModal'),
+    hintClose: document.getElementById('hintClose'),
+    hintPrev: document.getElementById('hintPrev'),
+    hintNext: document.getElementById('hintNext'),
+    hintDots: document.getElementById('hintDots'),
     clearModal: document.getElementById('clearModal'),
     nextGameButton: document.getElementById('nextGame')
 };
