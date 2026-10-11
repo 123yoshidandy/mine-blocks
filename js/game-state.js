@@ -10,7 +10,9 @@ const gameState = {
     board: [],
     blocks: [],
     selectedBlockIndex: -1,
-    boardSize: 7, // ボードサイズ
+    boardSize: 7, // パズル生成に使う範囲のサイズ
+    boardRows: 7, // 遊ぶ盤面の行数（想定解が収まる最小の長方形に切り落とした後）
+    boardCols: 7, // 遊ぶ盤面の列数
     notPlaceableCells: [], // 配置不可能なセル
     solution: null, // 想定解
     seed: null, // パズル生成に使ったシード

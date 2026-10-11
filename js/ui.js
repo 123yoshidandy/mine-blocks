@@ -80,8 +80,8 @@ function showBlockPreview(startRow, startCol, block) {
                 const boardCol = startCol + col;
                 
                 // ボード内かつ空いているセルのみ処理
-                if (boardRow >= 0 && boardRow < gameState.boardSize && 
-                    boardCol >= 0 && boardCol < gameState.boardSize) {
+                if (boardRow >= 0 && boardRow < gameState.boardRows &&
+                    boardCol >= 0 && boardCol < gameState.boardCols) {
                     
                     const cellElement = document.querySelector(`.cell[data-row="${boardRow}"][data-col="${boardCol}"]`);
                     if (cellElement) {

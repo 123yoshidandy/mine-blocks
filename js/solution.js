@@ -89,14 +89,33 @@ function generateSolutionAndNotPlaceableCells() {
         }
     }
     
-    // 生成されたソリューションを保存
-    gameState.solution = placedBlocks;
-    
-    // 配置不可能なセルを設定
-    // ソリューションで使用されていないセルを配置不可能にする
+    // ピースが1つもない外側の行・列を切り落とし、盤面を想定解が収まる最小の長方形にする
+    let minRow = size, maxRow = -1, minCol = size, maxCol = -1;
     for (let row = 0; row < size; row++) {
         for (let col = 0; col < size; col++) {
-            if (solutionBoard[row][col] === null) {
+            if (solutionBoard[row][col] !== null) {
+                minRow = Math.min(minRow, row);
+                maxRow = Math.max(maxRow, row);
+                minCol = Math.min(minCol, col);
+                maxCol = Math.max(maxCol, col);
+            }
+        }
+    }
+    gameState.boardRows = maxRow - minRow + 1;
+    gameState.boardCols = maxCol - minCol + 1;
+
+    // 生成されたソリューションを、切り落とした盤面の座標に合わせて保存
+    gameState.solution = placedBlocks.map(placed => ({
+        ...placed,
+        row: placed.row - minRow,
+        col: placed.col - minCol
+    }));
+
+    // 配置不可能なセルを設定
+    // ソリューションで使用されていないセルを配置不可能にする
+    for (let row = 0; row < gameState.boardRows; row++) {
+        for (let col = 0; col < gameState.boardCols; col++) {
+            if (solutionBoard[row + minRow][col + minCol] === null) {
                 gameState.notPlaceableCells.push({ row, col });
             }
         }

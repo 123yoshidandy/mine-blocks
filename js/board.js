@@ -5,14 +5,15 @@
 
 // ゲームボードを生成
 function generateBoard() {
-    const size = gameState.boardSize;
-    gameState.board = Array(size).fill().map(() => Array(size).fill(null));
-    
+    const rows = gameState.boardRows;
+    const cols = gameState.boardCols;
+    gameState.board = Array(rows).fill().map(() => Array(cols).fill(null));
+
     // ボードのDOM構造を作成
-    elements.gameBoard.style.gridTemplateColumns = `repeat(${size}, max-content)`;
-    
-    for (let row = 0; row < size; row++) {
-        for (let col = 0; col < size; col++) {
+    elements.gameBoard.style.gridTemplateColumns = `repeat(${cols}, max-content)`;
+
+    for (let row = 0; row < rows; row++) {
+        for (let col = 0; col < cols; col++) {
             const cell = document.createElement('div');
             cell.className = 'cell';
             cell.dataset.row = row;
@@ -72,11 +73,9 @@ function getBlockOrigin(row, col, block) {
 
 // ブロックを配置できるかチェック
 function canPlaceBlock(startRow, startCol, block) {
-    const boardSize = gameState.boardSize;
-
     // ボードの範囲外にはみ出ないかチェック
     if (startRow < 0 || startCol < 0 ||
-        startRow + block.rows > boardSize || startCol + block.cols > boardSize) {
+        startRow + block.rows > gameState.boardRows || startCol + block.cols > gameState.boardCols) {
         return false;
     }
 
@@ -183,14 +182,15 @@ function getJoinShadow(grid, row, col) {
 
 // ボードが完成したかチェック
 function checkBoardCompletion() {
-    const boardSize = gameState.boardSize;
-    
+    const rows = gameState.boardRows;
+    const cols = gameState.boardCols;
+
     // フィールドがすべて埋まっているかチェック
     let allCellsFilled = true;
-    
+
     // 配置可能な全てのセルが埋まっているかチェック
-    for (let row = 0; row < boardSize; row++) {
-        for (let col = 0; col < boardSize; col++) {
+    for (let row = 0; row < rows; row++) {
+        for (let col = 0; col < cols; col++) {
             // 配置不可能なセルはスキップ
             if (isNotPlaceableCell(row, col)) {
                 continue;
@@ -211,8 +211,8 @@ function checkBoardCompletion() {
     // 各セルのマイン数をチェック
     let isValid = true;
     
-    for (let row = 0; row < boardSize; row++) {
-        for (let col = 0; col < boardSize; col++) {
+    for (let row = 0; row < rows; row++) {
+        for (let col = 0; col < cols; col++) {
             const cell = document.querySelector(`.cell[data-row="${row}"][data-col="${col}"]`);
             const expectedMineCount = cell.textContent ? parseInt(cell.textContent) : 0;
             
@@ -269,11 +269,9 @@ function checkBoardCompletion() {
 
 // ボードを描画
 function renderBoard() {
-    const size = gameState.boardSize;
-    
     // すべてのマスに数字またはマインを表示するように修正
-    for (let row = 0; row < size; row++) {
-        for (let col = 0; col < size; col++) {
+    for (let row = 0; row < gameState.boardRows; row++) {
+        for (let col = 0; col < gameState.boardCols; col++) {
             // 配置不可能なセルには数字を表示しない
             if (isNotPlaceableCell(row, col)) {
                 continue;
