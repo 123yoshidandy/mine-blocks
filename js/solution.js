@@ -57,10 +57,18 @@ function generateSolutionAndNotPlaceableCells() {
             // 既に配置されたブロックの周囲のセルをチェック
             const adjacentPositions = findAdjacentPositions(solutionBoard, block);
             
-            // ランダム順にアクセス可能な隣接位置を試す
+            // 既存のブロックと接する辺が多い位置から順に試す（接触数が同じ位置はランダム順）
+            // ピース同士が密に接するほど、置ける範囲の外形から各ピースの形を読み取りにくくなる
+            // sortは安定ソートなので、同じシードならどのブラウザでも同じ順になる
             const shuffledPositions = shuffle(adjacentPositions);
-            
-            for (const position of shuffledPositions) {
+            const sortedPositions = shuffledPositions
+                .map(position => ({
+                    ...position,
+                    contacts: countContacts(position.row, position.col, block, solutionBoard)
+                }))
+                .sort((a, b) => b.contacts - a.contacts);
+
+            for (const position of sortedPositions) {
                 const startRow = position.row;
                 const startCol = position.col;
                 
@@ -239,4 +247,34 @@ function placeBlockOnSolution(startRow, startCol, blockIndex, block, solutionBoa
             }
         }
     }
+}
+// ブロックをこの位置に置いたとき、既存のブロックと接する辺の数を返す
+function countContacts(startRow, startCol, block, solutionBoard) {
+    const boardSize = solutionBoard.length;
+    const directions = [
+        { dr: -1, dc: 0 }, // 上
+        { dr: 1, dc: 0 },  // 下
+        { dr: 0, dc: -1 }, // 左
+        { dr: 0, dc: 1 }   // 右
+    ];
+    let contacts = 0;
+    
+    for (let row = 0; row < block.rows; row++) {
+        for (let col = 0; col < block.cols; col++) {
+            if (block.grid[row][col] !== 1) continue;
+            
+            for (const { dr, dc } of directions) {
+                const adjacentRow = startRow + row + dr;
+                const adjacentCol = startCol + col + dc;
+                
+                if (adjacentRow >= 0 && adjacentRow < boardSize &&
+                    adjacentCol >= 0 && adjacentCol < boardSize &&
+                    solutionBoard[adjacentRow][adjacentCol] !== null) {
+                    contacts++;
+                }
+            }
+        }
+    }
+    
+    return contacts;
 }
