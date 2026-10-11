@@ -277,6 +277,12 @@ function checkBoardCompletion() {
     }
     
     if (isValid) {
+        // チャレンジモードではクリア画面を出さず、持ち時間を加算して次の問題へ進む
+        if (challengeState.active) {
+            onChallengePuzzleSolved();
+            return;
+        }
+
         // タイマーを停止
         stopTimer();
         
@@ -326,9 +332,8 @@ function renderCellClue(row, col) {
     const mineInfo = getMineInfoFromSolution(row, col);
 
     if (mineInfo.hasMine) {
-        // マインがある場合は、数字ではなく色で表現
+        // マインがある場合は、数字ではなく色で表現（赤色はCSSの .solution-mine で指定）
         cell.classList.add('solution-mine');
-        cell.style.backgroundColor = '#e74c3c'; // 赤色でマインを表示
         cell.textContent = '';  // 数字は表示しない
     } else if (mineInfo.mineCount > 0) {
         // マインがない場合は数字を表示

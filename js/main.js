@@ -10,6 +10,11 @@ function generateGame(seed) {
 
     // シードを設定（同じシードなら同じパズルになる）
     gameState.seed = seed;
+
+    // エンドレスの問題番号を覚えておき、チャレンジやタイトルから戻ったときに再開する
+    if (!challengeState.active) {
+        gameState.endlessSeed = seed;
+    }
     setSeed(seed);
     updateSeedDisplay();
 
@@ -42,10 +47,12 @@ function initGame() {
     gameState.clearedCount = 0;
     updateStats();
 
-    // URLにシードが指定されていればそのパズル、なければ今日の日付のパズルを生成
+    // URLにシードが指定されていればそのパズル、なければ今日の日付のパズルから始める
     const urlSeed = parseSeed(new URLSearchParams(location.search).get('seed'));
     // 以降は「新しいゲーム」「次のゲーム」でこのシードから決まった順に問題が続く
-    generateGame(urlSeed ?? getDailySeed());
+    // チャレンジモードもこの問題番号から始める
+    gameState.initialSeed = urlSeed ?? getDailySeed();
+    generateGame(gameState.initialSeed);
     setupEventListeners();
 }
 

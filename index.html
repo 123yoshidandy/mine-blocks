@@ -8,44 +8,80 @@
 </head>
 <body>
     <div class="container">
-        <header>
-            <h1>MINE BLOCKS</h1>
+        <header class="app-header">
+            <h1 class="logo">
+                <svg class="logo-mark" viewBox="0 0 20 20" aria-hidden="true">
+                    <rect x="1" y="1" width="8.5" height="8.5" rx="1.5" fill="#3498db"/>
+                    <rect x="10.5" y="1" width="8.5" height="8.5" rx="1.5" fill="#e74c3c"/>
+                    <rect x="1" y="10.5" width="8.5" height="8.5" rx="1.5" fill="#27ae60"/>
+                    <rect x="10.5" y="10.5" width="8.5" height="8.5" rx="1.5" fill="#f39c12"/>
+                </svg>
+                MINE BLOCKS
+            </h1>
+            <div class="buttons">
+                <button id="newGame" class="icon-button" title="新しいゲーム" aria-label="新しいゲーム">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M20 12a8 8 0 1 1-2.34-5.66"/>
+                        <polyline points="18 2.5 18 6.5 14 6.5"/>
+                    </svg>
+                </button>
+                <button id="hint" class="icon-button" title="ヒント" aria-label="ヒント">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <circle cx="12" cy="12" r="9"/>
+                        <path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.6"/>
+                        <circle class="icon-dot" cx="12" cy="17" r="0.6"/>
+                    </svg>
+                </button>
+                <button id="share" class="icon-button" title="共有" aria-label="共有">
+                    <svg class="icon-default" viewBox="0 0 24 24" aria-hidden="true">
+                        <circle cx="18" cy="5" r="2.5"/>
+                        <circle cx="6" cy="12" r="2.5"/>
+                        <circle cx="18" cy="19" r="2.5"/>
+                        <line x1="8.2" y1="10.8" x2="15.8" y2="6.2"/>
+                        <line x1="8.2" y1="13.2" x2="15.8" y2="17.8"/>
+                    </svg>
+                    <svg class="icon-done" viewBox="0 0 24 24" aria-hidden="true">
+                        <polyline points="5 12.5 10 17.5 19 7"/>
+                    </svg>
+                </button>
+            </div>
         </header>
 
-        <div class="game-container">
-            <div class="top-controls">
-                <div class="stats">
-                    <div class="score">スコア: <span id="score">0</span></div>
-                    <div class="timer">経過時間: <span id="timerDisplay">0</span>秒</div>
-                    <div class="clear-count">クリア回数: <span id="clearCount">0</span></div>
-                    <div class="seed">問題番号: <span id="seedDisplay">-</span></div>
+        <main class="game-container">
+            <div class="stats">
+                <div class="stat">
+                    <span class="stat-label">スコア</span>
+                    <span class="stat-value" id="score">0</span>
                 </div>
-                <div class="buttons">
-                    <button id="newGame" class="icon-button" title="新しいゲーム" aria-label="新しいゲーム">
-                        <svg viewBox="0 0 24 24" aria-hidden="true">
-                            <path d="M20 12a8 8 0 1 1-2.34-5.66"/>
-                            <polyline points="18 2.5 18 6.5 14 6.5"/>
-                        </svg>
-                    </button>
-                    <button id="hint" class="icon-button" title="ヒント" aria-label="ヒント">
-                        <svg viewBox="0 0 24 24" aria-hidden="true">
-                            <circle cx="12" cy="12" r="9"/>
-                            <path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.6"/>
-                            <circle class="icon-dot" cx="12" cy="17" r="0.6"/>
-                        </svg>
-                    </button>
-                    <button id="share" class="icon-button" title="共有" aria-label="共有">
-                        <svg class="icon-default" viewBox="0 0 24 24" aria-hidden="true">
-                            <circle cx="18" cy="5" r="2.5"/>
-                            <circle cx="6" cy="12" r="2.5"/>
-                            <circle cx="18" cy="19" r="2.5"/>
-                            <line x1="8.2" y1="10.8" x2="15.8" y2="6.2"/>
-                            <line x1="8.2" y1="13.2" x2="15.8" y2="17.8"/>
-                        </svg>
-                        <svg class="icon-done" viewBox="0 0 24 24" aria-hidden="true">
-                            <polyline points="5 12.5 10 17.5 19 7"/>
-                        </svg>
-                    </button>
+                <div class="stat">
+                    <span class="stat-label">経過時間</span>
+                    <span class="stat-value"><span id="timerDisplay">0</span><small>秒</small></span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">クリア回数</span>
+                    <span class="stat-value" id="clearCount">0</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">問題番号</span>
+                    <span class="stat-value" id="seedDisplay">-</span>
+                </div>
+            </div>
+
+            <div class="mode-switch" role="group" aria-label="モード">
+                <button id="endlessMode" class="mode-button active">エンドレス</button>
+                <button id="challengeMode" class="mode-button">チャレンジ</button>
+            </div>
+
+            <!-- チャレンジモード中だけ表示 -->
+            <div class="challenge-bar" id="challengeBar" hidden>
+                <div class="challenge-time">
+                    <span class="challenge-label">残り</span>
+                    <span class="challenge-value"><span id="challengeTime">0</span><small>秒</small></span>
+                    <span class="challenge-bonus" id="challengeBonus" aria-live="polite"></span>
+                </div>
+                <div class="challenge-solved">
+                    <span class="challenge-label">解いた数</span>
+                    <span class="challenge-value"><span id="challengeSolved">0</span><small>問</small></span>
                 </div>
             </div>
 
@@ -56,19 +92,35 @@
             <div class="blocks-container" id="blocksContainer">
                 <!-- ブロックはJavaScriptで動的に生成されます -->
             </div>
-        </div>
+        </main>
 
         <div class="modal" id="clearModal">
             <div class="modal-content">
                 <h2>クリア！</h2>
-                <p>クリア時間: <span id="clearTime">0</span>秒</p>
-                <p>獲得スコア: <span id="earnedScore">0</span>点</p>
-                <p>合計スコア: <span id="currentScore">0</span>点</p>
-                <button id="nextGame">次のゲーム</button>
+                <dl class="result-list">
+                    <div><dt>クリア時間</dt><dd><span id="clearTime">0</span>秒</dd></div>
+                    <div><dt>獲得スコア</dt><dd><span id="earnedScore">0</span>点</dd></div>
+                    <div><dt>合計スコア</dt><dd><span id="currentScore">0</span>点</dd></div>
+                </dl>
+                <div class="modal-actions">
+                    <button id="nextGame" class="primary-button">次のゲーム</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal" id="challengeModal">
+            <div class="modal-content">
+                <h2>タイムアップ！</h2>
+                <p class="result-highlight"><span id="challengeResult">0</span><small>問</small></p>
+                <p class="result-note">問題番号 <span id="challengeStartSeed">-</span> から挑戦</p>
+                <div class="modal-actions">
+                    <button id="challengeRetry" class="primary-button">もう一度挑戦</button>
+                    <button id="challengeExit" class="secondary-button">エンドレスに戻る</button>
+                </div>
             </div>
         </div>
     </div>
-    
+
     <!-- モジュール分割したJSファイル -->
     <script src="js/random.js"></script>
     <script src="js/game-state.js"></script>
@@ -77,6 +129,7 @@
     <script src="js/solution.js"></script>
     <script src="js/ui.js"></script>
     <script src="js/interaction.js"></script>
+    <script src="js/challenge.js"></script>
     <script src="js/main.js"></script>
 </body>
 </html>

@@ -16,6 +16,8 @@ const gameState = {
     notPlaceableCells: [], // 配置不可能なセル
     solution: null, // 想定解
     seed: null, // パズル生成に使ったシード
+    initialSeed: null, // ページを開いたときの問題番号（チャレンジモードの開始番号）
+    endlessSeed: null, // 最後に遊んだエンドレスの問題番号（エンドレスに戻るときに再開する）
     startTime: null, // ゲーム開始時間
     endTime: null, // ゲーム終了時間
     elapsedTime: 0, // 経過時間（秒）
@@ -36,6 +38,17 @@ const elements = {
     newGameButton: document.getElementById('newGame'),
     hintButton: document.getElementById('hint'),
     shareButton: document.getElementById('share'),
+    endlessModeButton: document.getElementById('endlessMode'),
+    challengeModeButton: document.getElementById('challengeMode'),
+    challengeBar: document.getElementById('challengeBar'),
+    challengeTime: document.getElementById('challengeTime'),
+    challengeSolved: document.getElementById('challengeSolved'),
+    challengeBonus: document.getElementById('challengeBonus'),
+    challengeModal: document.getElementById('challengeModal'),
+    challengeResult: document.getElementById('challengeResult'),
+    challengeStartSeed: document.getElementById('challengeStartSeed'),
+    challengeRetryButton: document.getElementById('challengeRetry'),
+    challengeExitButton: document.getElementById('challengeExit'),
     clearModal: document.getElementById('clearModal'),
     nextGameButton: document.getElementById('nextGame')
 };

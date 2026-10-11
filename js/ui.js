@@ -21,6 +21,18 @@ function setupEventListeners() {
     // 共有ボタン（今の問題番号から同じ順番で遊べるURLを共有）
     elements.shareButton.addEventListener('click', shareGame);
 
+    // モード切り替えボタン
+    elements.endlessModeButton.addEventListener('click', requestExitChallenge);
+    elements.challengeModeButton.addEventListener('click', () => {
+        if (!challengeState.active) {
+            startChallenge();
+        }
+    });
+
+    // チャレンジ結果画面のボタン
+    elements.challengeRetryButton.addEventListener('click', startChallenge);
+    elements.challengeExitButton.addEventListener('click', exitChallenge);
+
     // 次のゲームボタン（次のシードの問題に進む）
     elements.nextGameButton.addEventListener('click', () => {
         elements.clearModal.classList.remove('active');
@@ -31,8 +43,10 @@ function setupEventListeners() {
 // 今の問題番号のURLを共有する
 // スマホでは共有シート、パソコンではクリップボードへのコピー、どちらも使えなければダイアログで表示
 async function shareGame() {
+    // チャレンジ中は、同じ問題の列で挑戦できるよう開始した問題番号を共有する
+    const seed = challengeState.active ? challengeState.startSeed : gameState.seed;
     const url = new URL(location.href);
-    url.searchParams.set('seed', gameState.seed);
+    url.searchParams.set('seed', seed);
     const shareUrl = url.toString();
     const isTouchDevice = window.matchMedia('(pointer: coarse)').matches;
 
@@ -40,7 +54,9 @@ async function shareGame() {
         try {
             await navigator.share({
                 title: 'MINE BLOCKS',
-                text: `MINE BLOCKS 問題番号 ${gameState.seed} で勝負！`,
+                text: challengeState.active
+                    ? `MINE BLOCKS チャレンジモード 問題番号 ${seed} で勝負！`
+                    : `MINE BLOCKS 問題番号 ${seed} で勝負！`,
                 url: shareUrl
             });
         } catch (e) {
