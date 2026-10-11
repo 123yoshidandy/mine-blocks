@@ -88,6 +88,8 @@ function finishChallenge() {
     challengeState.intervalId = null;
     stopTimer();
 
+    // 降参して想定解を見ている間に時間切れになった場合は、想定解を閉じて結果を出す
+    elements.surrenderModal.classList.remove('active');
     elements.challengeResult.textContent = challengeState.solved;
     elements.challengeModal.classList.add('active');
 }
@@ -112,15 +114,18 @@ function updateChallengeDisplay() {
     elements.remainingStat.classList.toggle('low', remaining <= 10);
 }
 
-// モードに応じて切り替えボタン・経過時間と残り時間・クリア回数・新しいゲームボタンを切り替える
-// チャレンジ中は難しい問題を飛ばせないよう、降参ボタンを無効にする
+// モードに応じてチャレンジボタン・経過時間と残り時間・クリア回数を切り替える
+// チャレンジボタンはチャレンジ中だけ強調し、押すとエンドレスに戻ることを説明文で示す
 function updateModeDisplay() {
     const isChallenge = challengeState.active;
-    elements.endlessModeButton.classList.toggle('active', !isChallenge);
-    elements.challengeModeButton.classList.toggle('active', isChallenge);
+    const button = elements.challengeToggleButton;
+    const label = isChallenge ? 'チャレンジを終了してエンドレスに戻る' : 'チャレンジモード';
+    button.classList.toggle('active', isChallenge);
+    button.setAttribute('aria-pressed', isChallenge);
+    button.title = label;
+    button.setAttribute('aria-label', label);
     elements.elapsedStat.hidden = isChallenge;
     elements.remainingStat.hidden = !isChallenge;
-    elements.surrenderButton.disabled = isChallenge;
     updateStats();
 }
 

@@ -25,6 +25,15 @@
                         <line x1="4" y1="22" x2="4" y2="15"/>
                     </svg>
                 </button>
+                <!-- エンドレス中はチャレンジを開始、チャレンジ中は強調表示され、押すとエンドレスに戻る -->
+                <button id="challengeToggle" class="icon-button" title="チャレンジモード" aria-label="チャレンジモード" aria-pressed="false">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <circle cx="12" cy="13.5" r="7.5"/>
+                        <polyline points="12 10 12 13.5 14.5 15.5"/>
+                        <line x1="9.5" y1="2.5" x2="14.5" y2="2.5"/>
+                        <line x1="12" y1="2.5" x2="12" y2="6"/>
+                    </svg>
+                </button>
                 <button id="hint" class="icon-button" title="ヒント" aria-label="ヒント">
                     <svg viewBox="0 0 24 24" aria-hidden="true">
                         <circle cx="12" cy="12" r="9"/>
@@ -63,11 +72,6 @@
                     <span class="stat-label">クリア回数</span>
                     <span class="stat-value" id="clearCount">0</span>
                 </div>
-            </div>
-
-            <div class="mode-switch" role="group" aria-label="モード">
-                <button id="endlessMode" class="mode-button active">エンドレス</button>
-                <button id="challengeMode" class="mode-button">チャレンジ</button>
             </div>
 
             <div class="game-board" id="gameBoard">
@@ -152,7 +156,7 @@
                     <ul class="hint-tips">
                         <li><span class="tip-icon tip-striped"></span>斜線のマスには置けません</li>
                         <li><span class="tip-icon tip-piece"></span>ピースは9個。使うのはそのうち6個です</li>
-                        <li><span class="tip-icon tip-timer"></span>チャレンジは60秒から。1問解くごとに+20秒</li>
+                        <li><span class="tip-icon tip-timer"></span>ストップウォッチのボタンでチャレンジ。60秒から始まり、1問解くごとに+20秒</li>
                     </ul>
                 </section>
 

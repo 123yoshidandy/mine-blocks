@@ -101,6 +101,14 @@ button:focus-visible {
     box-shadow: 0 2px 6px rgba(31, 42, 55, 0.1), inset 0 0 0 1px color-mix(in srgb, var(--accent) 40%, transparent);
 }
 
+/* チャレンジ中のチャレンジボタン */
+.icon-button.active,
+.icon-button.active:hover:not(:disabled) {
+    background-color: var(--accent);
+    color: white;
+    box-shadow: 0 2px 6px color-mix(in srgb, var(--accent) 40%, transparent);
+}
+
 .icon-button:disabled {
     color: #b5bdc8;
     cursor: not-allowed;
@@ -180,36 +188,6 @@ button:focus-visible {
     font-weight: 600;
     margin-left: 2px;
     color: var(--text-sub);
-}
-
-/* モード切り替え：ピル型のセグメント */
-.mode-switch {
-    display: flex;
-    width: fit-content;
-    margin: 0 auto 16px;
-    padding: 4px;
-    border-radius: 999px;
-    background-color: var(--surface-sub);
-    box-shadow: inset 0 0 0 1px rgba(31, 42, 55, 0.06);
-}
-
-.mode-button {
-    padding: 6px 20px;
-    border-radius: 999px;
-    background-color: transparent;
-    color: var(--text-sub);
-    font-size: 0.9rem;
-    font-weight: 600;
-}
-
-.mode-button:hover {
-    color: var(--text);
-}
-
-.mode-button.active {
-    background-color: var(--surface);
-    color: var(--accent-dark);
-    box-shadow: 0 1px 3px rgba(31, 42, 55, 0.15);
 }
 
 /* display: flex が hidden 属性より優先されないようにする（経過時間と残り時間の切り替え） */
@@ -1001,8 +979,10 @@ button:focus-visible {
     }
 
     .logo {
-        font-size: 1.25rem;
+        font-size: 1.1rem;
         gap: 8px;
+        letter-spacing: 0.03em;
+        white-space: nowrap; /* ボタンが4つ並んでもタイトルを1行に収める */
     }
 
     .logo-mark {
@@ -1010,9 +990,13 @@ button:focus-visible {
         height: 22px;
     }
 
+    .buttons {
+        gap: 6px;
+    }
+
     .icon-button {
-        width: 38px;
-        height: 38px;
+        width: 36px;
+        height: 36px;
     }
 
     .game-container {
@@ -1037,10 +1021,6 @@ button:focus-visible {
         font-size: 0.9rem;
     }
 
-    .mode-switch {
-        margin-bottom: 12px;
-    }
-
     .game-board {
         --board-gap: 3px;
         padding: 8px;
@@ -1059,5 +1039,34 @@ button:focus-visible {
         --slot: calc(var(--block-cell) * 3 + 20px);
         gap: 8px;
         padding: 10px;
+    }
+}
+
+/* 幅の狭いスマホ（iPhone SEなど）：タイトルと4つのボタンを1行に収める */
+@media (max-width: 360px) {
+    .logo {
+        font-size: 0.95rem;
+        gap: 6px;
+    }
+
+    .logo-mark {
+        width: 20px;
+        height: 20px;
+    }
+
+    .buttons {
+        gap: 4px;
+    }
+
+    .icon-button {
+        width: 34px;
+        height: 34px;
+    }
+
+    /* 7列の盤面でも画面からはみ出さない大きさにする */
+    .cell {
+        width: 34px;
+        height: 34px;
+        font-size: 0.95rem;
     }
 }

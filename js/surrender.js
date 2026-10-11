@@ -19,6 +19,7 @@ function requestSurrender() {
 }
 
 // タイマーを止め、想定解を結果画面に表示する（クリア回数には数えない）
+// チャレンジ中は持ち時間を止めず、時間の加算もしない（想定解を見ている時間も持ち時間から減る）
 function surrender() {
     stopTimer();
     selectBlock(-1);

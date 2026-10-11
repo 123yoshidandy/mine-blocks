@@ -14,10 +14,11 @@ function setupEventListeners() {
     // 共有ボタン（今の問題番号から同じ順番で遊べるURLを共有）
     elements.shareButton.addEventListener('click', shareGame);
 
-    // モード切り替えボタン
-    elements.endlessModeButton.addEventListener('click', requestExitChallenge);
-    elements.challengeModeButton.addEventListener('click', () => {
-        if (!challengeState.active) {
+    // チャレンジボタン（エンドレス中はチャレンジを開始、チャレンジ中はエンドレスに戻る）
+    elements.challengeToggleButton.addEventListener('click', () => {
+        if (challengeState.active) {
+            requestExitChallenge();
+        } else {
             startChallenge();
         }
     });
