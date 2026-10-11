@@ -39,8 +39,8 @@ function generateSolutionAndNotPlaceableCells() {
         if (!firstBlockPlaced) {
             // ランダムな開始位置を試行 (最大100回)
             for (let attempt = 0; attempt < 100 && !placed; attempt++) {
-                const startRow = Math.floor(random() * (size - block.grid.length + 1));
-                const startCol = Math.floor(random() * (size - block.grid.length + 1));
+                const startRow = Math.floor(random() * (size - block.rows + 1));
+                const startCol = Math.floor(random() * (size - block.cols + 1));
                 
                 // このブロックをこの位置に配置できるかチェック
                 if (canPlaceBlockOnSolution(startRow, startCol, block, solutionBoard)) {
@@ -100,7 +100,6 @@ function generateSolutionAndNotPlaceableCells() {
 // ソリューションボードで既存のブロックに隣接する配置可能な位置を探す
 function findAdjacentPositions(solutionBoard, block) {
     const boardSize = solutionBoard.length;
-    const blockSize = block.grid.length;
     const adjacentPositions = [];
     
     // ボード上で既に配置済みのブロックの隣接セルを収集
@@ -126,12 +125,12 @@ function findAdjacentPositions(solutionBoard, block) {
                         solutionBoard[adjacentRow][adjacentCol] === null) {
                         
                         // ブロックの左上隅の可能な位置を計算（ブロックサイズを考慮）
-                        for (let blockStartRow = Math.max(0, adjacentRow - blockSize + 1); 
-                             blockStartRow <= adjacentRow && blockStartRow + blockSize <= boardSize; 
+                        for (let blockStartRow = Math.max(0, adjacentRow - block.rows + 1);
+                             blockStartRow <= adjacentRow && blockStartRow + block.rows <= boardSize;
                              blockStartRow++) {
-                             
-                            for (let blockStartCol = Math.max(0, adjacentCol - blockSize + 1); 
-                                 blockStartCol <= adjacentCol && blockStartCol + blockSize <= boardSize; 
+
+                            for (let blockStartCol = Math.max(0, adjacentCol - block.cols + 1);
+                                 blockStartCol <= adjacentCol && blockStartCol + block.cols <= boardSize;
                                  blockStartCol++) {
                                 
                                 // ブロックがこの位置に配置可能かチェック
@@ -162,17 +161,16 @@ function findAdjacentPositions(solutionBoard, block) {
 // ブロックが既存のブロックと隣接するかをチェック（埋まったセル同士が隣接するかを確認）
 function wouldBlockBeAdjacentToExisting(startRow, startCol, block, solutionBoard) {
     const boardSize = solutionBoard.length;
-    const blockSize = block.grid.length;
     const directions = [
         { dr: -1, dc: 0 }, // 上
         { dr: 1, dc: 0 },  // 下
         { dr: 0, dc: -1 }, // 左
         { dr: 0, dc: 1 }   // 右
     ];
-    
+
     // ブロックの各セルについて確認
-    for (let row = 0; row < blockSize; row++) {
-        for (let col = 0; col < blockSize; col++) {
+    for (let row = 0; row < block.rows; row++) {
+        for (let col = 0; col < block.cols; col++) {
             // このセルがブロックの一部（埋まっている）場合
             if (block.grid[row][col] === 1) {
                 const boardRow = startRow + row;
@@ -200,16 +198,15 @@ function wouldBlockBeAdjacentToExisting(startRow, startCol, block, solutionBoard
 // ソリューションボード上にブロックを配置できるかチェック
 function canPlaceBlockOnSolution(startRow, startCol, block, solutionBoard) {
     const boardSize = solutionBoard.length;
-    const blockSize = block.grid.length;
-    
+
     // ボードの範囲外にはみ出ないかチェック
-    if (startRow + blockSize > boardSize || startCol + blockSize > boardSize) {
+    if (startRow + block.rows > boardSize || startCol + block.cols > boardSize) {
         return false;
     }
-    
+
     // 既に配置されているブロックと重ならないかチェック
-    for (let row = 0; row < blockSize; row++) {
-        for (let col = 0; col < blockSize; col++) {
+    for (let row = 0; row < block.rows; row++) {
+        for (let col = 0; col < block.cols; col++) {
             if (block.grid[row][col] === 1) {
                 const boardRow = startRow + row;
                 const boardCol = startCol + col;
@@ -226,10 +223,8 @@ function canPlaceBlockOnSolution(startRow, startCol, block, solutionBoard) {
 
 // ソリューションボード上にブロックを配置
 function placeBlockOnSolution(startRow, startCol, blockIndex, block, solutionBoard) {
-    const blockSize = block.grid.length;
-    
-    for (let row = 0; row < blockSize; row++) {
-        for (let col = 0; col < blockSize; col++) {
+    for (let row = 0; row < block.rows; row++) {
+        for (let col = 0; col < block.cols; col++) {
             if (block.grid[row][col] === 1) {
                 const boardRow = startRow + row;
                 const boardCol = startCol + col;

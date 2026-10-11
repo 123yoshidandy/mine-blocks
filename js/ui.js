@@ -27,12 +27,11 @@ function setupEventListeners() {
 
 // ブロックのプレビューを表示
 function showBlockPreview(startRow, startCol, block) {
-    const blockSize = block.grid.length;
     const canPlace = canPlaceBlock(startRow, startCol, block);
-    
+
     // ブロックのプレビューを表示
-    for (let row = 0; row < blockSize; row++) {
-        for (let col = 0; col < blockSize; col++) {
+    for (let row = 0; row < block.rows; row++) {
+        for (let col = 0; col < block.cols; col++) {
             if (block.grid[row][col] === 1) {
                 const boardRow = startRow + row;
                 const boardCol = startCol + col;

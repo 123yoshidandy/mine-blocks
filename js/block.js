@@ -49,12 +49,17 @@ function generateBlocks() {
             }
         }
         
+        // 空の行・列を取り除き、ピースが収まる最小サイズにする（例: 2×2のピースは2×2の枠）
+        block = trimToBoundingBox(block);
+        const rows = block.length;
+        const cols = block[0].length;
+
         // マインをランダムに配置（ブロックのセルの一部）
         const mines = [];
         const filledCells = [];
-        
-        for (let row = 0; row < blockSize; row++) {
-            for (let col = 0; col < blockSize; col++) {
+
+        for (let row = 0; row < rows; row++) {
+            for (let col = 0; col < cols; col++) {
                 if (block[row][col] === 1) {
                     filledCells.push({ row, col });
                 }
@@ -78,9 +83,36 @@ function generateBlocks() {
         gameState.blocks.push({
             grid: block,
             mines: mines,
-            size: blockSize
+            rows: rows,
+            cols: cols,
+            anchor: getCenterCell(filledCells)
         });
     }
+}
+
+// ピースの重心に最も近いマスを返す（ドラッグ・配置時にカーソルの下に来るマス）
+function getCenterCell(filledCells) {
+    const centerRow = filledCells.reduce((sum, cell) => sum + cell.row, 0) / filledCells.length;
+    const centerCol = filledCells.reduce((sum, cell) => sum + cell.col, 0) / filledCells.length;
+    return { row: Math.round(centerRow), col: Math.round(centerCol) };
+}
+
+// セルが埋まっている範囲だけを切り出したグリッドを返す
+function trimToBoundingBox(grid) {
+    let minRow = Infinity, maxRow = -1, minCol = Infinity, maxCol = -1;
+
+    for (let row = 0; row < grid.length; row++) {
+        for (let col = 0; col < grid[row].length; col++) {
+            if (grid[row][col] === 1) {
+                minRow = Math.min(minRow, row);
+                maxRow = Math.max(maxRow, row);
+                minCol = Math.min(minCol, col);
+                maxCol = Math.max(maxCol, col);
+            }
+        }
+    }
+
+    return grid.slice(minRow, maxRow + 1).map(line => line.slice(minCol, maxCol + 1));
 }
 
 // 指定されたセルに隣接する空のセルを取得
@@ -111,14 +143,15 @@ function getAdjacentEmptyCells(block, row, col) {
 
 // ブロックが連結されているかチェック（検証用に残しておく）
 function isConnected(block) {
-    const size = block.length;
-    const visited = Array(size).fill().map(() => Array(size).fill(false));
+    const rows = block.length;
+    const cols = block[0].length;
+    const visited = Array(rows).fill().map(() => Array(cols).fill(false));
     let count = 0;
-    
+
     // 最初のセルを見つける
     let startRow = -1, startCol = -1;
-    for (let row = 0; row < size; row++) {
-        for (let col = 0; col < size; col++) {
+    for (let row = 0; row < rows; row++) {
+        for (let col = 0; col < cols; col++) {
             if (block[row][col] === 1) {
                 startRow = row;
                 startCol = col;
@@ -132,7 +165,7 @@ function isConnected(block) {
     
     // DFSで連結を確認
     function dfs(row, col) {
-        if (row < 0 || row >= size || col < 0 || col >= size || 
+        if (row < 0 || row >= rows || col < 0 || col >= cols ||
             visited[row][col] || block[row][col] === 0) {
             return;
         }
@@ -150,8 +183,8 @@ function isConnected(block) {
     
     // 全てのセルの数を数える
     let totalCells = 0;
-    for (let row = 0; row < size; row++) {
-        for (let col = 0; col < size; col++) {
+    for (let row = 0; row < rows; row++) {
+        for (let col = 0; col < cols; col++) {
             if (block[row][col] === 1) {
                 totalCells++;
             }
@@ -168,13 +201,12 @@ function renderBlocks() {
         blockElement.className = 'block';
         blockElement.dataset.index = index;
         
-        const size = block.grid.length;
-        blockElement.style.setProperty('--cols', size);
-        blockElement.style.setProperty('--rows', size);
-        
+        blockElement.style.setProperty('--cols', block.cols);
+        blockElement.style.setProperty('--rows', block.rows);
+
         // ブロックのセルを描画
-        for (let row = 0; row < size; row++) {
-            for (let col = 0; col < size; col++) {
+        for (let row = 0; row < block.rows; row++) {
+            for (let col = 0; col < block.cols; col++) {
                 const cellElement = document.createElement('div');
                 cellElement.className = block.grid[row][col] === 1 ? 'block-cell' : 'block-cell empty';
                 

@@ -48,13 +48,14 @@ function isNotPlaceableCell(row, col) {
 // セルクリックのハンドラ
 function handleCellClick(row, col) {
     if (gameState.selectedBlockIndex === -1) return;
-    
+
     const block = gameState.blocks[gameState.selectedBlockIndex];
-    
+    const origin = getBlockOrigin(row, col, block);
+
     // ブロックをボードに配置できるかチェック
-    if (canPlaceBlock(row, col, block)) {
+    if (canPlaceBlock(origin.row, origin.col, block)) {
         // ブロックを配置
-        placeBlock(row, col, block);
+        placeBlock(origin.row, origin.col, block);
         
         // ブロックを選択解除
         selectBlock(-1);
@@ -64,19 +65,24 @@ function handleCellClick(row, col) {
     }
 }
 
+// カーソル位置のセルにピースの中心が来るときの、ピース左上の位置を返す
+function getBlockOrigin(row, col, block) {
+    return { row: row - block.anchor.row, col: col - block.anchor.col };
+}
+
 // ブロックを配置できるかチェック
 function canPlaceBlock(startRow, startCol, block) {
     const boardSize = gameState.boardSize;
-    const blockSize = block.grid.length;
-    
+
     // ボードの範囲外にはみ出ないかチェック
-    if (startRow + blockSize > boardSize || startCol + blockSize > boardSize) {
+    if (startRow < 0 || startCol < 0 ||
+        startRow + block.rows > boardSize || startCol + block.cols > boardSize) {
         return false;
     }
-    
+
     // 既に配置されているブロックと重ならないか、配置不可能なセルと重ならないかチェック
-    for (let row = 0; row < blockSize; row++) {
-        for (let col = 0; col < blockSize; col++) {
+    for (let row = 0; row < block.rows; row++) {
+        for (let col = 0; col < block.cols; col++) {
             if (block.grid[row][col] === 1) {
                 const boardRow = startRow + row;
                 const boardCol = startCol + col;
@@ -94,12 +100,11 @@ function canPlaceBlock(startRow, startCol, block) {
 
 // ブロックをボードに配置
 function placeBlock(startRow, startCol, block) {
-    const blockSize = block.grid.length;
     const blockIndex = gameState.selectedBlockIndex;
-    
+
     // ブロックをボードに配置
-    for (let row = 0; row < blockSize; row++) {
-        for (let col = 0; col < blockSize; col++) {
+    for (let row = 0; row < block.rows; row++) {
+        for (let col = 0; col < block.cols; col++) {
             if (block.grid[row][col] === 1) {
                 const boardRow = startRow + row;
                 const boardCol = startCol + col;
@@ -276,14 +281,13 @@ function getMineInfoFromSolution(row, col) {
     for (const placedBlock of solution) {
         const blockIndex = placedBlock.blockIndex;
         const block = gameState.blocks[blockIndex];
-        const blockSize = block.grid.length;
-        
+
         // このブロックがこのセルをカバーしているかチェック
         let isCoveredByThisBlock = false;
         let isMineCellInThisBlock = false;
-        
-        for (let r = 0; r < blockSize; r++) {
-            for (let c = 0; c < blockSize; c++) {
+
+        for (let r = 0; r < block.rows; r++) {
+            for (let c = 0; c < block.cols; c++) {
                 if (block.grid[r][c] === 1) {
                     const boardRow = placedBlock.row + r;
                     const boardCol = placedBlock.col + c;

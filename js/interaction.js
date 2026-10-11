@@ -97,7 +97,9 @@ function handleDragOver(e) {
         // 新しい位置にプレビューを表示
         dragState.lastHoverRow = row;
         dragState.lastHoverCol = col;
-        showBlockPreview(row, col, gameState.blocks[dragState.currentBlockIndex]);
+        const block = gameState.blocks[dragState.currentBlockIndex];
+        const origin = getBlockOrigin(row, col, block);
+        showBlockPreview(origin.row, origin.col, block);
     }
 }
 
@@ -125,8 +127,9 @@ function handleDrop(e) {
         
         // そのセルにブロックを配置
         const block = gameState.blocks[blockIndex];
-        if (canPlaceBlock(row, col, block)) {
-            placeBlock(row, col, block);
+        const origin = getBlockOrigin(row, col, block);
+        if (canPlaceBlock(origin.row, origin.col, block)) {
+            placeBlock(origin.row, origin.col, block);
             selectBlock(-1);
             checkBoardCompletion();
         }
@@ -216,7 +219,9 @@ function handleBodyTouchMove(e) {
         // 新しい位置にプレビューを表示
         if (!isNaN(row) && !isNaN(col)) {
             dragState.hoverCells = []; // ドラッグ状態の配列を使用
-            showBlockPreview(row, col, gameState.blocks[gameState.selectedBlockIndex]);
+            const block = gameState.blocks[gameState.selectedBlockIndex];
+            const origin = getBlockOrigin(row, col, block);
+            showBlockPreview(origin.row, origin.col, block);
         }
     }
 }
@@ -243,8 +248,9 @@ function handleBodyTouchEnd(e) {
         
         // ブロックを配置
         const block = gameState.blocks[gameState.selectedBlockIndex];
-        if (!isNaN(row) && !isNaN(col) && canPlaceBlock(row, col, block)) {
-            placeBlock(row, col, block);
+        const origin = getBlockOrigin(row, col, block);
+        if (!isNaN(row) && !isNaN(col) && canPlaceBlock(origin.row, origin.col, block)) {
+            placeBlock(origin.row, origin.col, block);
             selectBlock(-1);
             checkBoardCompletion();
         }
