@@ -37,9 +37,9 @@ const elements = {
     shareButton: document.getElementById('share'),
     endlessModeButton: document.getElementById('endlessMode'),
     challengeModeButton: document.getElementById('challengeMode'),
-    challengeBar: document.getElementById('challengeBar'),
+    elapsedStat: document.getElementById('elapsedStat'),
+    remainingStat: document.getElementById('remainingStat'),
     challengeTime: document.getElementById('challengeTime'),
-    challengeSolved: document.getElementById('challengeSolved'),
     challengeBonus: document.getElementById('challengeBonus'),
     challengeModal: document.getElementById('challengeModal'),
     challengeResult: document.getElementById('challengeResult'),
@@ -56,8 +56,9 @@ const elements = {
 };
 
 // 統計情報の更新
+// チャレンジ中はクリア回数の欄に、今回のチャレンジで解いた数を表示する（エンドレスのクリア回数は保持したまま）
 function updateStats() {
-    elements.clearCountDisplay.textContent = gameState.clearedCount;
+    elements.clearCountDisplay.textContent = challengeState.active ? challengeState.solved : gameState.clearedCount;
 }
 
 // シード表示とURLを更新（URLを共有すると同じパズルを遊べる）

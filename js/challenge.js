@@ -103,24 +103,26 @@ function getChallengeRemainingSeconds() {
     return Math.max(0, Math.ceil((challengeState.deadline - Date.now()) / 1000));
 }
 
-// 残り時間と解いた数の表示を更新
+// 残り時間と解いた数（クリア回数の欄）の表示を更新
 function updateChallengeDisplay() {
     const remaining = getChallengeRemainingSeconds();
     elements.challengeTime.textContent = remaining;
-    elements.challengeSolved.textContent = challengeState.solved;
+    updateStats();
 
     // 残り10秒以下は残り時間を赤く表示して知らせる
-    elements.challengeBar.classList.toggle('low', remaining <= 10);
+    elements.remainingStat.classList.toggle('low', remaining <= 10);
 }
 
-// モードに応じて切り替えボタン・残り時間表示・新しいゲームボタンを切り替える
+// モードに応じて切り替えボタン・経過時間と残り時間・クリア回数・新しいゲームボタンを切り替える
 // チャレンジ中は難しい問題を飛ばせないよう、新しいゲームボタンを無効にする
 function updateModeDisplay() {
     const isChallenge = challengeState.active;
     elements.endlessModeButton.classList.toggle('active', !isChallenge);
     elements.challengeModeButton.classList.toggle('active', isChallenge);
-    elements.challengeBar.hidden = !isChallenge;
+    elements.elapsedStat.hidden = isChallenge;
+    elements.remainingStat.hidden = !isChallenge;
     elements.newGameButton.disabled = isChallenge;
+    updateStats();
 }
 
 // チャレンジ中にエンドレスへ切り替えるときは確認する（時間切れ後の結果表示中は確認しない）

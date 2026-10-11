@@ -175,7 +175,6 @@ button:focus-visible {
 }
 
 .stat-value small,
-.challenge-value small,
 .result-highlight small {
     font-size: 0.6em;
     font-weight: 600;
@@ -213,48 +212,19 @@ button:focus-visible {
     box-shadow: 0 1px 3px rgba(31, 42, 55, 0.15);
 }
 
-/* チャレンジモードの残り時間・解いた数 */
-.challenge-bar {
-    display: flex;
-    justify-content: center;
-    gap: 12px;
-    margin-bottom: 16px;
-}
-
-/* display: flex が hidden 属性より優先されないようにする */
-.challenge-bar[hidden] {
+/* display: flex が hidden 属性より優先されないようにする（経過時間と残り時間の切り替え） */
+.stat[hidden] {
     display: none;
 }
 
-.challenge-time,
-.challenge-solved {
-    display: flex;
-    align-items: baseline;
-    gap: 8px;
-    padding: 6px 16px;
-    border-radius: var(--radius-md);
-    background-color: var(--surface-sub);
-}
-
-.challenge-time {
+/* チャレンジモードの残り時間 */
+.stat-remaining {
     position: relative;
     color: var(--accent-dark);
 }
 
-.challenge-label {
-    font-size: 0.75rem;
-    color: var(--text-sub);
-}
-
-.challenge-value {
-    font-size: 1.5rem;
-    font-weight: 800;
-    font-variant-numeric: tabular-nums;
-    line-height: 1.2;
-}
-
 /* 残り10秒以下は赤く点滅させて知らせる */
-.challenge-bar.low .challenge-time {
+.stat-remaining.low {
     color: var(--mine);
     background-color: color-mix(in srgb, var(--mine) 10%, var(--surface));
     animation: lowTime 1s ease-in-out infinite;
@@ -266,13 +236,19 @@ button:focus-visible {
     }
 }
 
-/* 解いたときの「+20秒」：残り時間の真上に重ね、浮かびながら消える（周りの文字は動かさない） */
+/* 解いたときの「+20秒」：残り時間のラベルに重ね、少し浮かびながら消える（周りの文字は動かさない）
+   カードが画面上部にあるため、カードの外にははみ出さない範囲で動かす */
 .challenge-bonus {
     position: absolute;
     left: 50%;
-    bottom: 100%;
+    top: 6px;
+    padding: 0 6px;
+    border-radius: var(--radius-sm);
+    background-color: var(--surface-sub); /* 下のラベルを隠す */
     color: var(--success);
+    font-size: 0.8rem;
     font-weight: 800;
+    line-height: 1.5;
     white-space: nowrap;
     opacity: 0;
     pointer-events: none;
@@ -285,7 +261,7 @@ button:focus-visible {
 @keyframes challengeBonus {
     0% {
         opacity: 0;
-        transform: translate(-50%, 8px);
+        transform: translate(-50%, 6px);
     }
     15% {
         opacity: 1;
@@ -296,7 +272,7 @@ button:focus-visible {
     }
     100% {
         opacity: 0;
-        transform: translate(-50%, -12px);
+        transform: translate(-50%, -4px);
     }
 }
 

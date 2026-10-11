@@ -49,9 +49,15 @@
 
         <main class="game-container">
             <div class="stats">
-                <div class="stat">
+                <div class="stat" id="elapsedStat">
                     <span class="stat-label">経過時間</span>
                     <span class="stat-value"><span id="timerDisplay">0</span><small>秒</small></span>
+                </div>
+                <!-- チャレンジモード中は経過時間の代わりに残り時間を表示 -->
+                <div class="stat stat-remaining" id="remainingStat" hidden>
+                    <span class="stat-label">残り時間</span>
+                    <span class="stat-value"><span id="challengeTime">0</span><small>秒</small></span>
+                    <span class="challenge-bonus" id="challengeBonus" aria-live="polite"></span>
                 </div>
                 <div class="stat">
                     <span class="stat-label">クリア回数</span>
@@ -66,19 +72,6 @@
             <div class="mode-switch" role="group" aria-label="モード">
                 <button id="endlessMode" class="mode-button active">エンドレス</button>
                 <button id="challengeMode" class="mode-button">チャレンジ</button>
-            </div>
-
-            <!-- チャレンジモード中だけ表示 -->
-            <div class="challenge-bar" id="challengeBar" hidden>
-                <div class="challenge-time">
-                    <span class="challenge-label">残り</span>
-                    <span class="challenge-value"><span id="challengeTime">0</span><small>秒</small></span>
-                    <span class="challenge-bonus" id="challengeBonus" aria-live="polite"></span>
-                </div>
-                <div class="challenge-solved">
-                    <span class="challenge-label">解いた数</span>
-                    <span class="challenge-value"><span id="challengeSolved">0</span><small>問</small></span>
-                </div>
             </div>
 
             <div class="game-board" id="gameBoard">
