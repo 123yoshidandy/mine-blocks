@@ -6,7 +6,8 @@
 // ピースの色（マインや配置不可の赤と区別できる色のみ）
 const PIECE_COLORS = ['#3498db', '#27ae60', '#9b59b6', '#f39c12', '#1abc9c', '#f1c40f'];
 
-// ブロックの形状を生成（形もマインの位置も同じピースは作り直す）
+// ブロックの形状を生成（同じ形のピースは作り直す）
+// 置き場ではマインが見えないため、同じ形が並ぶと見分けがつかず「置けるはずのピースが置けない」状態になる
 function generateBlocks() {
     // ブロック生成数(ダミーを含む)
     const numBlocks = 6;
@@ -15,7 +16,7 @@ function generateBlocks() {
     while (gameState.blocks.length < numBlocks) {
         const block = createRandomBlock();
         
-        // 既存のピースと形・マインの位置がすべて同じなら、乱数列の続きで作り直す
+        // 既存のピースと同じ形なら、乱数列の続きで作り直す
         const key = getBlockKey(block);
         if (blockKeys.has(key)) {
             continue;
@@ -27,10 +28,9 @@ function generateBlocks() {
     }
 }
 
-// 形とマインの位置から、ピースを比較するためのキーを作る
+// ピースの形から、ピースを比較するためのキーを作る
 function getBlockKey(block) {
-    const mineKeys = block.mines.map(mine => `${mine.row},${mine.col}`).sort();
-    return JSON.stringify([block.grid, mineKeys]);
+    return JSON.stringify(block.grid);
 }
 
 // ランダムな形とマインを持つピースを1つ生成
