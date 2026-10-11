@@ -82,15 +82,16 @@ function tickChallenge() {
     }
 }
 
-// 時間切れ：タイマーを止めて結果を表示する
+// チャレンジを終える（時間切れ・降参とも）：タイマーを止め、解いた数と最後の問題の想定解を表示する
 function finishChallenge() {
     clearInterval(challengeState.intervalId);
     challengeState.intervalId = null;
     stopTimer();
+    selectBlock(-1);
+    clearHoverPreview();
 
-    // 降参して想定解を見ている間に時間切れになった場合は、想定解を閉じて結果を出す
-    elements.surrenderModal.classList.remove('active');
     elements.challengeResult.textContent = challengeState.solved;
+    renderSolutionBoard(elements.challengeSolutionBoard);
     elements.challengeModal.classList.add('active');
 }
 
@@ -124,6 +125,11 @@ function updateModeDisplay() {
     button.setAttribute('aria-pressed', isChallenge);
     button.title = label;
     button.setAttribute('aria-label', label);
+
+    // チャレンジ中の降参はチャレンジの終了になることを、降参ボタンの説明で示す
+    const surrenderLabel = isChallenge ? '降参してチャレンジを終了' : '降参して想定解を見る';
+    elements.surrenderButton.title = surrenderLabel;
+    elements.surrenderButton.setAttribute('aria-label', surrenderLabel);
     elements.challengeStats.hidden = !isChallenge;
 }
 

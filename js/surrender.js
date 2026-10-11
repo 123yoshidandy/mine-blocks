@@ -13,22 +13,26 @@ function setupSurrender() {
 }
 
 // タイマーを止め、想定解を結果画面に表示する（クリア回数には数えない）
-// チャレンジ中は持ち時間を止めず、時間の加算もしない（想定解を見ている時間も持ち時間から減る）
+// チャレンジ中の降参はタイムアップと同じく、チャレンジを終えて結果（解いた数と想定解）を表示する
 function surrender() {
+    if (challengeState.active) {
+        finishChallenge();
+        return;
+    }
+
     stopTimer();
     selectBlock(-1);
     clearHoverPreview();
 
-    renderSolutionBoard();
+    renderSolutionBoard(elements.solutionBoard);
     elements.surrenderModal.classList.add('active');
 }
 
-// 想定解を小さな盤面に描く
+// 想定解を指定した要素に小さな盤面として描く
 // ピースの色でマスを塗り、数字は白、赤マスは赤い印で示す（置けないマスは斜線）
-function renderSolutionBoard() {
+function renderSolutionBoard(container) {
     const rows = gameState.boardRows;
     const cols = gameState.boardCols;
-    const container = elements.solutionBoard;
     container.innerHTML = '';
     container.style.gridTemplateColumns = `repeat(${cols}, var(--solution-cell))`;
 

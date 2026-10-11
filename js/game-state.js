@@ -43,6 +43,7 @@ const elements = {
     challengeBonus: document.getElementById('challengeBonus'),
     challengeModal: document.getElementById('challengeModal'),
     challengeResult: document.getElementById('challengeResult'),
+    challengeSolutionBoard: document.getElementById('challengeSolutionBoard'),
     challengeRetryButton: document.getElementById('challengeRetry'),
     challengeExitButton: document.getElementById('challengeExit'),
     hintModal: document.getElementById('hintModal'),

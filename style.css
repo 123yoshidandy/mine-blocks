@@ -419,6 +419,10 @@ button:focus-visible {
     width: 100%;
     box-shadow: 0 20px 50px rgba(17, 24, 39, 0.25);
     animation: modalIn 0.25s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+    /* 画面より背が高くなる場合は、見切れないようモーダルの中でスクロールする */
+    max-height: calc(100vh - 32px);
+    max-height: calc(100dvh - 32px);
+    overflow-y: auto;
 }
 
 @keyframes modalIn {
@@ -475,6 +479,16 @@ button:focus-visible {
     margin: 4px 0 20px;
     font-size: 0.85rem;
     color: var(--text-sub);
+}
+
+/* チャレンジ結果の項目名（解いた数・最後の問題の想定解） */
+.result-label {
+    font-size: 0.8rem;
+    color: var(--text-sub);
+}
+
+.result-highlight + .result-label {
+    margin-top: 12px;
 }
 
 /* 降参したときの想定解 */
@@ -1110,6 +1124,37 @@ button:focus-visible {
     /* 7行の盤面でも1画面に収まる範囲で、ピースをできるだけ大きくする */
     .blocks-container {
         --block-cell: 19px;
+    }
+}
+
+/* 背の低いスマホ：結果画面（想定解つき）も1画面に収める */
+@media (max-height: 600px) {
+    .modal-content {
+        padding: 20px 20px 16px;
+    }
+
+    .modal-content h2 {
+        font-size: 1.3rem;
+        margin-bottom: 8px;
+    }
+
+    .result-highlight {
+        font-size: 2.4rem;
+    }
+
+    .solution-board {
+        --solution-cell: 28px;
+        margin: 6px auto;
+    }
+
+    /* マスが小さくなった分、赤マスの印を相対的に大きくする */
+    .solution-cell.on-mine::after {
+        inset: 8px;
+    }
+
+    .primary-button,
+    .secondary-button {
+        padding: 10px 20px;
     }
 }
 
