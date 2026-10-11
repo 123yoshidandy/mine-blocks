@@ -27,10 +27,8 @@ const gameState = {
 const elements = {
     gameBoard: document.getElementById('gameBoard'),
     blocksContainer: document.getElementById('blocksContainer'),
-    clearCountDisplay: document.getElementById('clearCount'),
     clearCountResultDisplay: document.getElementById('clearCountResult'),
     clearTimeDisplay: document.getElementById('clearTime'),
-    timerDisplay: document.getElementById('timerDisplay'),
     surrenderButton: document.getElementById('surrender'),
     surrenderModal: document.getElementById('surrenderModal'),
     solutionBoard: document.getElementById('solutionBoard'),
@@ -38,8 +36,9 @@ const elements = {
     hintButton: document.getElementById('hint'),
     shareButton: document.getElementById('share'),
     challengeToggleButton: document.getElementById('challengeToggle'),
-    elapsedStat: document.getElementById('elapsedStat'),
+    challengeStats: document.getElementById('challengeStats'),
     remainingStat: document.getElementById('remainingStat'),
+    challengeSolved: document.getElementById('challengeSolved'),
     challengeTime: document.getElementById('challengeTime'),
     challengeBonus: document.getElementById('challengeBonus'),
     challengeModal: document.getElementById('challengeModal'),
@@ -54,12 +53,6 @@ const elements = {
     clearModal: document.getElementById('clearModal'),
     nextGameButton: document.getElementById('nextGame')
 };
-
-// 統計情報の更新
-// チャレンジ中はクリア回数の欄に、今回のチャレンジで解いた数を表示する（エンドレスのクリア回数は保持したまま）
-function updateStats() {
-    elements.clearCountDisplay.textContent = challengeState.active ? challengeState.solved : gameState.clearedCount;
-}
 
 // URLの問題番号を更新（URLを共有すると同じパズルを遊べる）
 function updateSeedUrl() {
@@ -77,13 +70,10 @@ function startTimer() {
     gameState.startTime = new Date();
     gameState.elapsedTime = 0;
     
-    // タイマーを開始（1秒ごとに更新）
+    // タイマーを開始（1秒ごとに経過時間を更新、クリア時間の表示に使う）
     gameState.timerInterval = setInterval(() => {
         const now = new Date();
         gameState.elapsedTime = Math.floor((now - gameState.startTime) / 1000);
-        
-        // タイマー表示を更新
-        updateTimerDisplay();
     }, 1000);
 }
 
@@ -99,13 +89,6 @@ function stopTimer() {
         gameState.endTime = new Date();
         // より正確な経過時間を計算
         gameState.elapsedTime = Math.floor((gameState.endTime - gameState.startTime) / 1000);
-    }
-}
-
-// タイマー表示を更新
-function updateTimerDisplay() {
-    if (elements.timerDisplay) {
-        elements.timerDisplay.textContent = gameState.elapsedTime;
     }
 }
 

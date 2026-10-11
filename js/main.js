@@ -44,7 +44,6 @@ function generateGame(seed) {
 // ゲーム初期化
 function initGame() {
     gameState.clearedCount = 0;
-    updateStats();
 
     // URLにシードが指定されていればそのパズル、なければ今日の日付のパズルから始める
     const urlSeed = parseSeed(new URLSearchParams(location.search).get('seed'));

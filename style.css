@@ -190,8 +190,8 @@ button:focus-visible {
     color: var(--text-sub);
 }
 
-/* display: flex が hidden 属性より優先されないようにする（経過時間と残り時間の切り替え） */
-.stat[hidden] {
+/* display: grid が hidden 属性より優先されないようにする（エンドレスでは表示しない） */
+.stats[hidden] {
     display: none;
 }
 

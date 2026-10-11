@@ -292,9 +292,6 @@ function checkBoardCompletion() {
         // クリアモーダルの内容を更新（クリア時間とクリア回数を表示）
         elements.clearTimeDisplay.textContent = gameState.elapsedTime;
         elements.clearCountResultDisplay.textContent = gameState.clearedCount;
-
-        // 統計表示を更新
-        updateStats();
         
         // クリアモーダルを表示
         elements.clearModal.classList.add('active');

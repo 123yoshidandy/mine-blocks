@@ -104,17 +104,17 @@ function getChallengeRemainingSeconds() {
     return Math.max(0, Math.ceil((challengeState.deadline - Date.now()) / 1000));
 }
 
-// 残り時間と解いた数（クリア回数の欄）の表示を更新
+// 残り時間と解いた数の表示を更新
 function updateChallengeDisplay() {
     const remaining = getChallengeRemainingSeconds();
     elements.challengeTime.textContent = remaining;
-    updateStats();
+    elements.challengeSolved.textContent = challengeState.solved;
 
     // 残り10秒以下は残り時間を赤く表示して知らせる
     elements.remainingStat.classList.toggle('low', remaining <= 10);
 }
 
-// モードに応じてチャレンジボタン・経過時間と残り時間・クリア回数を切り替える
+// モードに応じてチャレンジボタンと、残り時間・解いた数の表示（チャレンジ中だけ）を切り替える
 // チャレンジボタンはチャレンジ中だけ強調し、押すとエンドレスに戻ることを説明文で示す
 function updateModeDisplay() {
     const isChallenge = challengeState.active;
@@ -124,9 +124,7 @@ function updateModeDisplay() {
     button.setAttribute('aria-pressed', isChallenge);
     button.title = label;
     button.setAttribute('aria-label', label);
-    elements.elapsedStat.hidden = isChallenge;
-    elements.remainingStat.hidden = !isChallenge;
-    updateStats();
+    elements.challengeStats.hidden = !isChallenge;
 }
 
 // チャレンジ中にエンドレスへ切り替えるときは確認する（時間切れ後の結果表示中は確認しない）

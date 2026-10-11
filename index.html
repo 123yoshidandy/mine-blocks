@@ -57,20 +57,16 @@
         </header>
 
         <main class="game-container">
-            <div class="stats">
-                <div class="stat" id="elapsedStat">
-                    <span class="stat-label">経過時間</span>
-                    <span class="stat-value"><span id="timerDisplay">0</span><small>秒</small></span>
-                </div>
-                <!-- チャレンジモード中は経過時間の代わりに残り時間を表示 -->
-                <div class="stat stat-remaining" id="remainingStat" hidden>
+            <!-- チャレンジモード中だけ、残り時間と解いた数を表示 -->
+            <div class="stats" id="challengeStats" hidden>
+                <div class="stat stat-remaining" id="remainingStat">
                     <span class="stat-label">残り時間</span>
                     <span class="stat-value"><span id="challengeTime">0</span><small>秒</small></span>
                     <span class="challenge-bonus" id="challengeBonus" aria-live="polite"></span>
                 </div>
                 <div class="stat">
-                    <span class="stat-label">クリア回数</span>
-                    <span class="stat-value" id="clearCount">0</span>
+                    <span class="stat-label">解いた数</span>
+                    <span class="stat-value"><span id="challengeSolved">0</span><small>問</small></span>
                 </div>
             </div>
 
