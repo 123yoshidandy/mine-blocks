@@ -145,7 +145,7 @@ button:focus-visible {
 /* 統計：小さなカードを横に並べる */
 .stats {
     display: grid;
-    grid-template-columns: 1fr 1fr 1.4fr; /* 問題番号は8桁になるので広めにする */
+    grid-template-columns: 1fr 1fr;
     gap: 8px;
     margin-bottom: 16px;
 }
@@ -499,6 +499,38 @@ button:focus-visible {
     color: var(--text-sub);
 }
 
+/* 降参したときの想定解 */
+.solution-board {
+    --solution-cell: 34px;
+    --board-gap: 3px; /* ピースのつなぎ目（getJoinShadow）で使う */
+    display: grid;
+    gap: var(--board-gap);
+    width: fit-content;
+    margin: 12px auto;
+    padding: 8px;
+    border-radius: 10px;
+    background-color: var(--board-bg);
+}
+
+.solution-cell {
+    position: relative;
+    width: var(--solution-cell);
+    height: var(--solution-cell);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--piece-color);
+    color: white;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+}
+
+.solution-cell.not-placeable {
+    background-color: transparent;
+    background-image: repeating-linear-gradient(45deg, rgba(31, 42, 55, 0.06) 0, rgba(31, 42, 55, 0.06) 4px, transparent 4px, transparent 8px);
+    border-radius: 5px;
+}
+
 .modal-actions {
     display: flex;
     flex-direction: column;
@@ -751,7 +783,8 @@ button:focus-visible {
     background-color: transparent;
 }
 
-.demo-piece-cell.on-mine::after {
+.demo-piece-cell.on-mine::after,
+.solution-cell.on-mine::after {
     content: "";
     position: absolute;
     inset: 10px;

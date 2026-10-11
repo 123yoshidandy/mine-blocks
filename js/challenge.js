@@ -89,7 +89,6 @@ function finishChallenge() {
     stopTimer();
 
     elements.challengeResult.textContent = challengeState.solved;
-    elements.challengeStartSeed.textContent = challengeState.startSeed;
     elements.challengeModal.classList.add('active');
 }
 
@@ -114,14 +113,14 @@ function updateChallengeDisplay() {
 }
 
 // モードに応じて切り替えボタン・経過時間と残り時間・クリア回数・新しいゲームボタンを切り替える
-// チャレンジ中は難しい問題を飛ばせないよう、新しいゲームボタンを無効にする
+// チャレンジ中は難しい問題を飛ばせないよう、降参ボタンを無効にする
 function updateModeDisplay() {
     const isChallenge = challengeState.active;
     elements.endlessModeButton.classList.toggle('active', !isChallenge);
     elements.challengeModeButton.classList.toggle('active', isChallenge);
     elements.elapsedStat.hidden = isChallenge;
     elements.remainingStat.hidden = !isChallenge;
-    elements.newGameButton.disabled = isChallenge;
+    elements.surrenderButton.disabled = isChallenge;
     updateStats();
 }
 

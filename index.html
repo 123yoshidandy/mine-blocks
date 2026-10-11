@@ -19,10 +19,10 @@
                 MINE BLOCKS
             </h1>
             <div class="buttons">
-                <button id="newGame" class="icon-button" title="新しいゲーム" aria-label="新しいゲーム">
+                <button id="surrender" class="icon-button" title="降参して想定解を見る" aria-label="降参">
                     <svg viewBox="0 0 24 24" aria-hidden="true">
-                        <path d="M20 12a8 8 0 1 1-2.34-5.66"/>
-                        <polyline points="18 2.5 18 6.5 14 6.5"/>
+                        <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/>
+                        <line x1="4" y1="22" x2="4" y2="15"/>
                     </svg>
                 </button>
                 <button id="hint" class="icon-button" title="ヒント" aria-label="ヒント">
@@ -63,10 +63,6 @@
                     <span class="stat-label">クリア回数</span>
                     <span class="stat-value" id="clearCount">0</span>
                 </div>
-                <div class="stat">
-                    <span class="stat-label">問題番号</span>
-                    <span class="stat-value" id="seedDisplay">-</span>
-                </div>
             </div>
 
             <div class="mode-switch" role="group" aria-label="モード">
@@ -100,10 +96,22 @@
             <div class="modal-content">
                 <h2>タイムアップ！</h2>
                 <p class="result-highlight"><span id="challengeResult">0</span><small>問</small></p>
-                <p class="result-note">問題番号 <span id="challengeStartSeed">-</span> から挑戦</p>
                 <div class="modal-actions">
                     <button id="challengeRetry" class="primary-button">もう一度挑戦</button>
                     <button id="challengeExit" class="secondary-button">エンドレスに戻る</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 降参したときの結果画面：想定解を表示する（盤面はJavaScriptで生成） -->
+        <div class="modal" id="surrenderModal">
+            <div class="modal-content">
+                <h2>降参</h2>
+                <p class="result-note">想定していた解はこちらです</p>
+                <div class="solution-board" id="solutionBoard"></div>
+                <p class="result-note">これと違う置き方でも、条件を満たしていれば正解です</p>
+                <div class="modal-actions">
+                    <button id="surrenderNext" class="primary-button">次の問題へ</button>
                 </div>
             </div>
         </div>
@@ -167,6 +175,7 @@
     <script src="js/interaction.js"></script>
     <script src="js/challenge.js"></script>
     <script src="js/hint.js"></script>
+    <script src="js/surrender.js"></script>
     <script src="js/main.js"></script>
 </body>
 </html>

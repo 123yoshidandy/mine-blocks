@@ -5,10 +5,8 @@
 
 // イベントリスナーのセットアップ
 function setupEventListeners() {
-    // 新しいゲームボタン（次のシードの問題に進む）
-    elements.newGameButton.addEventListener('click', () => {
-        generateGame(getNextSeed(gameState.seed));
-    });
+    // 降参ボタン（想定解を表示して次の問題に進む）
+    setupSurrender();
     
     // ヒントボタン（遊び方をアニメーションで説明する）
     setupHint();

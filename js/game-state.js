@@ -31,8 +31,10 @@ const elements = {
     clearCountResultDisplay: document.getElementById('clearCountResult'),
     clearTimeDisplay: document.getElementById('clearTime'),
     timerDisplay: document.getElementById('timerDisplay'),
-    seedDisplay: document.getElementById('seedDisplay'),
-    newGameButton: document.getElementById('newGame'),
+    surrenderButton: document.getElementById('surrender'),
+    surrenderModal: document.getElementById('surrenderModal'),
+    solutionBoard: document.getElementById('solutionBoard'),
+    surrenderNextButton: document.getElementById('surrenderNext'),
     hintButton: document.getElementById('hint'),
     shareButton: document.getElementById('share'),
     endlessModeButton: document.getElementById('endlessMode'),
@@ -43,7 +45,6 @@ const elements = {
     challengeBonus: document.getElementById('challengeBonus'),
     challengeModal: document.getElementById('challengeModal'),
     challengeResult: document.getElementById('challengeResult'),
-    challengeStartSeed: document.getElementById('challengeStartSeed'),
     challengeRetryButton: document.getElementById('challengeRetry'),
     challengeExitButton: document.getElementById('challengeExit'),
     hintModal: document.getElementById('hintModal'),
@@ -61,10 +62,8 @@ function updateStats() {
     elements.clearCountDisplay.textContent = challengeState.active ? challengeState.solved : gameState.clearedCount;
 }
 
-// シード表示とURLを更新（URLを共有すると同じパズルを遊べる）
-function updateSeedDisplay() {
-    elements.seedDisplay.textContent = gameState.seed;
-
+// URLの問題番号を更新（URLを共有すると同じパズルを遊べる）
+function updateSeedUrl() {
     const url = new URL(location.href);
     url.searchParams.set('seed', gameState.seed);
     history.replaceState(null, '', url);

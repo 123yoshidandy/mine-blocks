@@ -16,7 +16,7 @@ function generateGame(seed) {
         gameState.endlessSeed = seed;
     }
     setSeed(seed);
-    updateSeedDisplay();
+    updateSeedUrl();
 
 
     // ブロックと想定解（配置不可能なセルを含む）を生成
