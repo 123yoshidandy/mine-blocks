@@ -33,6 +33,8 @@ const elements = {
     surrenderModal: document.getElementById('surrenderModal'),
     solutionBoard: document.getElementById('solutionBoard'),
     surrenderNextButton: document.getElementById('surrenderNext'),
+    surrenderRetryButton: document.getElementById('surrenderRetry'),
+    surrenderHomeButton: document.getElementById('surrenderHome'),
     hintButton: document.getElementById('hint'),
     shareButton: document.getElementById('share'),
     challengeStats: document.getElementById('challengeStats'),
@@ -88,7 +90,9 @@ const elements = {
     topHint: document.getElementById('topHint'),
     logoButton: document.getElementById('logoButton'),
     clearModal: document.getElementById('clearModal'),
-    nextGameButton: document.getElementById('nextGame')
+    nextGameButton: document.getElementById('nextGame'),
+    clearRetryButton: document.getElementById('clearRetry'),
+    clearHomeButton: document.getElementById('clearHome')
 };
 
 // URLの問題番号を更新（URLを共有すると同じパズルを遊べる）

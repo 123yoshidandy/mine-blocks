@@ -548,6 +548,30 @@ button:focus-visible {
     margin-top: 12px;
 }
 
+/* 結果画面の下の小さなボタン（もう一度・ホーム）を横に並べる */
+.modal-sub-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.modal-sub-actions button {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.modal-sub-actions svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
 /* 降参したときの想定解 */
 .solution-board {
     --solution-cell: 34px;

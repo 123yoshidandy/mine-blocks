@@ -10,6 +10,13 @@ function setupSurrender() {
         elements.surrenderModal.classList.remove('active');
         generateGame(getNextSeed(gameState.seed));
     });
+
+    // 想定解を見たあと、同じ問題を自分で解き直す／ホームに戻る
+    elements.surrenderRetryButton.addEventListener('click', () => {
+        elements.surrenderModal.classList.remove('active');
+        generateGame(gameState.seed);
+    });
+    elements.surrenderHomeButton.addEventListener('click', goToTop);
 }
 
 // タイマーを止め、想定解を結果画面に表示する（クリア回数には数えない）

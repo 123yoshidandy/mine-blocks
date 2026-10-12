@@ -22,13 +22,20 @@ function setupEventListeners() {
 
     // チャレンジ結果画面のボタン
     elements.challengeRetryButton.addEventListener('click', startChallenge);
-    elements.challengeExitButton.addEventListener('click', exitChallenge);
+    elements.challengeExitButton.addEventListener('click', goToTop); // チャレンジを終えてホームに戻る
 
     // 次のゲームボタン（次のシードの問題に進む）
     elements.nextGameButton.addEventListener('click', () => {
         elements.clearModal.classList.remove('active');
         generateGame(getNextSeed(gameState.seed));
     });
+
+    // クリア画面：同じ問題をもう一度解く／ホームに戻る
+    elements.clearRetryButton.addEventListener('click', () => {
+        elements.clearModal.classList.remove('active');
+        generateGame(gameState.seed);
+    });
+    elements.clearHomeButton.addEventListener('click', goToTop);
 }
 
 // トップ画面から始める問題番号（今日の問題など）のURLを共有する。受け取った人も、エンドレス・チャレンジで同じ問題の列を遊べる
