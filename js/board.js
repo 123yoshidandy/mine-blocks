@@ -220,13 +220,16 @@ function layoutPieceOverlay({ element, row, col, block }) {
     const gap = parseFloat(getComputedStyle(elements.gameBoard).columnGap) || 0;
     element.style.left = `${origin.offsetLeft}px`;
     element.style.top = `${origin.offsetTop}px`;
-    // 覆っている数字と地雷も透かして描く（置いたあとに考え直すときの手がかり）
-    const getMark = (r, c) => {
-        const info = getMineInfoFromSolution(row + r, col + c);
-        if (info.hasMine) return { mine: true };
-        return info.mineCount > 0 ? { number: info.mineCount } : null;
-    };
+    // 覆っている数字と地雷も描く（置いたあとに考え直すときの手がかり）
+    const getMark = (r, c) => getClueMark(row + r, col + c);
     element.replaceChildren(createPieceSvg(block.grid, origin.offsetWidth, gap, block.color, getMark));
+}
+
+// 盤面のマスの数字・地雷を、ピースの絵に描く印にする（地雷なら { mine: true }、数字なら { number }、どちらもなければ null）
+function getClueMark(row, col) {
+    const info = getMineInfoFromSolution(row, col);
+    if (info.hasMine) return { mine: true };
+    return info.mineCount > 0 ? { number: info.mineCount } : null;
 }
 
 // 画面の大きさが変わるとマスの大きさも変わるので、置いてあるピースの絵を作り直す

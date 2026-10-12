@@ -591,7 +591,8 @@ button:focus-visible {
 /* 降参したときの想定解 */
 .solution-board {
     --solution-cell: 34px;
-    --board-gap: 3px; /* ピースのつなぎ目（getJoinShadow）で使う */
+    --board-gap: 3px;
+    position: relative; /* ピースの絵（.solution-piece）を重ねる基準 */
     display: grid;
     gap: var(--board-gap);
     width: fit-content;
@@ -601,24 +602,24 @@ button:focus-visible {
     background-color: var(--board-bg);
 }
 
+/* マスの場所（ピースの見た目は上に重ねる絵が受け持つ） */
 .solution-cell {
-    position: relative;
     width: var(--solution-cell);
     height: var(--solution-cell);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: var(--piece-color);
-    color: white;
-    font-weight: 700;
-    font-variant-numeric: tabular-nums;
-    /* 盤面と同じピースの厚み（下の行のマスが後から描かれるので、下側の外周にだけ見える） */
+}
+
+/* 想定解のピースの絵：盤面に置いたピースと同じく、ピース1つを1つの SVG にして厚みを付ける */
+.solution-piece {
+    position: absolute;
+    pointer-events: none;
     filter: drop-shadow(0 3px 0 color-mix(in srgb, var(--piece-color) 60%, black));
 }
 
+.solution-piece svg {
+    display: block;
+}
+
 .solution-cell.not-placeable {
-    background-color: transparent;
-    filter: none;
     background-image: repeating-linear-gradient(45deg, rgba(31, 42, 55, 0.06) 0, rgba(31, 42, 55, 0.06) 4px, transparent 4px, transparent 8px);
     border-radius: 5px;
 }
@@ -890,8 +891,7 @@ button:focus-visible {
     background-color: transparent;
 }
 
-.demo-piece-cell.on-mine::after,
-.solution-cell.on-mine::after {
+.demo-piece-cell.on-mine::after {
     content: "";
     position: absolute;
     inset: 9px;
@@ -1880,10 +1880,6 @@ body.is-top {
         margin: 6px auto;
     }
 
-    /* マスが小さくなった分、赤マスの印を相対的に大きくする */
-    .solution-cell.on-mine::after {
-        inset: 8px;
-    }
 
     .primary-button,
     .secondary-button {

@@ -38,42 +38,37 @@ function surrender() {
 }
 
 // 想定解を指定した要素に小さな盤面として描く
-// ピースの色でマスを塗り、数字は白、赤マスは赤い印で示す（置けないマスは斜線）
+// ピースは盤面に置いたピースと同じ絵（数字は白、地雷は赤い丸の印）で描く（置けないマスは斜線）
 function renderSolutionBoard(container) {
     const rows = gameState.boardRows;
     const cols = gameState.boardCols;
     container.innerHTML = '';
     container.style.gridTemplateColumns = `repeat(${cols}, var(--solution-cell))`;
 
-    // 各マスを覆うピースと、ピース内での位置を調べる
-    const cover = Array(rows).fill().map(() => Array(cols).fill(null));
-    gameState.solution.forEach(placed => {
-        const block = gameState.blocks[placed.blockIndex];
-        for (let r = 0; r < block.rows; r++) {
-            for (let c = 0; c < block.cols; c++) {
-                if (block.grid[r][c] === 1) {
-                    cover[placed.row + r][placed.col + c] = { block, r, c };
-                }
-            }
-        }
-    });
-
+    // 下の層：マスの場所（ピースのマスは透明、置けないマスは斜線）
     for (let row = 0; row < rows; row++) {
         for (let col = 0; col < cols; col++) {
             const cell = document.createElement('div');
-            const covered = cover[row][col];
-
-            if (!covered) {
-                cell.className = 'solution-cell not-placeable';
-            } else {
-                const mineInfo = getMineInfoFromSolution(row, col);
-                cell.className = mineInfo.hasMine ? 'solution-cell on-mine' : 'solution-cell';
-                cell.textContent = mineInfo.hasMine ? '' : mineInfo.mineCount;
-                cell.style.setProperty('--piece-color', covered.block.color);
-                // 盤面と同じく、同じピースのマス同士の隙間を埋める
-                cell.style.boxShadow = getJoinShadow(covered.block.grid, covered.r, covered.c);
-            }
+            cell.className = isNotPlaceableCell(row, col) ? 'solution-cell not-placeable' : 'solution-cell';
             container.appendChild(cell);
         }
     }
+
+    // 上の層：ピース1つを1つの絵にして、覆っている数字と地雷も盤面と同じ形で描く
+    // 画面に出す前に作るので、位置と大きさは実際のマスではなく CSS の値から決める
+    const style = getComputedStyle(container);
+    const cell = parseFloat(style.getPropertyValue('--solution-cell'));
+    const gap = parseFloat(style.getPropertyValue('--board-gap'));
+    const padding = parseFloat(style.paddingLeft);
+    gameState.solution.forEach(placed => {
+        const block = gameState.blocks[placed.blockIndex];
+        const piece = document.createElement('div');
+        piece.className = 'solution-piece';
+        piece.style.setProperty('--piece-color', block.color);
+        piece.style.left = `${padding + placed.col * (cell + gap)}px`;
+        piece.style.top = `${padding + placed.row * (cell + gap)}px`;
+        const getMark = (r, c) => getClueMark(placed.row + r, placed.col + c);
+        piece.appendChild(createPieceSvg(block.grid, cell, gap, block.color, getMark));
+        container.appendChild(piece);
+    });
 }
