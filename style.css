@@ -23,6 +23,26 @@
     --num-3: #ea580c;
     --num-4: #7c3aed;
     --num-5: #be123c;
+    /* 画面の背景：深い藍色に、ピースの色（青・紫・緑）のほのかな光と、盤面のマスを思わせる薄い格子を重ねる */
+    --page-base: #1f2558;
+    --page-bg:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44'%3E%3Crect x='3' y='3' width='38' height='38' rx='8' fill='none' stroke='%23fff' stroke-opacity='.032' stroke-width='2'/%3E%3C/svg%3E") 0 0 / 44px 44px,
+        radial-gradient(circle at 12% 8%, rgba(59, 130, 246, 0.42), transparent 42%),
+        radial-gradient(circle at 92% 38%, rgba(155, 89, 182, 0.34), transparent 40%),
+        radial-gradient(circle at 30% 100%, rgba(34, 160, 107, 0.26), transparent 45%),
+        linear-gradient(165deg, #2a3275 0%, var(--page-base) 55%, #181c44 100%);
+    /* 背景の上に直接置く文字とボタン */
+    --on-page: #ffffff;
+    --on-page-sub: rgba(255, 255, 255, 0.72);
+    --glass: rgba(255, 255, 255, 0.13);
+    --glass-hover: rgba(255, 255, 255, 0.2);
+    --glass-line: rgba(255, 255, 255, 0.2);
+    --glass-edge: rgba(8, 10, 30, 0.35);
+}
+
+/* スクロールの端で背景の外が見えても、白く浮かないようにする */
+html {
+    background-color: var(--page-base);
 }
 
 /* 全体のスタイリング */
@@ -34,9 +54,8 @@
 
 body {
     font-family: var(--font-game);
-    background:
-        radial-gradient(rgba(31, 42, 55, 0.07) 1.2px, transparent 1.2px) 0 0 / 20px 20px,
-        radial-gradient(circle at 50% 0%, #fbfcff 0%, var(--bg) 65%) fixed;
+    background: var(--page-bg);
+    background-attachment: fixed; /* スクロールしても光の位置を画面に固定する（対応しない端末ではページと一緒に動く） */
     color: var(--text);
     line-height: 1.6;
     min-height: 100vh;
@@ -64,7 +83,8 @@ body {
     font-size: 1.6rem;
     font-weight: 800;
     letter-spacing: 0.06em;
-    color: var(--text);
+    color: var(--on-page);
+    text-shadow: 0 2px 0 rgba(8, 10, 30, 0.3);
 }
 
 .logo-mark {
@@ -93,7 +113,7 @@ button:focus-visible {
     outline-offset: 2px;
 }
 
-/* アイコンボタン */
+/* アイコンボタン：背景の上に置く、半透明のガラスのようなボタン */
 .icon-button {
     display: flex;
     align-items: center;
@@ -101,19 +121,20 @@ button:focus-visible {
     width: 42px;
     height: 42px;
     border-radius: var(--radius-md);
-    background-color: var(--surface);
-    color: var(--text);
-    box-shadow: 0 3px 0 #d3d9e2, inset 0 0 0 1px rgba(31, 42, 55, 0.08);
+    background-color: var(--glass);
+    color: var(--on-page);
+    box-shadow: 0 3px 0 var(--glass-edge), inset 0 0 0 1px var(--glass-line);
+    backdrop-filter: blur(6px);
     transition: transform 0.08s, box-shadow 0.08s, color 0.15s, background-color 0.15s;
 }
 
 .icon-button:hover:not(:disabled) {
-    color: var(--accent-dark);
+    background-color: var(--glass-hover);
 }
 
 .icon-button:active:not(:disabled) {
     transform: translateY(2px);
-    box-shadow: 0 1px 0 #d3d9e2, inset 0 0 0 1px rgba(31, 42, 55, 0.08);
+    box-shadow: 0 1px 0 var(--glass-edge), inset 0 0 0 1px var(--glass-line);
 }
 
 /* チャレンジ中のチャレンジボタン */
@@ -125,7 +146,7 @@ button:focus-visible {
 }
 
 .icon-button:disabled {
-    color: #b5bdc8;
+    color: rgba(255, 255, 255, 0.35);
     cursor: not-allowed;
 }
 
@@ -162,7 +183,7 @@ button:focus-visible {
     background-color: var(--surface);
     border-radius: var(--radius-lg);
     padding: 20px;
-    box-shadow: var(--shadow-card);
+    box-shadow: 0 4px 0 rgba(8, 10, 30, 0.25), 0 24px 60px rgba(8, 10, 30, 0.45);
 }
 
 /* 統計：小さなカードを横に並べる */
@@ -417,6 +438,7 @@ button:focus-visible {
     padding: 12px;
     border-radius: var(--radius-md);
     background-color: var(--surface-sub);
+    box-shadow: inset 0 2px 5px rgba(31, 42, 55, 0.08); /* 盤面と同じく、少しへこんだトレーにする */
 }
 
 .block {
@@ -455,7 +477,7 @@ button:focus-visible {
     display: none;
     position: fixed;
     inset: 0;
-    background-color: rgba(17, 24, 39, 0.45);
+    background-color: rgba(14, 17, 46, 0.6);
     backdrop-filter: blur(3px);
     z-index: 1000;
     justify-content: center;
@@ -468,13 +490,16 @@ button:focus-visible {
 }
 
 .modal-content {
-    background-color: var(--surface);
-    padding: 28px 24px 24px;
+    /* 上端にロゴと同じ4色の帯を入れる */
+    background:
+        linear-gradient(90deg, #3498db 0 25%, #e5484d 25% 50%, #27ae60 50% 75%, #f39c12 75%) top / 100% 6px no-repeat,
+        var(--surface);
+    padding: 30px 24px 24px;
     border-radius: var(--radius-lg);
     text-align: center;
     max-width: 360px;
     width: 100%;
-    box-shadow: 0 20px 50px rgba(17, 24, 39, 0.25);
+    box-shadow: 0 24px 60px rgba(8, 10, 30, 0.5);
     animation: modalIn 0.25s cubic-bezier(0.2, 0.9, 0.3, 1.2);
     /* 画面より背が高くなる場合は、見切れないようモーダルの中でスクロールする */
     max-height: calc(100vh - 32px);
@@ -1412,9 +1437,7 @@ body.is-top {
     justify-content: center;
     overflow-y: auto;
     padding: 24px 16px;
-    background:
-        radial-gradient(rgba(31, 42, 55, 0.07) 1.2px, transparent 1.2px) 0 0 / 20px 20px,
-        radial-gradient(circle at 50% 0%, #fbfcff 0%, var(--bg) 65%);
+    background: var(--page-bg);
 }
 
 .top-screen[hidden] {
@@ -1441,7 +1464,8 @@ body.is-top {
     padding: 10px;
     border-radius: 18px;
     background-color: #d6dce6;
-    box-shadow: inset 0 2px 6px rgba(31, 42, 55, 0.16), inset 0 -1px 0 rgba(255, 255, 255, 0.7);
+    box-shadow: inset 0 2px 6px rgba(31, 42, 55, 0.16), inset 0 -1px 0 rgba(255, 255, 255, 0.7),
+        0 0 0 6px rgba(255, 255, 255, 0.1), 0 24px 50px rgba(8, 10, 30, 0.5); /* 背景から浮かせる */
     /* 全体を浮かばせる動きは付けない（1ピクセル未満の位置になり、ピースのつなぎ目に線が出るため） */
 }
 
@@ -1502,7 +1526,8 @@ body.is-top {
     font-weight: 800;
     letter-spacing: 0.06em;
     line-height: 1.1;
-    color: var(--text);
+    color: var(--on-page);
+    text-shadow: 0 4px 0 rgba(8, 10, 30, 0.35);
     animation: topFadeUp 0.5s ease-out 0.45s both;
 }
 
@@ -1510,7 +1535,7 @@ body.is-top {
     margin: 10px 0 24px;
     font-size: 0.95rem;
     font-weight: 700;
-    color: var(--text-sub);
+    color: var(--on-page-sub);
     animation: topFadeUp 0.5s ease-out 0.55s both;
 }
 
@@ -1604,20 +1629,20 @@ body.is-top {
     gap: 6px;
     padding: 8px 16px;
     border-radius: 999px;
-    background-color: var(--surface);
-    color: var(--text-sub);
+    background-color: var(--glass);
+    color: var(--on-page);
     font-weight: 700;
-    box-shadow: 0 3px 0 #d3d9e2, inset 0 0 0 1px rgba(31, 42, 55, 0.08);
-    transition: transform 0.08s, box-shadow 0.08s, color 0.15s;
+    box-shadow: 0 3px 0 var(--glass-edge), inset 0 0 0 1px var(--glass-line);
+    transition: transform 0.08s, box-shadow 0.08s, background-color 0.15s;
 }
 
 .top-link:hover {
-    color: var(--accent-dark);
+    background-color: var(--glass-hover);
 }
 
 .top-link:active:not(:disabled) {
     transform: translateY(2px);
-    box-shadow: 0 1px 0 #d3d9e2, inset 0 0 0 1px rgba(31, 42, 55, 0.08);
+    box-shadow: 0 1px 0 var(--glass-edge), inset 0 0 0 1px var(--glass-line);
 }
 
 .top-link svg {
@@ -1635,7 +1660,7 @@ body.is-top {
 }
 
 .top-share.copied {
-    color: var(--success);
+    color: #6ee7b7;
 }
 
 /* 動きを減らす設定の環境では、トップ画面の動きを出さない */
