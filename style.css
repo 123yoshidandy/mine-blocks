@@ -337,6 +337,25 @@ button:focus-visible {
     display: block;
 }
 
+/* ピースが覆っている数字と地雷：置かれた感じを残すよう、想定解より控えめに透かす */
+.piece-marks {
+    opacity: 0.8;
+}
+
+.piece-mark-number {
+    fill: rgba(255, 255, 255, 0.85);
+    font-family: var(--font-game);
+    font-weight: 800;
+    text-anchor: middle;
+    dominant-baseline: central;
+}
+
+.piece-mark-mine {
+    fill: var(--mine);
+    stroke: rgba(255, 255, 255, 0.85);
+    stroke-width: 2;
+}
+
 /* 置いたとき：ピース全体が上からストンと落ちる */
 @keyframes placePop {
     from {
