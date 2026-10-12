@@ -16,7 +16,7 @@
     --radius-sm: 6px;
     --shadow-card: 0 1px 2px rgba(31, 42, 55, 0.06), 0 12px 32px rgba(31, 42, 55, 0.10);
     --font-game: "M PLUS Rounded 1c", "Hiragino Maru Gothic ProN", "Hiragino Sans", "Noto Sans JP", sans-serif;
-    --mine-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cg stroke='%232b1d1d' stroke-width='2.2' stroke-linecap='round'%3E%3Cpath d='M12 2.5v19M2.5 12h19M5.3 5.3l13.4 13.4M18.7 5.3 5.3 18.7'/%3E%3C/g%3E%3Ccircle cx='12' cy='12' r='6.2' fill='%232b1d1d'/%3E%3Ccircle cx='9.8' cy='9.8' r='1.9' fill='%23fff' fill-opacity='.85'/%3E%3C/svg%3E"); /* 地雷のアイコン（マインスイーパー風） */
+    --mine-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cg stroke='%232b1d1d' stroke-width='2.2' stroke-linecap='round'%3E%3Cpath d='M12 2.5v19M2.5 12h19M5.3 5.3l13.4 13.4M18.7 5.3 5.3 18.7'/%3E%3C/g%3E%3Ccircle cx='12' cy='12' r='6.2' fill='%232b1d1d'/%3E%3Ccircle cx='10.8' cy='10.8' r='1.4' fill='%23fff' fill-opacity='.85'/%3E%3C/svg%3E"); /* 地雷のアイコン（マインスイーパー風）。Safari でも大きさと位置がずれないよう、幅と高さを持たせる */
     /* 数字の色（マインスイーパーにならい、数ごとに色を変えて読みやすくする。3はマインの赤と区別してオレンジ） */
     --num-1: #2563eb;
     --num-2: #16a34a;
@@ -312,7 +312,7 @@ button:focus-visible {
 
 /* 盤面のマイン：赤いタイルに地雷のアイコン */
 .cell.solution-mine {
-    background: var(--mine-icon) center / 58% no-repeat, linear-gradient(#f0595e, #d83c41);
+    background: var(--mine-icon) center / 58% 58% no-repeat, linear-gradient(#f0595e, #d83c41);
     box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.2), inset 0 2px 0 rgba(255, 255, 255, 0.22), 0 1px 1px rgba(31, 42, 55, 0.1);
 }
 
@@ -858,7 +858,7 @@ button:focus-visible {
 }
 
 .demo-cell.mine {
-    background: var(--mine-icon) center / 58% no-repeat, linear-gradient(#f0595e, #d83c41);
+    background: var(--mine-icon) center / 58% 58% no-repeat, linear-gradient(#f0595e, #d83c41);
     box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.2);
 }
 
@@ -896,7 +896,7 @@ button:focus-visible {
     position: absolute;
     inset: 9px;
     border-radius: 50%;
-    background: var(--mine-icon) center / 78% no-repeat, var(--mine);
+    background: var(--mine-icon) center / 78% 78% no-repeat, var(--mine);
     box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.9);
 }
 
@@ -1475,7 +1475,7 @@ body.is-top {
 .hero-number[data-n="3"] { color: var(--num-3); }
 
 .hero-mine {
-    background: var(--mine-icon) center / 58% no-repeat, linear-gradient(#f0595e, #d83c41);
+    background: var(--mine-icon) center / 58% 58% no-repeat, linear-gradient(#f0595e, #d83c41);
     box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.2), inset 0 2px 0 rgba(255, 255, 255, 0.22);
 }
 
