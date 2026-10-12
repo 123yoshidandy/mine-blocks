@@ -34,7 +34,18 @@
                 </button>
             </div>
 
-            <button id="topHint" class="top-link">遊び方を見る</button>
+            <div class="top-links">
+                <button id="topHint" class="top-link">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.6"/><circle class="icon-dot" cx="12" cy="17" r="0.6"/></svg>
+                    遊び方
+                </button>
+                <!-- 共有：トップから始める問題番号（今日の問題など）のURLを送る。コピーしたらチェックマークに変わる -->
+                <button id="share" class="top-link top-share" title="この問題を共有" aria-label="この問題を共有">
+                    <svg class="icon-default" viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><line x1="8.2" y1="10.8" x2="15.8" y2="6.2"/><line x1="8.2" y1="13.2" x2="15.8" y2="17.8"/></svg>
+                    <svg class="icon-done" viewBox="0 0 24 24" aria-hidden="true"><polyline points="5 12.5 10 17.5 19 7"/></svg>
+                    <span class="top-share-label">共有する</span>
+                </button>
+            </div>
         </div>
     </section>
 
@@ -63,15 +74,6 @@
                         <line x1="4" y1="22" x2="4" y2="15"/>
                     </svg>
                 </button>
-                <!-- エンドレス中はチャレンジを開始、チャレンジ中は強調表示され、押すとエンドレスに戻る -->
-                <button id="challengeToggle" class="icon-button" title="チャレンジモード" aria-label="チャレンジモード" aria-pressed="false">
-                    <svg viewBox="0 0 24 24" aria-hidden="true">
-                        <circle cx="12" cy="13.5" r="7.5"/>
-                        <polyline points="12 10 12 13.5 14.5 15.5"/>
-                        <line x1="9.5" y1="2.5" x2="14.5" y2="2.5"/>
-                        <line x1="12" y1="2.5" x2="12" y2="6"/>
-                    </svg>
-                </button>
                 <!-- オンライン対戦：部屋を作る・参加する。部屋に入っている間は強調表示 -->
                 <button id="onlineButton" class="icon-button" title="オンライン対戦" aria-label="オンライン対戦">
                     <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -86,18 +88,6 @@
                         <circle cx="12" cy="12" r="9"/>
                         <path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.6"/>
                         <circle class="icon-dot" cx="12" cy="17" r="0.6"/>
-                    </svg>
-                </button>
-                <button id="share" class="icon-button" title="共有" aria-label="共有">
-                    <svg class="icon-default" viewBox="0 0 24 24" aria-hidden="true">
-                        <circle cx="18" cy="5" r="2.5"/>
-                        <circle cx="6" cy="12" r="2.5"/>
-                        <circle cx="18" cy="19" r="2.5"/>
-                        <line x1="8.2" y1="10.8" x2="15.8" y2="6.2"/>
-                        <line x1="8.2" y1="13.2" x2="15.8" y2="17.8"/>
-                    </svg>
-                    <svg class="icon-done" viewBox="0 0 24 24" aria-hidden="true">
-                        <polyline points="5 12.5 10 17.5 19 7"/>
                     </svg>
                 </button>
             </div>
@@ -277,7 +267,7 @@
                     <ul class="hint-tips">
                         <li><span class="tip-icon tip-striped"></span>斜線のマスには置けません</li>
                         <li><span class="tip-icon tip-piece"></span>ピースは8個。使うのはそのうち6個です</li>
-                        <li><span class="tip-icon tip-timer"></span>ストップウォッチのボタンでチャレンジ。60秒から始まり、1問解くごとに+20秒</li>
+                        <li><span class="tip-icon tip-timer"></span>チャレンジはトップ画面から。60秒から始まり、1問解くごとに+20秒</li>
                     </ul>
                 </section>
 

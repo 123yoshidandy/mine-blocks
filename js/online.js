@@ -354,11 +354,9 @@ function formatOnlineTime(ms) {
     return `${(ms / 1000).toFixed(1)}秒`;
 }
 
-// 対戦中は、チャレンジボタンを使えなくし、対戦ボタンを強調する
+// 対戦中は、対戦ボタンを強調する
 function updateOnlineButtons() {
-    const active = isOnlineActive();
-    elements.onlineButton.classList.toggle('active', active);
-    elements.challengeToggleButton.disabled = active;
+    elements.onlineButton.classList.toggle('active', isOnlineActive());
 }
 
 // ほかのモーダル（クリア・降参・チャレンジ結果）を閉じる

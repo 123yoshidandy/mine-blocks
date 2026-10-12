@@ -144,8 +144,8 @@ button:focus-visible {
 }
 
 /* 共有ボタン：コピー完了時だけチェックマークを表示 */
-.icon-button .icon-done,
-.icon-button.copied .icon-default {
+.icon-done,
+.copied .icon-default {
     display: none;
 }
 
@@ -153,7 +153,7 @@ button:focus-visible {
     color: var(--success);
 }
 
-.icon-button.copied .icon-done {
+.copied .icon-done {
     display: block;
 }
 
@@ -1540,20 +1540,52 @@ body.is-top {
     --button-edge: #157a4f;
 }
 
-.top-link {
+/* トップ画面の下：遊び方と共有 */
+.top-links {
+    display: flex;
+    gap: 10px;
     margin-top: 20px;
-    padding: 8px 14px;
+    animation: topFadeUp 0.5s ease-out 0.75s both;
+}
+
+.top-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
     border-radius: 999px;
-    background: none;
+    background-color: var(--surface);
     color: var(--text-sub);
     font-weight: 700;
-    text-decoration: underline;
-    text-underline-offset: 4px;
-    animation: topFadeUp 0.5s ease-out 0.75s both;
+    box-shadow: 0 3px 0 #d3d9e2, inset 0 0 0 1px rgba(31, 42, 55, 0.08);
+    transition: transform 0.08s, box-shadow 0.08s, color 0.15s;
 }
 
 .top-link:hover {
     color: var(--accent-dark);
+}
+
+.top-link:active:not(:disabled) {
+    transform: translateY(2px);
+    box-shadow: 0 1px 0 #d3d9e2, inset 0 0 0 1px rgba(31, 42, 55, 0.08);
+}
+
+.top-link svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.top-link .icon-dot {
+    fill: currentColor;
+}
+
+.top-share.copied {
+    color: var(--success);
 }
 
 /* 動きを減らす設定の環境では、トップ画面の動きを出さない */
@@ -1562,7 +1594,7 @@ body.is-top {
     .top-title,
     .top-catch,
     .top-menu,
-    .top-link {
+    .top-links {
         animation: none;
     }
 }
@@ -1590,8 +1622,8 @@ body.is-top {
         padding: 11px 18px;
     }
 
-    .top-link {
-        margin-top: 12px;
+    .top-links {
+        margin-top: 14px;
     }
 }
 
@@ -1637,8 +1669,8 @@ body.is-top {
         font-size: 1.1rem;
     }
 
-    .top-link {
-        margin-top: 6px;
+    .top-links {
+        margin-top: 10px;
     }
 }
 
@@ -1728,11 +1760,6 @@ body.is-top {
 
 /* 幅の狭いスマホ（iPhone SEなど）：タイトルと4つのボタンを1行に収める */
 @media (max-width: 360px) {
-    /* ボタン5つとタイトルが並ばないので、ロゴのマークだけにする */
-    .logo-text {
-        display: none;
-    }
-
     .logo {
         gap: 6px;
     }

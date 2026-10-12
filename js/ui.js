@@ -11,17 +11,8 @@ function setupEventListeners() {
     // ヒントボタン（遊び方をアニメーションで説明する）
     setupHint();
     
-    // 共有ボタン（今の問題番号から同じ順番で遊べるURLを共有）
+    // 共有ボタン（トップ画面にだけある。トップから始める問題番号のURLを共有）
     elements.shareButton.addEventListener('click', shareGame);
-
-    // チャレンジボタン（エンドレス中はチャレンジを開始、チャレンジ中はエンドレスに戻る）
-    elements.challengeToggleButton.addEventListener('click', () => {
-        if (challengeState.active) {
-            requestExitChallenge();
-        } else {
-            startChallenge();
-        }
-    });
 
     // オンライン対戦（部屋を作る・参加する）
     setupOnline();
@@ -40,17 +31,10 @@ function setupEventListeners() {
     });
 }
 
-// 今の問題番号のURLを共有する
+// トップ画面から始める問題番号（今日の問題など）のURLを共有する。受け取った人も、エンドレス・チャレンジで同じ問題の列を遊べる
 // スマホでは共有シート、パソコンではクリップボードへのコピー、どちらも使えなければダイアログで表示
 async function shareGame() {
-    // オンライン対戦中は、部屋に招待するURLを共有する
-    if (isOnlineActive()) {
-        shareOnlineInvite();
-        return;
-    }
-
-    // チャレンジ中は、同じ問題の列で挑戦できるよう開始した問題番号を共有する
-    const seed = challengeState.active ? challengeState.startSeed : gameState.seed;
+    const seed = gameState.initialSeed;
     const url = new URL(location.href);
     url.searchParams.set('seed', seed);
     const shareUrl = url.toString();
@@ -60,9 +44,7 @@ async function shareGame() {
         try {
             await navigator.share({
                 title: 'MINE BLOCKS',
-                text: challengeState.active
-                    ? `MINE BLOCKS チャレンジモード 問題番号 ${seed} で勝負！`
-                    : `MINE BLOCKS 問題番号 ${seed} で勝負！`,
+                text: `MINE BLOCKS 問題番号 ${seed} で勝負！`,
                 url: shareUrl
             });
         } catch (e) {
@@ -73,20 +55,23 @@ async function shareGame() {
 
     try {
         await navigator.clipboard.writeText(shareUrl);
-        showShareFeedback('コピーしました！');
+        showShareFeedback('コピーしました');
     } catch (e) {
         window.prompt('このURLを共有してください', shareUrl);
     }
 }
 
-// 共有ボタンのアイコンを一時的にチェックマークに変えて結果を知らせる
+// 共有ボタンのアイコンと文字を一時的に変えて、コピーしたことを知らせる
 function showShareFeedback(message) {
     const button = elements.shareButton;
+    const label = button.querySelector('.top-share-label');
     button.classList.add('copied');
     button.title = message;
+    label.textContent = message;
     setTimeout(() => {
         button.classList.remove('copied');
-        button.title = '共有';
+        button.title = 'この問題を共有';
+        label.textContent = '共有する';
     }, 2000);
 }
 

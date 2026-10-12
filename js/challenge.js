@@ -116,16 +116,10 @@ function updateChallengeDisplay() {
     elements.remainingStat.classList.toggle('low', remaining <= 10);
 }
 
-// モードに応じてチャレンジボタンと、残り時間・解いた数の表示（チャレンジ中だけ）を切り替える
-// チャレンジボタンはチャレンジ中だけ強調し、押すとエンドレスに戻ることを説明文で示す
+// モードに応じて、残り時間・解いた数の表示（チャレンジ中だけ）と降参ボタンの説明を切り替える
+// チャレンジの開始はトップ画面から、終了はロゴでトップに戻るか結果画面から行う
 function updateModeDisplay() {
     const isChallenge = challengeState.active;
-    const button = elements.challengeToggleButton;
-    const label = isChallenge ? 'チャレンジを終了してエンドレスに戻る' : 'チャレンジモード';
-    button.classList.toggle('active', isChallenge);
-    button.setAttribute('aria-pressed', isChallenge);
-    button.title = label;
-    button.setAttribute('aria-label', label);
 
     // チャレンジ中の降参はチャレンジの終了になることを、降参ボタンの説明で示す
     const surrenderLabel = isChallenge ? '降参してチャレンジを終了' : '降参して想定解を見る';
@@ -137,12 +131,3 @@ function updateModeDisplay() {
     elements.onlineButton.disabled = isChallenge;
 }
 
-// チャレンジ中にエンドレスへ切り替えるときは確認する（時間切れ後の結果表示中は確認しない）
-function requestExitChallenge() {
-    if (!challengeState.active) return;
-
-    if (isChallengeRunning() && !window.confirm('チャレンジを終了してエンドレスに戻りますか？')) {
-        return;
-    }
-    exitChallenge();
-}

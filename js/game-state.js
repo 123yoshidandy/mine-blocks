@@ -35,7 +35,6 @@ const elements = {
     surrenderNextButton: document.getElementById('surrenderNext'),
     hintButton: document.getElementById('hint'),
     shareButton: document.getElementById('share'),
-    challengeToggleButton: document.getElementById('challengeToggle'),
     challengeStats: document.getElementById('challengeStats'),
     remainingStat: document.getElementById('remainingStat'),
     challengeSolved: document.getElementById('challengeSolved'),
