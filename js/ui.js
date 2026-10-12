@@ -10,7 +10,10 @@ function setupEventListeners() {
     
     // ヒントボタン（遊び方をアニメーションで説明する）
     setupHint();
-    
+
+    // ご意見・不具合の報告（GitHub の Issue 作成画面を開く）
+    setupFeedback();
+
     // 共有ボタン（トップ画面にだけある。トップから始める問題番号のURLを共有）
     elements.shareButton.addEventListener('click', shareGame);
 

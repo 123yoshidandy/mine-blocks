@@ -89,7 +89,16 @@ const elements = {
     logoButton: document.getElementById('logoButton'),
     clearModal: document.getElementById('clearModal'),
     nextGameButton: document.getElementById('nextGame'),
-    clearHomeButton: document.getElementById('clearHome')
+    clearHomeButton: document.getElementById('clearHome'),
+    feedbackButton: document.getElementById('feedbackButton'),
+    topFeedback: document.getElementById('topFeedback'),
+    feedbackModal: document.getElementById('feedbackModal'),
+    feedbackClose: document.getElementById('feedbackClose'),
+    feedbackForm: document.getElementById('feedbackForm'),
+    feedbackTitle: document.getElementById('feedbackTitle'),
+    feedbackBody: document.getElementById('feedbackBody'),
+    feedbackAttach: document.getElementById('feedbackAttach'),
+    feedbackContext: document.getElementById('feedbackContext')
 };
 
 // タイマーを開始

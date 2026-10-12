@@ -1408,6 +1408,131 @@ button:focus-visible {
     }
 }
 
+/* ご意見・不具合の報告 */
+.feedback-content {
+    position: relative;
+    max-width: 400px;
+}
+
+.online-field textarea {
+    font: inherit;
+    font-size: 1rem;
+    color: var(--text);
+    padding: 10px 12px;
+    border: 1px solid #d5dbe4;
+    border-radius: var(--radius-md);
+    background-color: var(--surface);
+    resize: vertical;
+}
+
+.online-field textarea:focus {
+    outline: 3px solid color-mix(in srgb, var(--accent) 35%, transparent);
+    border-color: var(--accent);
+}
+
+/* 種類：2つのボタンを並べたタブのように切り替える */
+.feedback-kinds {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+    margin-bottom: 12px;
+    padding: 4px;
+    border-radius: var(--radius-md);
+    background-color: var(--surface-sub);
+}
+
+.feedback-kinds label {
+    position: relative;
+    cursor: pointer;
+}
+
+.feedback-kinds input {
+    position: absolute;
+    opacity: 0;
+}
+
+.feedback-kinds span {
+    display: block;
+    padding: 8px 4px;
+    border-radius: 9px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--text-sub);
+    transition: background-color 0.15s, color 0.15s;
+}
+
+.feedback-kinds input:checked + span {
+    background-color: var(--surface);
+    color: var(--accent-dark);
+    box-shadow: 0 1px 3px rgba(31, 42, 55, 0.15);
+}
+
+.feedback-kinds input:focus-visible + span {
+    outline: 3px solid color-mix(in srgb, var(--accent) 45%, transparent);
+}
+
+.feedback-attach {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    text-align: left;
+    cursor: pointer;
+}
+
+.feedback-attach input {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--accent);
+}
+
+/* 添える情報の中身（チェックを外すと隠す） */
+.feedback-context {
+    margin-top: 6px;
+    padding: 8px 10px;
+    border-radius: var(--radius-sm);
+    background-color: var(--surface-sub);
+    font-family: inherit;
+    font-size: 0.7rem;
+    line-height: 1.5;
+    color: var(--text-sub);
+    text-align: left;
+    white-space: pre-wrap;
+    word-break: break-all;
+    max-height: 6.2em;
+    overflow-y: auto;
+}
+
+.feedback-attach:has(input:not(:checked)) + .feedback-context {
+    display: none;
+}
+
+.feedback-note {
+    margin: 12px 0 10px;
+    font-size: 0.75rem;
+}
+
+.feedback-submit {
+    width: 100%;
+}
+
+/* トップ画面のいちばん下：控えめな文字のリンク */
+.top-feedback {
+    margin-top: 16px;
+    padding: 4px 8px;
+    background: none;
+    color: var(--on-page-sub);
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    animation: topFadeUp 0.5s ease-out 0.85s both;
+}
+
+.top-feedback:hover {
+    color: var(--on-page);
+}
+
 /* ヘッダーのロゴ：押すとトップ画面に戻る（見た目はロゴのまま） */
 .logo-button {
     display: flex;
@@ -1670,7 +1795,8 @@ body.is-top {
     .top-title,
     .top-catch,
     .top-menu,
-    .top-links {
+    .top-links,
+    .top-feedback {
         animation: none;
     }
 }

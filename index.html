@@ -51,6 +51,7 @@
                     <span class="top-share-label">共有する</span>
                 </button>
             </div>
+            <button id="topFeedback" class="top-feedback">ご意見・不具合の報告</button>
         </div>
     </section>
 
@@ -84,6 +85,13 @@
                     <svg viewBox="0 0 24 24" aria-hidden="true">
                         <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/>
                         <line x1="4" y1="22" x2="4" y2="15"/>
+                    </svg>
+                </button>
+                <button id="feedbackButton" class="icon-button" title="ご意見・不具合の報告" aria-label="ご意見・不具合の報告">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3h11A2.5 2.5 0 0 1 20 5.5v8a2.5 2.5 0 0 1-2.5 2.5H10l-4.5 4v-4h0A1.5 1.5 0 0 1 4 14.5z"/>
+                        <line x1="12" y1="6.5" x2="12" y2="10"/>
+                        <circle class="icon-dot" cx="12" cy="13" r="0.6"/>
                     </svg>
                 </button>
                 <button id="hint" class="icon-button" title="ヒント" aria-label="ヒント">
@@ -233,6 +241,35 @@
             <p class="countdown-number" id="onlineCountdownNumber">3</p>
         </div>
 
+        <!-- ご意見・不具合の報告：書いた内容を入れて GitHub の Issue 作成画面を開く -->
+        <div class="modal" id="feedbackModal">
+            <div class="modal-content feedback-content" role="dialog" aria-labelledby="feedbackHeading">
+                <button id="feedbackClose" class="hint-close" type="button" aria-label="閉じる">×</button>
+                <h2 id="feedbackHeading">ご意見・不具合</h2>
+                <form id="feedbackForm">
+                    <div class="feedback-kinds" role="radiogroup" aria-label="種類">
+                        <label><input type="radio" name="feedbackKind" value="bug" checked><span>不具合</span></label>
+                        <label><input type="radio" name="feedbackKind" value="idea"><span>ご意見・要望</span></label>
+                    </div>
+                    <label class="online-field">
+                        <span>ひとことで</span>
+                        <input id="feedbackTitle" type="text" maxlength="80" required placeholder="例：ピースが置けるはずなのに置けない">
+                    </label>
+                    <label class="online-field">
+                        <span>くわしく（任意）</span>
+                        <textarea id="feedbackBody" rows="4" maxlength="2000" placeholder="どの画面で、何をしたら、どうなったか"></textarea>
+                    </label>
+                    <label class="feedback-attach">
+                        <input id="feedbackAttach" type="checkbox" checked>
+                        <span>遊んでいた問題と端末の情報を添える</span>
+                    </label>
+                    <pre class="feedback-context" id="feedbackContext"></pre>
+                    <p class="result-note feedback-note">GitHub の画面が開きます。内容を確かめて送信してください（GitHub のアカウントが必要です）</p>
+                    <button type="submit" class="primary-button feedback-submit">GitHub で報告する</button>
+                </form>
+            </div>
+        </div>
+
         <!-- 画面下に出す短いお知らせ -->
         <div class="toast" id="toast" role="status" hidden></div>
 
@@ -299,6 +336,7 @@
     <script src="js/hint.js"></script>
     <script src="js/surrender.js"></script>
     <script src="js/top.js"></script>
+    <script src="js/feedback.js"></script>
     <script src="js/netplay/netplay-client.js"></script>
     <script src="js/online-config.js"></script>
     <script src="js/online.js"></script>
