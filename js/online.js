@@ -48,7 +48,6 @@ function setupOnline() {
         if (!connected && isOnlineActive()) showToast('接続が切れました。再接続しています…');
     });
 
-    elements.onlineButton.addEventListener('click', openOnline);
     elements.onlineClose.addEventListener('click', () => elements.onlineModal.classList.remove('active'));
     elements.onlineCreate.addEventListener('click', () => enterRoom(name => net.createRoom(name)));
     elements.onlineJoin.addEventListener('click', () => {
@@ -84,12 +83,8 @@ function setupOnline() {
     }
 }
 
-// 対戦ボタン：部屋に入っていなければ参加画面、ロビーなら部屋の画面を出す。対戦中は退出を確認する
+// オンライン対戦の参加画面を出す（トップ画面の「オンライン対戦」から）
 function openOnline() {
-    if (isOnlineActive() && onlineState.lobby.status !== 'lobby') {
-        if (window.confirm('対戦から退出しますか？')) leaveOnline();
-        return;
-    }
     showOnlineError('');
     renderOnlineModal();
     elements.onlineModal.classList.add('active');
@@ -146,7 +141,6 @@ function handleRoomUpdate() {
     // 部屋に入ったら、トップ画面やチャレンジは閉じる
     hideTop();
     if (challengeState.active) stopChallenge();
-    updateOnlineButtons();
     renderOnlineBar();
 
     if (stage === 'lobby') {
@@ -238,6 +232,8 @@ function renderOnlineModal() {
     const inLobby = lobby?.status === 'lobby';
     elements.onlineEntry.hidden = inLobby;
     elements.onlineLobby.hidden = !inLobby;
+    // 部屋に入っている間は閉じられない（開き直す入口がないため。出るときは「部屋を出る」）
+    elements.onlineClose.hidden = inLobby;
     if (!inLobby) return;
 
     const isHost = net.isHost();
@@ -354,11 +350,6 @@ function formatOnlineTime(ms) {
     return `${(ms / 1000).toFixed(1)}秒`;
 }
 
-// 対戦中は、対戦ボタンを強調する
-function updateOnlineButtons() {
-    elements.onlineButton.classList.toggle('active', isOnlineActive());
-}
-
 // ほかのモーダル（クリア・降参・チャレンジ結果）を閉じる
 function closeGameModals() {
     elements.clearModal.classList.remove('active');
@@ -422,7 +413,6 @@ function cleanupOnline() {
 
     elements.onlineModal.classList.remove('active');
     elements.onlineResultModal.classList.remove('active');
-    updateOnlineButtons();
     renderOnlineBar();
     net.setRoomUrl(null);
     generateGame(gameState.endlessSeed ?? gameState.initialSeed);

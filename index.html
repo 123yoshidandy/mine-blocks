@@ -68,19 +68,17 @@
                 </button>
             </h1>
             <div class="buttons">
+                <!-- ホームに戻る（ロゴと同じ。チャレンジや対戦の最中は確認してからやめる） -->
+                <button id="homeButton" class="icon-button" title="ホームに戻る" aria-label="ホームに戻る">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M3.5 11 12 4l8.5 7"/>
+                        <path d="M5.5 9.5V20h4.5v-5.5h4V20h4.5V9.5"/>
+                    </svg>
+                </button>
                 <button id="surrender" class="icon-button" title="降参して想定解を見る" aria-label="降参">
                     <svg viewBox="0 0 24 24" aria-hidden="true">
                         <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/>
                         <line x1="4" y1="22" x2="4" y2="15"/>
-                    </svg>
-                </button>
-                <!-- オンライン対戦：部屋を作る・参加する。部屋に入っている間は強調表示 -->
-                <button id="onlineButton" class="icon-button" title="オンライン対戦" aria-label="オンライン対戦">
-                    <svg viewBox="0 0 24 24" aria-hidden="true">
-                        <circle cx="9" cy="8" r="3.5"/>
-                        <path d="M2.5 20c0-3.6 2.9-6.5 6.5-6.5s6.5 2.9 6.5 6.5"/>
-                        <path d="M16 4.8a3.5 3.5 0 0 1 0 6.4"/>
-                        <path d="M18 13.8c2.1.9 3.5 3 3.5 5.7"/>
                     </svg>
                 </button>
                 <button id="hint" class="icon-button" title="ヒント" aria-label="ヒント">

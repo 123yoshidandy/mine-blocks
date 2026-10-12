@@ -50,7 +50,7 @@ const elements = {
     hintPrev: document.getElementById('hintPrev'),
     hintNext: document.getElementById('hintNext'),
     hintDots: document.getElementById('hintDots'),
-    onlineButton: document.getElementById('onlineButton'),
+    homeButton: document.getElementById('homeButton'),
     onlineModal: document.getElementById('onlineModal'),
     onlineClose: document.getElementById('onlineClose'),
     onlineEntry: document.getElementById('onlineEntry'),

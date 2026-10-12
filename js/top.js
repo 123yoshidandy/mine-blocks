@@ -32,6 +32,7 @@ function setupTop() {
     });
     elements.topHint.addEventListener('click', openHint);
     elements.logoButton.addEventListener('click', goToTop);
+    elements.homeButton.addEventListener('click', goToTop);
 
     // 招待URL（?room=）で開いたときは、トップ画面を出さずに部屋の画面に進む
     if (!NetplayClient.roomCodeFromUrl()) {
@@ -50,7 +51,7 @@ function hideTop() {
     document.body.classList.remove('is-top');
 }
 
-// ロゴからトップ画面に戻る。チャレンジや対戦の最中なら、確認してから終える
+// ロゴかホームのボタンからトップ画面に戻る。チャレンジや対戦の最中なら、確認してから終える
 function goToTop() {
     if (isOnlineActive()) {
         if (!window.confirm('対戦から退出してトップに戻りますか？')) return;
