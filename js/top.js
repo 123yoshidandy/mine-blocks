@@ -51,16 +51,13 @@ function hideTop() {
     document.body.classList.remove('is-top');
 }
 
-// ロゴかホームのボタンからトップ画面に戻る。チャレンジや対戦の最中なら、確認してから終える
+// ロゴかホームのボタンからトップ画面に戻る。チャレンジ中ならそのまま終え、対戦中は確認してから退出する
 function goToTop() {
     if (isOnlineActive()) {
         if (!window.confirm('対戦から退出してトップに戻りますか？')) return;
         leaveOnline();
-    } else if (isChallengeRunning()) {
-        if (!window.confirm('チャレンジを終了してトップに戻りますか？')) return;
-        exitChallenge();
     } else if (challengeState.active) {
-        exitChallenge(); // 時間切れの結果画面から戻る
+        exitChallenge();
     }
     elements.clearModal.classList.remove('active');
     elements.surrenderModal.classList.remove('active');
