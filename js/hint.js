@@ -97,6 +97,7 @@ function buildHintDemo(demo, scene) {
         const cell = document.createElement('div');
         cell.className = clue === 'R' ? 'demo-cell mine' : 'demo-cell';
         cell.textContent = clue === 'R' ? '' : clue;
+        if (clue !== 'R') cell.dataset.n = clue; // 盤面と同じく数ごとに色を変える
         board.appendChild(cell);
     }));
 

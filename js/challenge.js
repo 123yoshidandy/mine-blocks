@@ -62,6 +62,7 @@ function onChallengePuzzleSolved() {
     generateGame(getNextSeed(gameState.seed));
     updateChallengeDisplay();
     showChallengeBonus();
+    spawnConfetti(24); // すぐ次の問題に進むので、紙吹雪だけ出す
 }
 
 // 残り時間の横に「+20秒」を表示する（続けて解いても毎回アニメーションを最初から再生する）

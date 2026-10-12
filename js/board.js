@@ -299,8 +299,8 @@ function checkBoardCompletion() {
         elements.clearTimeDisplay.textContent = gameState.elapsedTime;
         elements.clearCountResultDisplay.textContent = gameState.clearedCount;
         
-        // クリアモーダルを表示
-        elements.clearModal.classList.add('active');
+        // 盤面の波と紙吹雪を見せてから、クリアモーダルを表示
+        celebrateClear(() => elements.clearModal.classList.add('active'));
     }
 }
 
@@ -331,8 +331,9 @@ function renderCellClue(row, col) {
         cell.classList.add('solution-mine');
         cell.textContent = '';  // 数字は表示しない
     } else if (mineInfo.mineCount > 0) {
-        // マインがない場合は数字を表示
+        // マインがない場合は数字を表示（data-n で数ごとに色を変える）
         cell.textContent = mineInfo.mineCount;
+        cell.dataset.n = mineInfo.mineCount;
     } else {
         // マインもなく、重なるブロックもない場合
         cell.textContent = '';
