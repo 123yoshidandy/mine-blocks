@@ -337,13 +337,9 @@ button:focus-visible {
     display: block;
 }
 
-/* ピースが覆っている数字と地雷：置かれた感じを残すよう、想定解より控えめに透かす */
-.piece-marks {
-    opacity: 0.8;
-}
-
+/* ピースが覆っている数字と地雷：想定解と同じく、はっきり表示する */
 .piece-mark-number {
-    fill: rgba(255, 255, 255, 0.85);
+    fill: white;
     font-family: var(--font-game);
     font-weight: 800;
     text-anchor: middle;
@@ -352,7 +348,7 @@ button:focus-visible {
 
 .piece-mark-mine {
     fill: var(--mine);
-    stroke: rgba(255, 255, 255, 0.85);
+    stroke: white;
     stroke-width: 2;
 }
 

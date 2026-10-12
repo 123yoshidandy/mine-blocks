@@ -56,7 +56,7 @@ function createPieceSvg(grid, cell, gap, color, getMark = null) {
     return svg;
 }
 
-// ピースが覆っている数字と地雷を、控えめに透かして描く（置いたあとも何を覆ったか分かるように）
+// ピースが覆っている数字と地雷を描く（置いたあとも何を覆ったか分かるように）
 function addPieceMarks(svg, grid, step, cell, getMark) {
     const marks = document.createElementNS(SVG_NS, 'g');
     marks.setAttribute('class', 'piece-marks');
