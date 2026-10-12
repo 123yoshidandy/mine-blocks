@@ -7,7 +7,7 @@
 const SVG_NS = 'http://www.w3.org/2000/svg';
 
 // 地雷のアイコン（style.css の --mine-icon と同じ絵）
-const MINE_ICON_URI = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cg stroke='%232b1d1d' stroke-width='2.2' stroke-linecap='round'%3E%3Cpath d='M12 2.5v19M2.5 12h19M5.3 5.3l13.4 13.4M18.7 5.3 5.3 18.7'/%3E%3C/g%3E%3Ccircle cx='12' cy='12' r='6.2' fill='%232b1d1d'/%3E%3Ccircle cx='10.8' cy='10.8' r='1.4' fill='%23fff' fill-opacity='.85'/%3E%3C/svg%3E";
+const MINE_ICON_URI = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cg transform='translate(0.7 0)'%3E%3Cg stroke='%232b1d1d' stroke-width='2.2' stroke-linecap='round'%3E%3Cpath d='M12 2.5v19M2.5 12h19M5.3 5.3l13.4 13.4M18.7 5.3 5.3 18.7'/%3E%3C/g%3E%3Ccircle cx='12' cy='12' r='6.2' fill='%232b1d1d'/%3E%3Ccircle cx='9.8' cy='9.8' r='1.9' fill='%23fff' fill-opacity='.85'/%3E%3C/g%3E%3C/svg%3E";
 
 // grid（1がピースのマス）から、マスの大きさ cell・隙間 gap のピースの SVG を作る
 // 各マスの四角に加え、右・下の同じピースのマスとの隙間、田の字の真ん中の隙間も同じ色で埋める
