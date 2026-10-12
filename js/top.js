@@ -67,9 +67,13 @@ function renderTopHero() {
     hero.innerHTML = '';
     hero.style.gridTemplateColumns = `repeat(${TOP_HERO_LAYOUT[0].length}, var(--hero-cell))`;
 
+    // 出てくる順番：数字と地雷は1マスずつ、ピースは最初のマスの順番でまとめて（ピースがマスに分かれて落ちないように）
+    const flat = TOP_HERO_LAYOUT.flat();
+
     TOP_HERO_LAYOUT.forEach((row, r) => row.forEach((token, c) => {
         const cell = document.createElement('div');
-        cell.style.setProperty('--i', r * row.length + c); // 出てくる順番
+        const isPiece = !/^(\d|m)$/.test(token);
+        cell.style.setProperty('--i', isPiece ? flat.indexOf(token) : r * row.length + c);
         if (token === 'm') {
             cell.className = 'hero-cell hero-mine';
         } else if (/^\d$/.test(token)) {
