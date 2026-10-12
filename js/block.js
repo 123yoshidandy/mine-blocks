@@ -243,20 +243,8 @@ function renderBlocks() {
         blockElement.style.setProperty('--cols', block.cols);
         blockElement.style.setProperty('--rows', block.rows);
 
-        // ブロックのセルを描画
-        for (let row = 0; row < block.rows; row++) {
-            for (let col = 0; col < block.cols; col++) {
-                const cellElement = document.createElement('div');
-                cellElement.className = block.grid[row][col] === 1 ? 'block-cell' : 'block-cell empty';
-
-                // マインの場合はマークを付ける
-                if (block.mines.some(mine => mine.row === row && mine.col === col)) {
-                    cellElement.classList.add('mine');
-                }
-                
-                blockElement.appendChild(cellElement);
-            }
-        }
+        // ピースを1つの絵にする（マス1つを1単位で作り、大きさは CSS の --block-cell で決める）
+        blockElement.appendChild(createPieceSvg(block.grid, 1, 0, block.color));
         
         // ドラッグ機能を追加（デスクトップ用）
         blockElement.setAttribute('draggable', 'true');

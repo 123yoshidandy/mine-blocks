@@ -138,9 +138,8 @@ function placeBlock(startRow, startCol, block) {
                 
                 // DOM要素を更新
                 const cellElement = document.querySelector(`.cell[data-row="${boardRow}"][data-col="${boardCol}"]`);
+                // ピースの見た目は盤面の上に重ねる絵（addPieceOverlay）が受け持つ。マスには置いた印だけを付ける
                 cellElement.classList.add('filled');
-                cellElement.style.setProperty('--piece-color', block.color);
-                cellElement.style.setProperty('--join-shadow', getJoinShadow(block.grid, row, col));
                 
                 // マスに配置した場合は、数字やマイン表示を非表示にする
                 cellElement.textContent = '';
@@ -157,6 +156,8 @@ function placeBlock(startRow, startCol, block) {
         }
     }
     
+    addPieceOverlay(blockIndex, startRow, startCol, block);
+
     // ブロックを使用済みにする
     const blockElement = elements.blocksContainer.children[blockIndex];
     blockElement.classList.add('used');
@@ -182,11 +183,10 @@ function removeBlock(blockIndex) {
             // ピースの色・つなぎ目を消し、置く前のヒント（数字・赤いマス）を表示し直す
             const cellElement = document.querySelector(`.cell[data-row="${row}"][data-col="${col}"]`);
             cellElement.classList.remove('filled', 'mine');
-            cellElement.style.removeProperty('--piece-color');
-            cellElement.style.removeProperty('--join-shadow');
             renderCellClue(row, col);
         }
     }
+    removePieceOverlay(blockIndex);
 
     // 置き場のブロックを再び表示する
     const blockElement = elements.blocksContainer.children[blockIndex];
@@ -195,7 +195,38 @@ function removeBlock(blockIndex) {
     blockElement.style.pointerEvents = '';
 }
 
-// 同じピースの右・下・右下のマスとの隙間をピースの色で埋める影を返す
+// 盤面に置いたピースの絵（ピース1つを1つの SVG にして、マスの上に重ねる）
+// マスごとに色を塗ると、動かしたときにつなぎ目に線が出るため、見た目はこの絵だけで描く
+const pieceOverlays = new Map(); // blockIndex → { element, row, col, block }
+
+function addPieceOverlay(blockIndex, row, col, block) {
+    const element = document.createElement('div');
+    element.className = 'piece-overlay';
+    element.style.setProperty('--piece-color', block.color);
+    const overlay = { element, row, col, block };
+    pieceOverlays.set(blockIndex, overlay);
+    elements.gameBoard.appendChild(element);
+    layoutPieceOverlay(overlay);
+}
+
+function removePieceOverlay(blockIndex) {
+    pieceOverlays.get(blockIndex)?.element.remove();
+    pieceOverlays.delete(blockIndex);
+}
+
+// ピースの左上のマスの位置と、マスの大きさ・隙間を実際の盤面から測って、絵を作り直す
+function layoutPieceOverlay({ element, row, col, block }) {
+    const origin = elements.gameBoard.querySelector(`.cell[data-row="${row}"][data-col="${col}"]`);
+    const gap = parseFloat(getComputedStyle(elements.gameBoard).columnGap) || 0;
+    element.style.left = `${origin.offsetLeft}px`;
+    element.style.top = `${origin.offsetTop}px`;
+    element.replaceChildren(createPieceSvg(block.grid, origin.offsetWidth, gap, block.color));
+}
+
+// 画面の大きさが変わるとマスの大きさも変わるので、置いてあるピースの絵を作り直す
+window.addEventListener('resize', () => pieceOverlays.forEach(layoutPieceOverlay));
+
+// 同じピースの右・下・右下のマスとの隙間をピースの色で埋める影を返す（遊び方・想定解の小さな盤面で使う）
 function getJoinShadow(grid, row, col) {
     const isFilled = (r, c) => grid[r] !== undefined && grid[r][c] === 1;
     const right = isFilled(row, col + 1);

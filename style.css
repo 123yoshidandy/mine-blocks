@@ -271,9 +271,10 @@ button:focus-visible {
 
 /* ゲームボード：下地のパネルの上にマスを並べる */
 .game-board {
+    position: relative; /* 置いたピースの絵（.piece-overlay）を重ねる基準 */
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    --board-gap: 4px; /* 置いたピースのつなぎ目（JSの影）でも使う */
+    --board-gap: 4px;
     gap: var(--board-gap);
     width: fit-content; /* マスの大きさに合わせ、列間に余白が出ないようにする */
     max-width: 100%;
@@ -315,19 +316,28 @@ button:focus-visible {
     box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.2), inset 0 2px 0 rgba(255, 255, 255, 0.22), 0 1px 1px rgba(31, 42, 55, 0.1);
 }
 
+/* ピースを置いたマス：見た目は上に重ねるピースの絵が受け持つので、マスは透明にしてクリック・タッチだけ受ける */
 .cell.filled {
-    background-color: var(--piece-color, #3498db);
-    color: white;
-    background-image: none;
-    border-radius: 0;
-    box-shadow: var(--join-shadow, none); /* 同じピースのマス同士の隙間を埋める */
+    background: none;
+    box-shadow: none;
     cursor: pointer; /* クリックで外せることを示す */
-    /* ピースの厚み：下の行のマスは後から描かれて影を隠すので、ピースの下側の外周（行間の隙間）にだけ見える */
+}
+
+/* 盤面に置いたピースの絵（ピース1つを1つの SVG にして、動かしてもつなぎ目に線が出ないようにする） */
+.piece-overlay {
+    position: absolute;
+    z-index: 1;
+    pointer-events: none; /* クリック・タッチは下のマスが受ける */
+    /* ピースの厚み：下側の外周にだけ、同じ色の濃い影が出る */
     filter: drop-shadow(0 3px 0 color-mix(in srgb, var(--piece-color) 60%, black));
     animation: placePop 0.28s cubic-bezier(0.3, 1.6, 0.5, 1);
 }
 
-/* 置いたとき：ピース全体が上からストンと落ちる（マスごとに拡大するとピースがバラけて見えるため、全マス同じ動きにする） */
+.piece-overlay svg {
+    display: block;
+}
+
+/* 置いたとき：ピース全体が上からストンと落ちる */
 @keyframes placePop {
     from {
         transform: translateY(-7px);
@@ -395,10 +405,6 @@ button:focus-visible {
 }
 
 .block {
-    display: grid;
-    grid-template-columns: repeat(var(--cols, 3), var(--block-cell));
-    grid-template-rows: repeat(var(--rows, 3), var(--block-cell));
-    gap: 0; /* マス同士をくっつけて1つのピースに見せる */
     cursor: grab;
     padding: 8px;
     border-radius: var(--radius-md);
@@ -421,17 +427,12 @@ button:focus-visible {
     cursor: not-allowed;
 }
 
-.block-cell {
-    width: var(--block-cell);
-    height: var(--block-cell);
-    background-color: var(--piece-color, #3498db);
-    /* 盤面に置いたピースと同じ厚み（下のマスが後から描かれるので、ピースの下側の外周にだけ見える） */
+/* 置き場のピースの絵：マスの数 × --block-cell の大きさで表示し、盤面と同じ厚みを付ける */
+.block svg {
+    display: block;
+    width: calc(var(--cols, 3) * var(--block-cell));
+    height: calc(var(--rows, 3) * var(--block-cell));
     filter: drop-shadow(0 3px 0 color-mix(in srgb, var(--piece-color, #3498db) 60%, black));
-}
-
-.block-cell.empty {
-    background-color: transparent;
-    filter: none;
 }
 
 /* モーダル */
@@ -1319,7 +1320,7 @@ button:focus-visible {
     pointer-events: none; /* 演出中にピースを外さないようにする */
 }
 
-.game-board.cleared .cell.filled {
+.game-board.cleared .piece-overlay {
     animation: clearWave 0.55s ease var(--wave-delay, 0ms) both;
 }
 
@@ -1356,8 +1357,8 @@ button:focus-visible {
 
 /* 動きを減らす設定の環境では、ピースの弾み・クリアの演出を出さない */
 @media (prefers-reduced-motion: reduce) {
-    .cell.filled,
-    .game-board.cleared .cell.filled,
+    .piece-overlay,
+    .game-board.cleared .piece-overlay,
     .title-clear {
         animation: none;
     }
@@ -1418,7 +1419,8 @@ body.is-top {
 /* 盤面を模した絵：へこんだトレーの上にマスが1つずつ落ちてくる */
 .top-hero {
     --hero-cell: 52px;
-    --board-gap: 4px; /* ピースのつなぎ目（getJoinShadow）で使う。盤面と同じ幅にしてつなぎ目に線が出ないようにする */
+    --board-gap: 4px;
+    position: relative; /* ピースの絵（.hero-piece）を重ねる基準 */
     display: grid;
     gap: var(--board-gap);
     padding: 10px;
@@ -1462,12 +1464,21 @@ body.is-top {
     box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.2), inset 0 2px 0 rgba(255, 255, 255, 0.22);
 }
 
-/* ピース：マス同士の隙間を埋めて1つにつなげ、下側の外周に厚みを付ける */
+/* ピースのマスは場所だけ取る（見た目は上に重ねるピースの絵が受け持つ） */
+.hero-slot {
+    animation: none;
+}
+
+/* ピースの絵：ピース1つを1つの SVG にして重ね、下側の外周に厚みを付けて、まとめて落ちてくる */
 .hero-piece {
-    border-radius: 0;
-    background-color: var(--piece-color);
-    box-shadow: var(--join-shadow, none);
+    position: absolute;
+    pointer-events: none;
     filter: drop-shadow(0 4px 0 color-mix(in srgb, var(--piece-color) 60%, black));
+    animation: heroDrop 0.45s cubic-bezier(0.3, 1.5, 0.5, 1) calc(var(--i) * 45ms) backwards;
+}
+
+.hero-piece svg {
+    display: block;
 }
 
 .top-title {
@@ -1615,6 +1626,7 @@ body.is-top {
 /* 動きを減らす設定の環境では、トップ画面の動きを出さない */
 @media (prefers-reduced-motion: reduce) {
     .hero-cell,
+    .hero-piece,
     .top-title,
     .top-catch,
     .top-menu,

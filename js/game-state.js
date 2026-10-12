@@ -126,6 +126,7 @@ function stopTimer() {
 // ボードとブロックコンテナをクリア
 function clearBoard() {
     elements.gameBoard.innerHTML = '';
+    pieceOverlays.clear(); // 盤面に重ねたピースの絵も一緒に消える
     elements.blocksContainer.innerHTML = '';
     gameState.board = [];
     gameState.blocks = [];
