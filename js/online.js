@@ -392,12 +392,9 @@ async function shareOnlineInvite() {
     }
 }
 
-// URLに部屋番号を入れる（再読み込みしても部屋に戻れる）。問題番号は外す
+// URLに部屋番号を入れる（再読み込みしても部屋に戻れる）
 function setOnlineRoomUrl(roomCode) {
     net.setRoomUrl(roomCode);
-    const url = new URL(location.href);
-    url.searchParams.delete('seed');
-    history.replaceState(history.state, '', url);
 }
 
 // ===== 片付けと保存 =====
@@ -415,7 +412,7 @@ function cleanupOnline() {
     elements.onlineResultModal.classList.remove('active');
     renderOnlineBar();
     net.setRoomUrl(null);
-    generateGame(gameState.endlessSeed ?? gameState.initialSeed);
+    generateGame(gameState.endlessSeed);
 }
 
 function loadOnlineName() {

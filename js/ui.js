@@ -24,30 +24,27 @@ function setupEventListeners() {
     elements.challengeRetryButton.addEventListener('click', startChallenge);
     elements.challengeExitButton.addEventListener('click', goToTop); // チャレンジを終えてホームに戻る
 
-    // 次のゲームボタン（次のシードの問題に進む）
+    // 次のゲームボタン（新しいランダムな問題に進む）
     elements.nextGameButton.addEventListener('click', () => {
         elements.clearModal.classList.remove('active');
-        generateGame(getNextSeed(gameState.seed));
+        generateGame(createRandomSeed());
     });
 
     // クリア画面：ホームに戻る
     elements.clearHomeButton.addEventListener('click', goToTop);
 }
 
-// トップ画面から始める問題番号（今日の問題など）のURLを共有する。受け取った人も、エンドレス・チャレンジで同じ問題の列を遊べる
+// ゲームのページのURLを共有して、友達を誘う
 // スマホでは共有シート、パソコンではクリップボードへのコピー、どちらも使えなければダイアログで表示
 async function shareGame() {
-    const seed = gameState.initialSeed;
-    const url = new URL(location.href);
-    url.searchParams.set('seed', seed);
-    const shareUrl = url.toString();
+    const shareUrl = location.origin + location.pathname;
     const isTouchDevice = window.matchMedia('(pointer: coarse)').matches;
 
     if (isTouchDevice && navigator.share) {
         try {
             await navigator.share({
                 title: 'MINE BLOCKS',
-                text: `MINE BLOCKS 問題番号 ${seed} で勝負！`,
+                text: 'MINE BLOCKS で遊ぼう！',
                 url: shareUrl
             });
         } catch (e) {
@@ -73,7 +70,7 @@ function showShareFeedback(message) {
     label.textContent = message;
     setTimeout(() => {
         button.classList.remove('copied');
-        button.title = 'この問題を共有';
+        button.title = 'MINE BLOCKS を共有';
         label.textContent = '共有する';
     }, 2000);
 }

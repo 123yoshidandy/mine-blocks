@@ -8,7 +8,7 @@ function setupSurrender() {
     elements.surrenderButton.addEventListener('click', surrender);
     elements.surrenderNextButton.addEventListener('click', () => {
         elements.surrenderModal.classList.remove('active');
-        generateGame(getNextSeed(gameState.seed));
+        generateGame(createRandomSeed());
     });
 
     // 降参画面：ホームに戻る

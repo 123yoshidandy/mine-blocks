@@ -14,9 +14,6 @@ const TOP_HERO_COLORS = { a: 0, b: 3, c: 1 }; // PIECE_COLORS の番号
 
 function setupTop() {
     renderTopHero();
-    elements.topEndlessNote.textContent = gameState.initialSeed === getDailySeed()
-        ? '今日の問題から'
-        : `問題番号 ${gameState.initialSeed} から`;
 
     elements.topEndless.addEventListener('click', () => {
         hideTop();

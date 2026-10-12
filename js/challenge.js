@@ -13,24 +13,21 @@ const CHALLENGE_TIME_BONUS = 20;
 // チャレンジモードの状態
 const challengeState = {
     active: false,      // チャレンジモード中かどうか（結果表示中も含む）
-    startSeed: null,    // チャレンジを開始した問題番号（同じ番号から始めれば同じ問題の列になる）
     solved: 0,          // 解いた問題数
     deadline: 0,        // 時間切れになる時刻（ミリ秒）
     intervalId: null    // 残り時間表示を更新するインターバルID
 };
 
-// チャレンジを開始する
-// ページを開いたときの問題番号から始めるので、同じ日（同じURL）なら誰でも同じ問題の列になる
+// チャレンジを開始する（問題は毎回ランダム）
 function startChallenge() {
     challengeState.active = true;
-    challengeState.startSeed = gameState.initialSeed;
     challengeState.solved = 0;
     challengeState.deadline = Date.now() + CHALLENGE_INITIAL_TIME * 1000;
 
     elements.clearModal.classList.remove('active');
     elements.challengeModal.classList.remove('active');
 
-    generateGame(challengeState.startSeed);
+    generateGame(createRandomSeed());
     updateModeDisplay();
     updateChallengeDisplay();
 
@@ -51,7 +48,7 @@ function stopChallenge() {
 // チャレンジを終了してエンドレスモードに戻る（チャレンジ開始前の問題から再開）
 function exitChallenge() {
     stopChallenge();
-    generateGame(gameState.endlessSeed ?? gameState.initialSeed);
+    generateGame(gameState.endlessSeed);
 }
 
 // 1問解いたときの処理：持ち時間を加算して次の問題へ進む
@@ -59,7 +56,7 @@ function onChallengePuzzleSolved() {
     challengeState.solved++;
     challengeState.deadline += CHALLENGE_TIME_BONUS * 1000;
 
-    generateGame(getNextSeed(gameState.seed));
+    generateGame(createRandomSeed());
     updateChallengeDisplay();
     showChallengeBonus();
     spawnConfetti(24); // すぐ次の問題に進むので、紙吹雪だけ出す

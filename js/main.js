@@ -16,8 +16,6 @@ function generateGame(seed) {
         gameState.endlessSeed = seed;
     }
     setSeed(seed);
-    updateSeedUrl();
-
 
     // ブロックと想定解（配置不可能なセルを含む）を生成
     // 想定解を作れなかった場合は、乱数列の続きを使って作り直す（同じシードなら結果も同じ）
@@ -45,12 +43,15 @@ function generateGame(seed) {
 function initGame() {
     gameState.clearedCount = 0;
 
-    // URLにシードが指定されていればそのパズル、なければ今日の日付のパズルから始める
-    const urlSeed = parseSeed(new URLSearchParams(location.search).get('seed'));
-    // 以降は「新しいゲーム」「次のゲーム」でこのシードから決まった順に問題が続く
-    // チャレンジモードもこの問題番号から始める
-    gameState.initialSeed = urlSeed ?? getDailySeed();
-    generateGame(gameState.initialSeed);
+    // 以前の版で共有された問題番号つきのURL（?seed=）は使わないので、URLから外す
+    const url = new URL(location.href);
+    if (url.searchParams.has('seed')) {
+        url.searchParams.delete('seed');
+        history.replaceState(null, '', url);
+    }
+
+    // 毎回ランダムな問題で始める
+    generateGame(createRandomSeed());
     setupEventListeners();
 }
 
