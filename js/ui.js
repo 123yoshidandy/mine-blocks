@@ -30,11 +30,7 @@ function setupEventListeners() {
         generateGame(getNextSeed(gameState.seed));
     });
 
-    // クリア画面：同じ問題をもう一度解く／ホームに戻る
-    elements.clearRetryButton.addEventListener('click', () => {
-        elements.clearModal.classList.remove('active');
-        generateGame(gameState.seed);
-    });
+    // クリア画面：ホームに戻る
     elements.clearHomeButton.addEventListener('click', goToTop);
 }
 

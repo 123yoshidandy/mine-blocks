@@ -11,11 +11,7 @@ function setupSurrender() {
         generateGame(getNextSeed(gameState.seed));
     });
 
-    // 想定解を見たあと、同じ問題を自分で解き直す／ホームに戻る
-    elements.surrenderRetryButton.addEventListener('click', () => {
-        elements.surrenderModal.classList.remove('active');
-        generateGame(gameState.seed);
-    });
+    // 降参画面：ホームに戻る
     elements.surrenderHomeButton.addEventListener('click', goToTop);
 }
 

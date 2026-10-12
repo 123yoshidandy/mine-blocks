@@ -33,7 +33,6 @@ const elements = {
     surrenderModal: document.getElementById('surrenderModal'),
     solutionBoard: document.getElementById('solutionBoard'),
     surrenderNextButton: document.getElementById('surrenderNext'),
-    surrenderRetryButton: document.getElementById('surrenderRetry'),
     surrenderHomeButton: document.getElementById('surrenderHome'),
     hintButton: document.getElementById('hint'),
     shareButton: document.getElementById('share'),
@@ -91,7 +90,6 @@ const elements = {
     logoButton: document.getElementById('logoButton'),
     clearModal: document.getElementById('clearModal'),
     nextGameButton: document.getElementById('nextGame'),
-    clearRetryButton: document.getElementById('clearRetry'),
     clearHomeButton: document.getElementById('clearHome')
 };
 

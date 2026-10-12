@@ -548,7 +548,7 @@ button:focus-visible {
     margin-top: 12px;
 }
 
-/* 結果画面の下の小さなボタン（もう一度・ホーム）を横に並べる */
+/* 結果画面の下の小さなボタン（ホーム） */
 .modal-sub-actions {
     display: flex;
     gap: 8px;
