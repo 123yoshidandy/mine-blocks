@@ -10,9 +10,39 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- トップ画面：開いたときに出る。遊び方（エンドレス・チャレンジ・オンライン対戦）を選ぶ -->
+    <section class="top-screen" id="topScreen" hidden>
+        <div class="top-inner">
+            <div class="top-hero" id="topHero" aria-hidden="true">
+                <!-- 盤面を模した絵（JavaScriptで生成） -->
+            </div>
+            <h1 class="top-title">MINE BLOCKS</h1>
+            <p class="top-catch">数字と地雷を手がかりに、<br>ピースで盤面を埋めるパズル</p>
+
+            <div class="top-menu">
+                <button id="topEndless" class="top-button top-endless">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12c0-2 1.6-3.5 3.5-3.5 3.5 0 3.5 7 7 7 1.9 0 3.5-1.5 3.5-3.5s-1.6-3.5-3.5-3.5c-3.5 0-3.5 7-7 7C6.6 15.5 5 14 5 12z"/></svg>
+                    <span class="top-button-label">エンドレス<small id="topEndlessNote">今日の問題から</small></span>
+                </button>
+                <button id="topChallenge" class="top-button top-challenge">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13.5" r="7.5"/><polyline points="12 10 12 13.5 14.5 15.5"/><line x1="9.5" y1="2.5" x2="14.5" y2="2.5"/><line x1="12" y1="2.5" x2="12" y2="6"/></svg>
+                    <span class="top-button-label">チャレンジ<small>60秒で何問解ける？</small></span>
+                </button>
+                <button id="topOnline" class="top-button top-online">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6.5 6.5-6.5s6.5 2.9 6.5 6.5"/><path d="M16 4.8a3.5 3.5 0 0 1 0 6.4"/><path d="M18 13.8c2.1.9 3.5 3 3.5 5.7"/></svg>
+                    <span class="top-button-label">オンライン対戦<small>2〜4人で早解き</small></span>
+                </button>
+            </div>
+
+            <button id="topHint" class="top-link">遊び方を見る</button>
+        </div>
+    </section>
+
     <div class="container">
         <header class="app-header">
             <h1 class="logo">
+                <!-- ロゴを押すとトップ画面に戻る -->
+                <button class="logo-button" id="logoButton" title="トップに戻る" aria-label="トップに戻る">
                 <svg class="logo-mark" viewBox="0 0 20 20" aria-hidden="true">
                     <rect x="1" y="1" width="8.5" height="8.5" rx="1.5" fill="#3498db"/>
                     <rect x="10.5" y="1" width="8.5" height="8.5" rx="1.5" fill="#e5484d"/>
@@ -24,6 +54,7 @@
                     <rect x="10.5" y="10.5" width="8.5" height="8.5" rx="1.5" fill="#f39c12"/>
                 </svg>
                 <span class="logo-text">MINE BLOCKS</span>
+                </button>
             </h1>
             <div class="buttons">
                 <button id="surrender" class="icon-button" title="降参して想定解を見る" aria-label="降参">
@@ -271,6 +302,8 @@
     <script src="js/challenge.js"></script>
     <script src="js/hint.js"></script>
     <script src="js/surrender.js"></script>
+    <script src="js/top.js"></script>
+    <script src="js/netplay/netplay-client.js"></script>
     <script src="js/online-config.js"></script>
     <script src="js/online.js"></script>
     <script src="js/main.js"></script>

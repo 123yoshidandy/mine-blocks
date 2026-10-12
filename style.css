@@ -327,9 +327,13 @@ button:focus-visible {
     animation: placePop 0.28s cubic-bezier(0.3, 1.6, 0.5, 1);
 }
 
+/* 置いたとき：ピース全体が上からストンと落ちる（マスごとに拡大するとピースがバラけて見えるため、全マス同じ動きにする） */
 @keyframes placePop {
     from {
-        transform: scale(0.82);
+        transform: translateY(-7px);
+    }
+    60% {
+        transform: translateY(1px);
     }
 }
 
@@ -477,14 +481,11 @@ button:focus-visible {
     color: var(--text);
 }
 
-/* クリアの見出し：ピースの色のグラデーション */
+/* クリアの見出し：大きな青い文字で弾んで出る */
 .title-clear {
-    display: inline-block; /* グラデーションを文字の幅にかける */
+    display: inline-block;
     font-size: 2.4rem !important;
-    background: linear-gradient(90deg, #3498db, #27ae60, #f1c40f, #f39c12, #9b59b6);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent !important;
+    color: var(--accent-dark) !important;
     animation: titlePop 0.5s cubic-bezier(0.3, 1.6, 0.5, 1);
 }
 
@@ -1300,7 +1301,7 @@ button:focus-visible {
 
 @keyframes clearWave {
     40% {
-        transform: translateY(-9px) scale(1.04);
+        transform: translateY(-10px);
     }
 }
 
@@ -1339,6 +1340,305 @@ button:focus-visible {
 
     .confetti {
         display: none;
+    }
+}
+
+/* ヘッダーのロゴ：押すとトップ画面に戻る（見た目はロゴのまま） */
+.logo-button {
+    display: flex;
+    align-items: center;
+    gap: inherit;
+    padding: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    letter-spacing: inherit;
+}
+
+.logo-button:active:not(:disabled) {
+    transform: none;
+}
+
+/* トップ画面 */
+body.is-top {
+    overflow: hidden; /* 後ろの盤面をスクロールさせない */
+}
+
+.top-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 900; /* モーダル（遊び方など）はこの上に出る */
+    display: flex;
+    justify-content: center;
+    overflow-y: auto;
+    padding: 24px 16px;
+    background:
+        radial-gradient(rgba(31, 42, 55, 0.07) 1.2px, transparent 1.2px) 0 0 / 20px 20px,
+        radial-gradient(circle at 50% 0%, #fbfcff 0%, var(--bg) 65%);
+}
+
+.top-screen[hidden] {
+    display: none;
+}
+
+.top-inner {
+    width: 100%;
+    max-width: 380px;
+    margin: auto 0; /* 画面に収まるときは縦の中央、収まらないときは上から並べる */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+/* 盤面を模した絵：へこんだトレーの上にマスが1つずつ落ちてくる */
+.top-hero {
+    --hero-cell: 52px;
+    --board-gap: 4px; /* ピースのつなぎ目（getJoinShadow）で使う。盤面と同じ幅にしてつなぎ目に線が出ないようにする */
+    display: grid;
+    gap: var(--board-gap);
+    padding: 10px;
+    border-radius: 18px;
+    background-color: #d6dce6;
+    box-shadow: inset 0 2px 6px rgba(31, 42, 55, 0.16), inset 0 -1px 0 rgba(255, 255, 255, 0.7);
+    /* 全体を浮かばせる動きは付けない（1ピクセル未満の位置になり、ピースのつなぎ目に線が出るため） */
+}
+
+.hero-cell {
+    width: var(--hero-cell);
+    height: var(--hero-cell);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    font-size: 1.5rem;
+    font-weight: 800;
+    /* 動きが終わったら指定を外す（both で残すとマスごとに別の層で描かれ、浮かぶ動きでピースのつなぎ目に線が出る） */
+    animation: heroDrop 0.45s cubic-bezier(0.3, 1.5, 0.5, 1) calc(var(--i) * 45ms) backwards;
+}
+
+@keyframes heroDrop {
+    from {
+        opacity: 0;
+        transform: translateY(-24px);
+    }
+}
+
+.hero-number {
+    background-image: linear-gradient(#ffffff, #f4f6fa);
+    box-shadow: inset 0 -3px 0 rgba(31, 42, 55, 0.10), 0 1px 1px rgba(31, 42, 55, 0.08);
+}
+
+.hero-number[data-n="1"] { color: var(--num-1); }
+.hero-number[data-n="2"] { color: var(--num-2); }
+.hero-number[data-n="3"] { color: var(--num-3); }
+
+.hero-mine {
+    background: var(--mine-icon) center / 58% no-repeat, linear-gradient(#f0595e, #d83c41);
+    box-shadow: inset 0 -3px 0 rgba(0, 0, 0, 0.2), inset 0 2px 0 rgba(255, 255, 255, 0.22);
+}
+
+/* ピース：マス同士の隙間を埋めて1つにつなげ、下側の外周に厚みを付ける */
+.hero-piece {
+    border-radius: 0;
+    background-color: var(--piece-color);
+    box-shadow: var(--join-shadow, none);
+    filter: drop-shadow(0 4px 0 color-mix(in srgb, var(--piece-color) 60%, black));
+}
+
+.top-title {
+    margin-top: 24px;
+    font-size: 2.6rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    line-height: 1.1;
+    color: var(--text);
+    animation: topFadeUp 0.5s ease-out 0.45s both;
+}
+
+.top-catch {
+    margin: 10px 0 24px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-sub);
+    animation: topFadeUp 0.5s ease-out 0.55s both;
+}
+
+@keyframes topFadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+}
+
+.top-menu {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    animation: topFadeUp 0.5s ease-out 0.65s both;
+}
+
+/* 遊び方を選ぶボタン：色ごとに下の厚みを付け、押すと沈む */
+.top-button {
+    --button-color: var(--accent);
+    --button-edge: #1d4ed8;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+    padding: 14px 20px;
+    border-radius: 16px;
+    background-color: var(--button-color);
+    color: white;
+    text-align: left;
+    box-shadow: 0 5px 0 var(--button-edge), 0 8px 18px color-mix(in srgb, var(--button-color) 30%, transparent);
+    transition: transform 0.08s, box-shadow 0.08s, filter 0.15s;
+}
+
+.top-button:hover {
+    filter: brightness(1.05);
+}
+
+.top-button:active:not(:disabled) {
+    transform: translateY(4px);
+    box-shadow: 0 1px 0 var(--button-edge), 0 2px 6px color-mix(in srgb, var(--button-color) 25%, transparent);
+}
+
+.top-button svg {
+    flex-shrink: 0;
+    width: 30px;
+    height: 30px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.top-button-label {
+    display: flex;
+    flex-direction: column;
+    font-size: 1.25rem;
+    font-weight: 800;
+    line-height: 1.25;
+}
+
+.top-button-label small {
+    font-size: 0.8rem;
+    font-weight: 700;
+    opacity: 0.9;
+}
+
+.top-challenge {
+    --button-color: #f08c1a;
+    --button-edge: #c56a06;
+}
+
+.top-online {
+    --button-color: #22a06b;
+    --button-edge: #157a4f;
+}
+
+.top-link {
+    margin-top: 20px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: none;
+    color: var(--text-sub);
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    animation: topFadeUp 0.5s ease-out 0.75s both;
+}
+
+.top-link:hover {
+    color: var(--accent-dark);
+}
+
+/* 動きを減らす設定の環境では、トップ画面の動きを出さない */
+@media (prefers-reduced-motion: reduce) {
+    .hero-cell,
+    .top-title,
+    .top-catch,
+    .top-menu,
+    .top-link {
+        animation: none;
+    }
+}
+
+/* 背の低い画面では、絵と余白を小さくして1画面に収める */
+@media (max-height: 740px) {
+    .top-hero {
+        --hero-cell: 44px;
+    }
+
+    .top-title {
+        margin-top: 18px;
+        font-size: 2.2rem;
+    }
+
+    .top-catch {
+        margin: 8px 0 18px;
+    }
+
+    .top-menu {
+        gap: 12px;
+    }
+
+    .top-button {
+        padding: 11px 18px;
+    }
+
+    .top-link {
+        margin-top: 12px;
+    }
+}
+
+/* iPhone SE などさらに背の低い画面 */
+@media (max-height: 600px) {
+    .top-screen {
+        padding: 14px 16px;
+    }
+
+    .top-hero {
+        --hero-cell: 34px;
+        padding: 8px;
+    }
+
+    .hero-cell {
+        font-size: 1.15rem;
+    }
+
+    .top-title {
+        margin-top: 12px;
+        font-size: 1.9rem;
+    }
+
+    .top-catch {
+        margin: 6px 0 12px;
+        font-size: 0.85rem;
+    }
+
+    .top-menu {
+        gap: 10px;
+    }
+
+    .top-button {
+        padding: 8px 18px;
+    }
+
+    .top-button svg {
+        width: 26px;
+        height: 26px;
+    }
+
+    .top-button-label {
+        font-size: 1.1rem;
+    }
+
+    .top-link {
+        margin-top: 6px;
     }
 }
 

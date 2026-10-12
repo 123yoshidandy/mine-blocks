@@ -26,6 +26,9 @@ function setupEventListeners() {
     // オンライン対戦（部屋を作る・参加する）
     setupOnline();
 
+    // トップ画面（オンライン対戦の招待URLで開いたときは出さないので、setupOnline のあとに準備する）
+    setupTop();
+
     // チャレンジ結果画面のボタン
     elements.challengeRetryButton.addEventListener('click', startChallenge);
     elements.challengeExitButton.addEventListener('click', exitChallenge);

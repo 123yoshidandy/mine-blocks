@@ -10,7 +10,8 @@ function prefersReducedMotion() {
     return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 }
 
-// クリアの演出：盤面のピースを左上から順に跳ねさせ、紙吹雪を出してから onDone を呼ぶ
+// クリアの演出：盤面のピースを左上から1つずつ順に跳ねさせ、紙吹雪を出してから onDone を呼ぶ
+// 同じピースのマスは同じタイミングで動かし、ピースがマスに分かれて見えないようにする
 function celebrateClear(onDone) {
     if (prefersReducedMotion()) {
         onDone();
@@ -18,9 +19,19 @@ function celebrateClear(onDone) {
     }
 
     const board = elements.gameBoard;
-    board.querySelectorAll('.cell.filled').forEach(cell => {
-        const delay = (Number(cell.dataset.row) + Number(cell.dataset.col)) * 35;
-        cell.style.setProperty('--wave-delay', `${delay}ms`);
+    const cells = [...board.querySelectorAll('.cell.filled')];
+    const pieceOf = (cell) => gameState.board[cell.dataset.row][cell.dataset.col]?.blockIndex;
+
+    // ピースごとに、いちばん左上のマスの位置で順番を決める
+    const firstCell = new Map();
+    cells.forEach(cell => {
+        const key = Number(cell.dataset.row) + Number(cell.dataset.col);
+        const piece = pieceOf(cell);
+        firstCell.set(piece, Math.min(firstCell.get(piece) ?? Infinity, key));
+    });
+    const order = [...firstCell.entries()].sort((a, b) => a[1] - b[1]).map(([piece]) => piece);
+    cells.forEach(cell => {
+        cell.style.setProperty('--wave-delay', `${order.indexOf(pieceOf(cell)) * 70}ms`);
     });
     board.classList.add('cleared');
     spawnConfetti();

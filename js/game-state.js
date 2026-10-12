@@ -80,6 +80,14 @@ const elements = {
     onlineCountdownNumber: document.getElementById('onlineCountdownNumber'),
     onlineBar: document.getElementById('onlineBar'),
     toast: document.getElementById('toast'),
+    topScreen: document.getElementById('topScreen'),
+    topHero: document.getElementById('topHero'),
+    topEndless: document.getElementById('topEndless'),
+    topEndlessNote: document.getElementById('topEndlessNote'),
+    topChallenge: document.getElementById('topChallenge'),
+    topOnline: document.getElementById('topOnline'),
+    topHint: document.getElementById('topHint'),
+    logoButton: document.getElementById('logoButton'),
     clearModal: document.getElementById('clearModal'),
     nextGameButton: document.getElementById('nextGame')
 };
