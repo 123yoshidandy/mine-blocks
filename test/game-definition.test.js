@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { createTestServer } from '../server/netplay/testing.js';
-import game, { COUNTDOWN_MS, DEFAULT_WINS } from '../server/src/game-definition.js';
+import game, { COUNTDOWN_MS, DEFAULT_WINS, NEXT_ROUND_MS } from '../server/src/game-definition.js';
 
 // 部屋を作り、勝ち数を決めて開始する
 async function startMatch(names, winsNeeded = 2) {
@@ -71,20 +71,47 @@ describe('対戦', () => {
         await c.send('solved', { round: 1 });
         expect(view(a).wins).toEqual([0, 1, 0]);
 
-        await a.send('nextRound', { round: 1 });
+        // 次の問題が始まってから届いた、前の問題の通知
+        server.clock.now += NEXT_ROUND_MS;
         await c.send('solved', { round: 1 });
         expect(view(a).round.number).toBe(2);
         expect(view(a).phase).toBe('playing');
         expect(view(a).wins).toEqual([0, 1, 0]);
     });
 
-    it('次の問題へは誰でも進められ、同時に押されても1問だけ進む', async () => {
+    it('問題が終わるとすぐに次の問題が決まり、8秒後に全員同時に始まる（押さなくても進む）', async () => {
         await a.send('solved', { round: 1 });
-        const firstSeed = view(a).round.seed;
-        await c.send('nextRound', { round: 1 });
-        await b.send('nextRound', { round: 1 });
+        const ended = view(b);
+        expect(ended.phase).toBe('roundEnd');
+        expect(ended.next.number).toBe(2);
+        expect(ended.next.startAt).toBe(server.clock.now + NEXT_ROUND_MS);
+        expect(ended.next.seed).toBe(view(c).next.seed);
+
+        // 開始時刻の前は、結果を見せたまま
+        server.clock.now += NEXT_ROUND_MS - 1;
+        await b.send('ping', { clientTime: 0 });
+        expect(view(a).phase).toBe('roundEnd');
+
+        // 開始時刻を過ぎて最初のメッセージで、次の問題に切り替わる
+        server.clock.now += 1;
+        await b.send('ping', { clientTime: 0 });
+        const next = view(a);
+        expect(next.phase).toBe('playing');
+        expect(next.round.number).toBe(2);
+        expect(next.round.seed).toBe(ended.next.seed);
+        expect(next.round.startAt).toBe(ended.next.startAt);
+        expect(next.round.results).toEqual([null, null, null]);
+        expect(next.next).toBeNull();
+    });
+
+    it('次の問題の最初の通知は、切り替えてから受け付ける', async () => {
+        await a.send('solved', { round: 1 });
+        server.clock.now += NEXT_ROUND_MS + 5_000;
+        await b.send('solved', { round: 2 });
         expect(view(a).round.number).toBe(2);
-        expect(view(a).round.seed).not.toBe(firstSeed);
+        expect(view(a).round.winner).toBe(1);
+        expect(view(a).round.winnerTime).toBe(5_000);
+        expect(view(a).wins).toEqual([1, 1, 0]);
     });
 
     it('全員が降参したら、勝者なしで問題を終える', async () => {
@@ -94,6 +121,7 @@ describe('対戦', () => {
         await c.send('surrender', { round: 1 });
         expect(view(a).phase).toBe('roundEnd');
         expect(view(a).round.winner).toBeNull();
+        expect(view(a).next.number).toBe(2);
     });
 
     it('降参した人は、その問題ではもう勝てない', async () => {
@@ -112,10 +140,11 @@ describe('対戦', () => {
 
     it('必要な勝ち数に届いたら試合終了。部屋に戻ると勝ち数が0から始まる', async () => {
         await c.send('solved', { round: 1 });
-        await a.send('nextRound', { round: 1 });
+        server.clock.now += NEXT_ROUND_MS;
         await c.send('solved', { round: 2 });
         expect(lobby(a).status).toBe('ended');
         expect(view(a).wins).toEqual([0, 0, 2]);
+        expect(view(a).next).toBeNull(); // 優勝が決まったら、次の問題は決めない
 
         await b.send('backToLobby');
         expect(lobby(a).status).toBe('lobby');

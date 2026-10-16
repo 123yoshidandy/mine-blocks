@@ -73,6 +73,7 @@ const elements = {
     onlineStandings: document.getElementById('onlineStandings'),
     onlineSolutionBoard: document.getElementById('onlineSolutionBoard'),
     onlineNext: document.getElementById('onlineNext'),
+    onlineNextCountdown: document.getElementById('onlineNextCountdown'),
     onlineResultLeave: document.getElementById('onlineResultLeave'),
     onlineCountdown: document.getElementById('onlineCountdown'),
     onlineCountdownRound: document.getElementById('onlineCountdownRound'),

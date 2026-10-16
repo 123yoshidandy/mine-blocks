@@ -189,7 +189,7 @@
                     <div class="online-divider"><span>または</span></div>
                     <label class="online-field">
                         <span>部屋番号</span>
-                        <input id="onlineCode" type="text" inputmode="numeric" maxlength="5" placeholder="数字5桁">
+                        <input id="onlineCode" type="text" inputmode="numeric" maxlength="4" placeholder="数字4桁">
                     </label>
                     <button id="onlineJoin" class="secondary-button">参加する</button>
                 </div>
@@ -220,7 +220,7 @@
             </div>
         </div>
 
-        <!-- オンライン対戦の結果画面：問題の勝者・全員の勝ち数・想定解（降参して待っている間も表示） -->
+        <!-- オンライン対戦の結果画面：問題の勝者・全員の勝ち数・想定解・次の問題までのカウントダウン（降参して待っている間も表示） -->
         <div class="modal" id="onlineResultModal">
             <div class="modal-content">
                 <h2 id="onlineResultTitle"></h2>
@@ -228,8 +228,10 @@
                 <ul class="online-players" id="onlineStandings"></ul>
                 <p class="result-label">想定解</p>
                 <div class="solution-board" id="onlineSolutionBoard"></div>
+                <!-- 試合の途中：押さなくても、想定解を見せたまま次の問題までカウントダウンする -->
+                <p class="online-next-countdown" id="onlineNextCountdown" aria-live="polite" hidden></p>
                 <div class="modal-actions">
-                    <button id="onlineNext" class="primary-button">次の問題へ</button>
+                    <button id="onlineNext" class="primary-button">部屋に戻る</button>
                     <button id="onlineResultLeave" class="secondary-button">部屋を出る</button>
                 </div>
             </div>

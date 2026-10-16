@@ -5,6 +5,8 @@
  * 2〜4人が同じ問題を同時に解き、一番早く解いた人がその問題の勝ち。先に決めた勝ち数に届いた人が優勝
  * 問題は問題番号（シード）から各端末で作るので、サーバーは問題番号・開始時刻・結果だけを扱う
  * 問題の番号（round）で、前の問題の遅れた通知や二重の通知を黙って捨てる
+ * 問題が終わったら、その場で次の問題（next）を決めて配る。結果と想定解を見せながら全員が同じ時刻に次の問題を始め、
+ * サーバーは開始時刻を過ぎて最初に届いたメッセージ（ping を含む）で、次の問題に切り替える（Lambda はタイマーを持てないため）
  */
 
 import { GameError } from '../netplay/room-service.js';
@@ -12,7 +14,8 @@ import { GameError } from '../netplay/room-service.js';
 export const MIN_WINS = 1;
 export const MAX_WINS = 5;
 export const DEFAULT_WINS = 3;
-export const COUNTDOWN_MS = 3000; // 問題を配ってから解き始めるまで（全員が同時に始められるように）
+export const COUNTDOWN_MS = 3000; // 試合の最初の問題を配ってから解き始めるまで（全員が同時に始められるように）
+export const NEXT_ROUND_MS = 8000; // 問題が終わってから次の問題を始めるまで（その間、結果と想定解を見せる）
 const MAX_SEED = 1000000;         // 問題番号の範囲（画面の「次の問題」と同じ6桁）
 
 export default {
@@ -35,8 +38,8 @@ export default {
 
     // 試合を始める（勝ち数は試合ごとに0から）
     create({ players, settings, random, now }) {
-        const game = { winsNeeded: settings.winsNeeded, wins: players.map(() => 0), phase: 'playing', round: null };
-        startRound(game, 1, random, now, players.length);
+        const game = { winsNeeded: settings.winsNeeded, wins: players.map(() => 0), phase: 'playing', round: null, next: null };
+        startRound(game, { number: 1, seed: Math.floor(random() * MAX_SEED), startAt: now + COUNTDOWN_MS }, players.length);
         return game;
     },
 
@@ -45,13 +48,13 @@ export default {
 
     actions: {
         solved: (ctx) => finishPuzzle(ctx, 'solved'),
-        surrender: (ctx) => finishPuzzle(ctx, 'surrendered'),
+        surrender: (ctx) => finishPuzzle(ctx, 'surrendered')
+    },
 
-        // 次の問題へ（誰が押してもよい。同時に押されても、同じ問題の番号のときだけ進める）
-        nextRound({ game, message, ignore, random, now, players }) {
-            if (game.phase !== 'roundEnd' || game.round.number !== message.round) return ignore();
-            startRound(game, game.round.number + 1, random, now(), players.length);
-        }
+    // 次の問題の開始時刻を過ぎたら、次の問題に切り替える
+    deadline: (game) => game.next?.startAt ?? null,
+    onDeadline(ctx) {
+        startRound(ctx.game, ctx.game.next, ctx.players.length);
     },
 
     // 誰かが勝ち数に届いたら試合終了
@@ -63,15 +66,28 @@ export default {
     }
 };
 
-function startRound(game, number, random, now, playerCount) {
+function startRound(game, { number, seed, startAt }, playerCount) {
     game.phase = 'playing';
+    game.next = null;
     game.round = {
         number,
-        seed: Math.floor(random() * MAX_SEED),
-        startAt: now + COUNTDOWN_MS,
+        seed,
+        startAt,
         results: Array.from({ length: playerCount }, () => null),
         winner: null,
         winnerTime: null
+    };
+}
+
+// 問題が終わった。試合がまだ続くなら、次の問題を決めておく（勝ち数に届いたら、試合の終わりは netplay-kit が isOver で判定する）
+function endRound(ctx) {
+    const game = ctx.game;
+    game.phase = 'roundEnd';
+    if (game.wins.some(wins => wins >= game.winsNeeded)) return;
+    game.next = {
+        number: game.round.number + 1,
+        seed: Math.floor(ctx.random() * MAX_SEED),
+        startAt: ctx.now() + NEXT_ROUND_MS
     };
 }
 
@@ -86,7 +102,7 @@ function finishPuzzle(ctx, result) {
         game.wins[seat] += 1;
         game.round.winner = seat;
         game.round.winnerTime = time;
-        game.phase = 'roundEnd';
+        endRound(ctx);
     } else {
         endRoundIfNobodyLeft(ctx);
     }
@@ -98,6 +114,6 @@ function endRoundIfNobodyLeft(ctx) {
     if (game.phase !== 'playing') return false;
     const stillPlaying = ctx.players.some((player, seat) => ctx.isConnected(seat) && !game.round.results[seat]);
     if (stillPlaying) return false;
-    game.phase = 'roundEnd';
+    endRound(ctx);
     return true;
 }

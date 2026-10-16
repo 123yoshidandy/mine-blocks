@@ -1260,6 +1260,21 @@ button:focus-visible {
     font-variant-numeric: tabular-nums;
 }
 
+/* 結果画面の、次の問題までのカウントダウン */
+.online-next-countdown {
+    margin: 4px 0 12px;
+    padding: 10px 12px;
+    border-radius: var(--radius-md);
+    background-color: color-mix(in srgb, var(--accent) 12%, var(--surface));
+    color: var(--accent-dark);
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+}
+
+.online-next-countdown[hidden] {
+    display: none;
+}
+
 /* 対戦中の盤面の上：問題の番号と全員の勝ち数 */
 .online-bar {
     display: flex;

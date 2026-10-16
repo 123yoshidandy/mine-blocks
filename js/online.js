@@ -2,6 +2,8 @@
  * オンライン対戦モジュール
  * 2〜4人で同じ問題を同時に解き、一番早く解いた人がその問題の勝ち。決めた勝ち数に先に届いた人が優勝
  * 問題は、サーバーから届いた問題番号で各端末が作る（generateGame）。サーバーは開始時刻と結果を扱う
+ * 問題が終わると、サーバーは次の問題（next）をすぐに決めて配る。結果画面で想定解を見せながら開始時刻までカウントダウンし、
+ * 0になったら全員が同時に次の問題を始める（サーバーからの知らせは待たない）
  *
  * 接続・再接続・参加情報の保存・ping・時計のずれの補正・招待URLは netplay-kit の NetplayClient（js/netplay/）が行い、
  * ここでは画面（参加画面・ロビー・カウントダウン・対戦中のバー・結果画面）を受け持つ
@@ -26,6 +28,9 @@ const onlineState = {
 
 function setupOnline() {
     elements.onlineName.value = loadOnlineName();
+    // 部屋番号の桁数は netplay-kit に合わせる
+    elements.onlineCode.maxLength = NetplayClient.ROOM_CODE_LENGTH;
+    elements.onlineCode.placeholder = `数字${NetplayClient.ROOM_CODE_LENGTH}桁`;
 
     net.on('joined', (message) => setOnlineRoomUrl(message.roomCode));
     net.on('lobby', (lobby) => {
@@ -52,8 +57,8 @@ function setupOnline() {
     elements.onlineCreate.addEventListener('click', () => enterRoom(name => net.createRoom(name)));
     elements.onlineJoin.addEventListener('click', () => {
         const roomCode = elements.onlineCode.value.trim();
-        if (!/^\d{5}$/.test(roomCode)) {
-            showOnlineError('部屋番号（数字5桁）を入れてください');
+        if (!NetplayClient.isRoomCode(roomCode)) {
+            showOnlineError(`部屋番号（数字${NetplayClient.ROOM_CODE_LENGTH}桁）を入れてください`);
             return;
         }
         enterRoom(name => net.joinRoom(roomCode, name));
@@ -66,9 +71,7 @@ function setupOnline() {
     elements.onlineLeave.addEventListener('click', leaveOnline);
     elements.onlineResultLeave.addEventListener('click', leaveOnline);
     elements.onlineNext.addEventListener('click', () => {
-        const stage = getOnlineStage();
-        if (stage === 'roundEnd') net.send('nextRound', { round: onlineState.game.round.number });
-        if (stage === 'matchEnd') net.backToLobby();
+        if (getOnlineStage() === 'matchEnd') net.backToLobby();
     });
 
     // 招待URL（?room=部屋番号）で開いたら、前に入った部屋なら同じ席に戻り、初めてなら参加画面を出す
@@ -131,7 +134,21 @@ function getOnlineStage() {
     if (!game) return 'waiting';
     // 試合終了は、部屋の状態（lobby）が先に届き、最後の問題の結果（state）があとから届く。結果が届くまでは待つ
     if (lobby.status === 'ended') return game.phase === 'roundEnd' ? 'matchEnd' : 'waiting';
-    return game.phase === 'roundEnd' ? 'roundEnd' : 'playing';
+    if (game.phase === 'roundEnd' && !isNextRoundDue(game)) return 'roundEnd';
+    return 'playing';
+}
+
+// 次の問題の開始時刻を過ぎたか（サーバーは、開始時刻のあとに最初のメッセージが届くまで、前の問題の結果のまま）
+function isNextRoundDue(game) {
+    return Boolean(game.next) && net.serverNow() >= game.next.startAt;
+}
+
+// 今の問題（次の問題の開始時刻を過ぎていれば、まだ誰も解いていない次の問題）
+function getOnlineRound() {
+    const game = getOnlineGame();
+    if (!game) return null;
+    if (game.phase !== 'roundEnd' || !isNextRoundDue(game)) return game.round;
+    return { ...game.next, results: game.round.results.map(() => null), winner: null, winnerTime: null };
 }
 
 // 部屋の状態に合わせて画面を切り替える
@@ -153,7 +170,7 @@ function handleRoomUpdate() {
     }
     if (stage === 'waiting') return;
 
-    const round = getOnlineGame().round;
+    const round = getOnlineRound();
     closeGameModals();
     elements.onlineModal.classList.remove('active');
 
@@ -175,6 +192,23 @@ function handleRoomUpdate() {
     }
     stopTimer();
     renderOnlineResult();
+    if (stage === 'roundEnd') startNextRoundCountdown(getOnlineGame().next);
+}
+
+// 結果画面で、想定解を見せたまま次の問題の開始時刻までカウントダウンする。0になったら次の問題を始める
+function startNextRoundCountdown(next) {
+    const startAt = net.toLocalTime(next.startAt);
+    const tick = () => {
+        const remaining = Math.ceil((startAt - Date.now()) / 1000);
+        if (remaining <= 0) {
+            stopCountdown();
+            handleRoomUpdate();
+            return;
+        }
+        elements.onlineNextCountdown.textContent = `第${next.number}問まで あと${remaining}秒`;
+    };
+    tick();
+    onlineState.countdownTimer = setInterval(tick, 100);
 }
 
 // 開始時刻までカウントダウンし、0になったら問題を出す（開始前に問題が見えないよう、盤面はそのとき作る）
@@ -253,12 +287,13 @@ function renderOnlineModal() {
 function renderPlayerList(list, { showHost = false } = {}) {
     const lobby = onlineState.lobby;
     const game = getOnlineGame();
+    const round = getOnlineRound();
     list.innerHTML = '';
     lobby.players.forEach((player, seat) => {
         const item = document.createElement('li');
         item.className = 'online-player';
         item.classList.toggle('is-me', seat === net.seat);
-        item.classList.toggle('is-winner', game?.round.winner === seat && game.phase === 'roundEnd');
+        item.classList.toggle('is-winner', round?.winner === seat && getOnlineStage() !== 'playing');
 
         const name = document.createElement('span');
         name.className = 'online-player-name';
@@ -281,7 +316,7 @@ function renderPlayerList(list, { showHost = false } = {}) {
 }
 
 function getPlayerNote(player, seat, { showHost }) {
-    const result = getOnlineGame()?.round.results[seat];
+    const result = getOnlineRound()?.results[seat];
     if (player.left) return '退出';
     if (!player.connected) return '切断中';
     if (result?.result === 'surrendered') return '降参';
@@ -297,17 +332,18 @@ function renderOnlineBar() {
     elements.onlineBar.hidden = !show;
     if (!show) return;
 
+    const currentRound = getOnlineRound();
     elements.onlineBar.innerHTML = '';
     const round = document.createElement('span');
     round.className = 'online-bar-round';
-    round.textContent = `第${game.round.number}問・${game.winsNeeded}勝先取`;
+    round.textContent = `第${currentRound.number}問・${game.winsNeeded}勝先取`;
     elements.onlineBar.appendChild(round);
 
     lobby.players.forEach((player, seat) => {
         const chip = document.createElement('span');
         chip.className = 'online-chip';
         chip.classList.toggle('is-me', seat === net.seat);
-        chip.classList.toggle('is-out', player.left || !player.connected || Boolean(game.round.results[seat]));
+        chip.classList.toggle('is-out', player.left || !player.connected || Boolean(currentRound.results[seat]));
         chip.textContent = `${player.name} ${game.wins[seat]}`;
         elements.onlineBar.appendChild(chip);
     });
@@ -316,8 +352,7 @@ function renderOnlineBar() {
 // 結果画面：問題の勝者と全員の勝ち数、想定解を出す（降参して待っているときも同じ画面）
 function renderOnlineResult() {
     const stage = getOnlineStage();
-    const game = getOnlineGame();
-    const round = game.round;
+    const round = getOnlineRound();
     const winner = round.winner !== null ? onlineState.lobby.players[round.winner] : null;
 
     let title;
@@ -341,8 +376,10 @@ function renderOnlineResult() {
     renderPlayerList(elements.onlineStandings);
     renderSolutionBoard(elements.onlineSolutionBoard);
 
-    elements.onlineNext.hidden = stage === 'playing';
-    elements.onlineNext.textContent = stage === 'matchEnd' ? '部屋に戻る' : '次の問題へ';
+    // 試合の途中は押さなくても次の問題に進む（カウントダウンを出す）。試合が終わったら部屋に戻るボタンを出す
+    elements.onlineNext.hidden = stage !== 'matchEnd';
+    elements.onlineNextCountdown.hidden = stage !== 'roundEnd';
+    elements.onlineNextCountdown.textContent = '';
     elements.onlineResultModal.classList.add('active');
 }
 
