@@ -208,16 +208,18 @@ function startNextRoundCountdown(next) {
         const remaining = Math.ceil((startAt - Date.now()) / 1000);
         if (remaining <= 0) {
             stopCountdown();
+            playCountdownSound(next.number, 'go');
             handleRoomUpdate();
             return;
         }
-        // 数字が変わったときだけ書き換え、弾む動きを最初から出し直す
+        // 数字が変わったときだけ書き換え、弾む動きを最初から出し直す（最後の3秒は音でも知らせる）
         const number = elements.onlineNextNumber;
         if (number.textContent !== String(remaining)) {
             number.textContent = remaining;
             number.classList.remove('tick');
             void number.offsetWidth;
             number.classList.add('tick');
+            if (remaining <= 3) playCountdownSound(next.number, remaining);
         }
     };
     tick();
@@ -233,11 +235,15 @@ function startRoundCountdown(round) {
     const tick = () => {
         const remaining = Math.ceil((startAt - Date.now()) / 1000);
         if (remaining <= 0) {
+            // カウントダウンを見せていたときだけ、開始の音を鳴らす（再接続などで、すでに始まっていた問題では鳴らさない）
+            const wasCounting = onlineState.countdownTimer !== null;
             stopCountdown();
+            if (wasCounting) playCountdownSound(round.number, 'go');
             onlineState.currentRound = round.number;
             generateGame(round.seed);
             return;
         }
+        playCountdownSound(round.number, remaining);
         elements.onlineCountdownNumber.textContent = remaining;
         elements.onlineCountdownRound.textContent = `第${round.number}問`;
         elements.onlineCountdown.hidden = false;
@@ -246,6 +252,14 @@ function startRoundCountdown(round) {
     if (onlineState.currentRound !== round.number) {
         onlineState.countdownTimer = setInterval(tick, 100);
     }
+}
+
+// カウントダウンの音（数字は 'count'、開始は 'go'）。表示の出し直しで同じ数字を2回鳴らさないよう、鳴らした数字を覚えておく
+function playCountdownSound(roundNumber, remaining) {
+    const key = `${onlineState.gameMatchId}-${roundNumber}-${remaining}`;
+    if (onlineState.lastCountdownSound === key) return;
+    onlineState.lastCountdownSound = key;
+    playSound(remaining === 'go' ? 'go' : 'count');
 }
 
 function stopCountdown() {
@@ -268,6 +282,7 @@ function onlineSurrender() {
     stopTimer();
     selectBlock(-1);
     clearHoverPreview();
+    playSound('surrender');
     net.send('surrender', { round: onlineState.currentRound });
 }
 
@@ -396,6 +411,21 @@ function renderOnlineResult() {
     elements.onlineResultLeave.hidden = stage === 'roundEnd';
     elements.onlineNextCountdown.hidden = stage !== 'roundEnd';
     elements.onlineResultModal.classList.add('active');
+    playOnlineResultSound(stage, round);
+}
+
+// 結果の音：自分が勝てばファンファーレ（優勝なら長いもの）、ほかの人が勝てば下がる音
+// 勝者なし（全員が降参）のときは、降参を押したときに鳴らしたので鳴らさない
+// 結果画面は部屋の状態が変わるたびに描き直すので、同じ結果では1回だけ鳴らす
+function playOnlineResultSound(stage, round) {
+    if (stage === 'playing') return; // 降参して待っているとき（降参の音は押したときに鳴らした）
+    const key = `${onlineState.gameMatchId}-${round.number}-${stage}`;
+    if (onlineState.lastResultSound === key) return;
+    onlineState.lastResultSound = key;
+
+    const won = round.winner === net.seat;
+    if (stage === 'matchEnd') playSound(won ? 'victory' : 'lose');
+    else if (round.winner !== null) playSound(won ? 'clear' : 'lose');
 }
 
 // 再戦するボタン：押したら、ほかの人を待つ表示にする。退出して1人になったら押せない

@@ -35,6 +35,7 @@ function surrender() {
 
     renderSolutionBoard(elements.solutionBoard);
     elements.surrenderModal.classList.add('active');
+    playSound('surrender');
 }
 
 // 想定解を指定した要素に小さな盤面として描く

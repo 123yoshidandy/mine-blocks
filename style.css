@@ -178,6 +178,20 @@ button:focus-visible {
     display: block;
 }
 
+/* 音のボタン：鳴っているときはスピーカー、消しているときは × のアイコン */
+.sound-button .icon-sound-off,
+.sound-button[aria-pressed="false"] .icon-sound-on {
+    display: none;
+}
+
+.sound-button[aria-pressed="false"] .icon-sound-off {
+    display: block;
+}
+
+.sound-button[aria-pressed="false"] {
+    color: rgba(255, 255, 255, 0.55);
+}
+
 /* ゲームエリア */
 .game-container {
     background-color: var(--surface);
@@ -1562,9 +1576,52 @@ button:focus-visible {
     width: 100%;
 }
 
+/* トップ画面の音の切り替え：ON は明るく、OFF は薄く打ち消し線 */
+.top-sound {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 6px 8px;
+    margin-top: 16px;
+    animation: topFadeUp 0.5s ease-out 0.8s both;
+}
+
+.top-sound-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 999px;
+    background-color: var(--glass);
+    color: var(--on-page);
+    font-size: 0.8rem;
+    font-weight: 700;
+    box-shadow: inset 0 0 0 1px var(--glass-line);
+}
+
+.top-sound-toggle::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: #6ee7b7;
+    box-shadow: 0 0 6px #6ee7b7;
+}
+
+.top-sound-toggle[aria-pressed="false"] {
+    color: var(--on-page-sub);
+    text-decoration: line-through;
+    background-color: transparent;
+}
+
+.top-sound-toggle[aria-pressed="false"]::before {
+    background-color: rgba(255, 255, 255, 0.3);
+    box-shadow: none;
+}
+
 /* トップ画面のいちばん下：控えめな文字のリンク */
 .top-feedback {
-    margin-top: 16px;
     padding: 4px 8px;
     background: none;
     color: var(--on-page-sub);
@@ -1572,7 +1629,6 @@ button:focus-visible {
     font-weight: 700;
     text-decoration: underline;
     text-underline-offset: 3px;
-    animation: topFadeUp 0.5s ease-out 0.85s both;
 }
 
 .top-feedback:hover {
@@ -1842,6 +1898,7 @@ body.is-top {
     .top-catch,
     .top-menu,
     .top-links,
+    .top-sound,
     .top-feedback,
     .online-next-number.tick {
         animation: none;
@@ -2004,6 +2061,28 @@ body.is-top {
     /* 4列を横幅に収めるため、ピースの余白（選択時の枠の分）を詰める */
     .block {
         padding: 5px;
+    }
+}
+
+/* さらに幅の狭いスマホ（幅320px など）：タイトルと5つのボタンを1行に収めるため、ボタンを少し小さくする */
+@media (max-width: 340px) {
+    .logo {
+        font-size: 0.9rem;
+        letter-spacing: 0.02em;
+    }
+
+    .buttons {
+        gap: 3px;
+    }
+
+    .icon-button {
+        width: 30px;
+        height: 30px;
+    }
+
+    .icon-button svg {
+        width: 18px;
+        height: 18px;
     }
 }
 

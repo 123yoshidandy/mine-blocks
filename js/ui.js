@@ -14,6 +14,10 @@ function setupEventListeners() {
     // ご意見・不具合の報告（GitHub の Issue 作成画面を開く）
     setupFeedback();
 
+    // BGM と効果音（最初の操作で鳴り始める）と、その切り替えボタン
+    setupSound();
+    setupSoundControls();
+
     // 共有ボタン（トップ画面にだけある。トップから始める問題番号のURLを共有）
     elements.shareButton.addEventListener('click', shareGame);
 
@@ -35,6 +39,24 @@ function setupEventListeners() {
 
     // クリア画面：ホームに戻る
     elements.clearHomeButton.addEventListener('click', goToTop);
+}
+
+// 音の切り替えボタン：ヘッダーは BGM と効果音をまとめて、トップ画面はそれぞれを切り替える
+function setupSoundControls() {
+    elements.soundButton.addEventListener('click', toggleAllSound);
+    elements.topBgm.addEventListener('click', () => toggleSound('bgm'));
+    elements.topEffects.addEventListener('click', () => toggleSound('effects'));
+
+    const render = ({ effects, bgm }) => {
+        const anyOn = effects || bgm;
+        elements.soundButton.setAttribute('aria-pressed', String(anyOn));
+        elements.soundButton.title = anyOn ? '音を消す' : '音を出す';
+        elements.soundButton.setAttribute('aria-label', elements.soundButton.title);
+        elements.topBgm.setAttribute('aria-pressed', String(bgm));
+        elements.topEffects.setAttribute('aria-pressed', String(effects));
+    };
+    onSoundSettingsChange(render);
+    render(getSoundSettings());
 }
 
 // ゲームのページのURLを共有して、友達を誘う

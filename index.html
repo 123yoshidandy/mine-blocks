@@ -51,7 +51,12 @@
                     <span class="top-share-label">共有する</span>
                 </button>
             </div>
-            <button id="topFeedback" class="top-feedback">ご意見・不具合の報告</button>
+            <!-- 音の切り替え（設定はこの端末に保存する）と、ご意見・不具合の報告。1画面に収めるため1行に並べる -->
+            <div class="top-sound">
+                <button id="topBgm" class="top-sound-toggle" aria-pressed="true">BGM</button>
+                <button id="topEffects" class="top-sound-toggle" aria-pressed="true">効果音</button>
+                <button id="topFeedback" class="top-feedback">ご意見・不具合の報告</button>
+            </div>
         </div>
     </section>
 
@@ -85,6 +90,19 @@
                     <svg viewBox="0 0 24 24" aria-hidden="true">
                         <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/>
                         <line x1="4" y1="22" x2="4" y2="15"/>
+                    </svg>
+                </button>
+                <!-- 音（BGM と効果音）をまとめて消す・出す。個別の切り替えはトップ画面で -->
+                <button id="soundButton" class="icon-button sound-button" title="音を消す" aria-label="音を消す" aria-pressed="true">
+                    <svg class="icon-sound-on" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/>
+                        <path d="M15.5 9a4 4 0 0 1 0 6"/>
+                        <path d="M18 6.5a7.5 7.5 0 0 1 0 11"/>
+                    </svg>
+                    <svg class="icon-sound-off" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/>
+                        <line x1="15.5" y1="9.5" x2="20.5" y2="14.5"/>
+                        <line x1="20.5" y1="9.5" x2="15.5" y2="14.5"/>
                     </svg>
                 </button>
                 <button id="feedbackButton" class="icon-button" title="ご意見・不具合の報告" aria-label="ご意見・不具合の報告">
@@ -330,6 +348,7 @@
     <!-- モジュール分割したJSファイル -->
     <script src="js/random.js"></script>
     <script src="js/game-state.js"></script>
+    <script src="js/sound.js"></script>
     <script src="js/piece-shape.js"></script>
     <script src="js/board.js"></script>
     <script src="js/effects.js"></script>

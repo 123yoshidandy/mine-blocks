@@ -133,6 +133,8 @@ function handleDrop(e) {
             placeBlock(origin.row, origin.col, block);
             selectBlock(-1);
             checkBoardCompletion();
+        } else {
+            playSound('invalid');
         }
     }
 }
@@ -280,6 +282,8 @@ function handleBodyTouchEnd(e) {
             placeBlock(origin.row, origin.col, block);
             selectBlock(-1);
             checkBoardCompletion();
+        } else {
+            playSound('invalid');
         }
     }
     

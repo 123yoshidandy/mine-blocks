@@ -70,6 +70,8 @@ function handleCellClick(row, col) {
         
         // ボードが完成したかチェック
         checkBoardCompletion();
+    } else {
+        playSound('invalid');
     }
 }
 
@@ -167,6 +169,8 @@ function placeBlock(startRow, startCol, block) {
     
     // 操作できないようにする（念のため）
     blockElement.style.pointerEvents = 'none';
+
+    playSound('place');
 }
 
 // 配置済みのブロックを盤面から外し、置き場に戻す
@@ -193,6 +197,8 @@ function removeBlock(blockIndex) {
     blockElement.classList.remove('used');
     blockElement.style.visibility = '';
     blockElement.style.pointerEvents = '';
+
+    playSound('remove');
 }
 
 // 盤面に置いたピースの絵（ピース1つを1つの SVG にして、マスの上に重ねる）

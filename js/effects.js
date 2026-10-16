@@ -12,6 +12,7 @@ function prefersReducedMotion() {
 
 // クリアの演出：盤面のピースを左上から1つずつ順に跳ねさせ、紙吹雪を出してから onDone を呼ぶ
 function celebrateClear(onDone) {
+    playSound('clear');
     if (prefersReducedMotion()) {
         onDone();
         return;
