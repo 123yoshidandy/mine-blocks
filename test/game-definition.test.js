@@ -153,6 +153,37 @@ describe('対戦', () => {
         expect(view(b).round.number).toBe(1);
     });
 
+    it('試合のあと、全員が「再戦する」を押したら、同じ顔ぶれ・同じ勝ち数で次の試合が始まる', async () => {
+        await c.send('solved', { round: 1 });
+        server.clock.now += NEXT_ROUND_MS;
+        await c.send('solved', { round: 2 });
+        const endedMatch = lobby(a).matchId;
+
+        await a.send('ready', { ready: true });
+        await b.send('ready', { ready: true });
+        expect(lobby(c).status).toBe('ended');
+        expect(lobby(c).players.map(player => player.ready)).toEqual([true, true, false]);
+
+        await c.send('ready', { ready: true });
+        expect(lobby(a).status).toBe('playing');
+        expect(lobby(a).matchId).toBe(endedMatch + 1);
+        expect(view(b).wins).toEqual([0, 0, 0]);
+        expect(view(b).winsNeeded).toBe(2);
+        expect(view(b).round.number).toBe(1);
+    });
+
+    it('再戦は、退出した人を待たずに始まる', async () => {
+        await c.send('solved', { round: 1 });
+        server.clock.now += NEXT_ROUND_MS;
+        await c.send('solved', { round: 2 });
+
+        await a.send('ready', { ready: true });
+        await b.send('ready', { ready: true });
+        await c.send('leave');
+        expect(lobby(a).status).toBe('playing');
+        expect(lobby(a).players.map(player => player.name)).toEqual(['A', 'B']);
+    });
+
     it('切断しても同じ席に戻れ、対戦中の問題が届く', async () => {
         await b.send('solved', { round: 1 });
         const b2 = await server.reconnect(b);

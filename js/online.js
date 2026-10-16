@@ -40,6 +40,8 @@ function setupOnline() {
         handleRoomUpdate();
     });
     net.on('state', (state) => {
+        // 再戦で新しい試合になったら、盤面の問題の番号を忘れる（前の試合と同じ第1問でも、カウントダウンから始める）
+        if (state.matchId !== onlineState.gameMatchId) onlineState.currentRound = null;
         onlineState.game = state.view;
         onlineState.gameMatchId = state.matchId;
         handleRoomUpdate();
@@ -70,8 +72,10 @@ function setupOnline() {
     elements.onlineStart.addEventListener('click', () => net.start());
     elements.onlineLeave.addEventListener('click', leaveOnline);
     elements.onlineResultLeave.addEventListener('click', leaveOnline);
+    // 再戦する：全員が押したら、同じ顔ぶれ・同じ勝ち数で次の試合が始まる
     elements.onlineNext.addEventListener('click', () => {
-        if (getOnlineStage() === 'matchEnd') net.backToLobby();
+        if (getOnlineStage() !== 'matchEnd') return;
+        net.ready(true).catch(error => showToast(error.message));
     });
 
     // 招待URL（?room=部屋番号）で開いたら、前に入った部屋なら同じ席に戻り、初めてなら参加画面を出す
@@ -328,6 +332,7 @@ function getPlayerNote(player, seat, { showHost }) {
     const result = getOnlineRound()?.results[seat];
     if (player.left) return '退出';
     if (!player.connected) return '切断中';
+    if (onlineState.lobby.status === 'ended' && player.ready) return '再戦OK';
     if (result?.result === 'surrendered') return '降参';
     if (showHost && seat === onlineState.lobby.hostSeat) return '部屋を作った人';
     return '';
@@ -385,11 +390,30 @@ function renderOnlineResult() {
     renderPlayerList(elements.onlineStandings);
     renderSolutionBoard(elements.onlineSolutionBoard);
 
-    // 試合の途中は押さなくても次の問題に進むので、ボタンは出さずにカウントダウンを出す。試合が終わったら部屋に戻るボタンを出す
+    // 試合の途中は押さなくても次の問題に進むので、ボタンは出さずにカウントダウンを出す。試合が終わったら再戦するボタンを出す
     elements.onlineNext.hidden = stage !== 'matchEnd';
+    if (stage === 'matchEnd') renderRematchButton();
     elements.onlineResultLeave.hidden = stage === 'roundEnd';
     elements.onlineNextCountdown.hidden = stage !== 'roundEnd';
     elements.onlineResultModal.classList.add('active');
+}
+
+// 再戦するボタン：押したら、ほかの人を待つ表示にする。退出して1人になったら押せない
+function renderRematchButton() {
+    const players = onlineState.lobby.players.filter(player => !player.left);
+    const me = onlineState.lobby.players[net.seat];
+    const button = elements.onlineNext;
+    if (players.length < 2) {
+        button.textContent = '再戦できる相手がいません';
+        button.disabled = true;
+    } else if (me?.ready) {
+        const readyCount = players.filter(player => player.ready).length;
+        button.textContent = `ほかの人を待っています（${readyCount}/${players.length}人）`;
+        button.disabled = true;
+    } else {
+        button.textContent = '再戦する';
+        button.disabled = false;
+    }
 }
 
 function formatOnlineTime(ms) {

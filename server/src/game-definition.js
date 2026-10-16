@@ -21,7 +21,7 @@ const MAX_SEED = 1000000;         // 問題番号の範囲（画面の「次の�
 export default {
     minPlayers: 2,
     maxPlayers: 4,
-    rematch: 'host',              // 試合のあとは、部屋を作った人が「開始」で再戦する（「部屋に戻る」は誰でも押せる）
+    rematch: 'ready',             // 試合のあとは、全員が「再戦する」を押したら、同じ顔ぶれ・同じ勝ち数で次の試合を始める
     roomTtlSeconds: 24 * 60 * 60, // 部屋は最後の操作から1日で消える
 
     // ロビーの設定：勝ち抜けの数
