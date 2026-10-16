@@ -198,6 +198,8 @@ function handleRoomUpdate() {
 // 結果画面で、想定解を見せたまま次の問題の開始時刻までカウントダウンする。0になったら次の問題を始める
 function startNextRoundCountdown(next) {
     const startAt = net.toLocalTime(next.startAt);
+    elements.onlineNextRound.textContent = `第${next.number}問`;
+    elements.onlineNextNumber.textContent = '';
     const tick = () => {
         const remaining = Math.ceil((startAt - Date.now()) / 1000);
         if (remaining <= 0) {
@@ -205,7 +207,14 @@ function startNextRoundCountdown(next) {
             handleRoomUpdate();
             return;
         }
-        elements.onlineNextCountdown.textContent = `第${next.number}問まで あと${remaining}秒`;
+        // 数字が変わったときだけ書き換え、弾む動きを最初から出し直す
+        const number = elements.onlineNextNumber;
+        if (number.textContent !== String(remaining)) {
+            number.textContent = remaining;
+            number.classList.remove('tick');
+            void number.offsetWidth;
+            number.classList.add('tick');
+        }
     };
     tick();
     onlineState.countdownTimer = setInterval(tick, 100);
@@ -376,10 +385,10 @@ function renderOnlineResult() {
     renderPlayerList(elements.onlineStandings);
     renderSolutionBoard(elements.onlineSolutionBoard);
 
-    // 試合の途中は押さなくても次の問題に進む（カウントダウンを出す）。試合が終わったら部屋に戻るボタンを出す
+    // 試合の途中は押さなくても次の問題に進むので、ボタンは出さずにカウントダウンを出す。試合が終わったら部屋に戻るボタンを出す
     elements.onlineNext.hidden = stage !== 'matchEnd';
+    elements.onlineResultLeave.hidden = stage === 'roundEnd';
     elements.onlineNextCountdown.hidden = stage !== 'roundEnd';
-    elements.onlineNextCountdown.textContent = '';
     elements.onlineResultModal.classList.add('active');
 }
 

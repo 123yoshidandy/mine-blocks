@@ -1260,15 +1260,36 @@ button:focus-visible {
     font-variant-numeric: tabular-nums;
 }
 
-/* 結果画面の、次の問題までのカウントダウン */
+/* 結果画面の、次の問題までのカウントダウン：試合の最初のカウントダウンと同じく、大きな数字で目立たせる */
 .online-next-countdown {
-    margin: 4px 0 12px;
-    padding: 10px 12px;
-    border-radius: var(--radius-md);
-    background-color: color-mix(in srgb, var(--accent) 12%, var(--surface));
+    margin: 4px 0 0;
     color: var(--accent-dark);
+    line-height: 1;
+}
+
+.online-next-round {
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--text-sub);
+}
+
+.online-next-number {
+    height: 4.6rem; /* 数字が変わる瞬間に空になっても、高さを変えない */
+    font-size: 4.6rem;
     font-weight: 800;
     font-variant-numeric: tabular-nums;
+}
+
+/* 数字が変わるたびに、大きく出てから縮む */
+.online-next-number.tick {
+    animation: nextTick 0.45s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+
+@keyframes nextTick {
+    from {
+        opacity: 0.3;
+        transform: scale(1.6);
+    }
 }
 
 .online-next-countdown[hidden] {
@@ -1811,7 +1832,8 @@ body.is-top {
     .top-catch,
     .top-menu,
     .top-links,
-    .top-feedback {
+    .top-feedback,
+    .online-next-number.tick {
         animation: none;
     }
 }
@@ -2044,6 +2066,31 @@ body.is-top {
     .solution-board {
         --solution-cell: 28px;
         margin: 6px auto;
+    }
+
+    /* 「第N問」と数字を横に並べて、高さを詰める */
+    .online-next-countdown:not([hidden]) {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .online-next-round {
+        font-size: 0.95rem;
+    }
+
+    .online-next-number {
+        height: 3rem;
+        font-size: 3rem;
+    }
+
+    .result-note {
+        margin-bottom: 10px;
+    }
+
+    .online-players {
+        margin: 8px 0;
     }
 
 

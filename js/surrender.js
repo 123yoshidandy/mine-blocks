@@ -72,3 +72,11 @@ function renderSolutionBoard(container) {
         container.appendChild(piece);
     });
 }
+
+// 画面の大きさが変わったら（向きを変えたときなど）、表示中の想定解を描き直す
+// マスの大きさは画面の高さで変わるが、ピースの絵の位置は描いたときの大きさで決めているため、そのままだとずれる
+window.addEventListener('resize', () => {
+    document.querySelectorAll('.modal.active .solution-board').forEach(board => {
+        if (board.childElementCount > 0) renderSolutionBoard(board);
+    });
+});

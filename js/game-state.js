@@ -74,6 +74,8 @@ const elements = {
     onlineSolutionBoard: document.getElementById('onlineSolutionBoard'),
     onlineNext: document.getElementById('onlineNext'),
     onlineNextCountdown: document.getElementById('onlineNextCountdown'),
+    onlineNextRound: document.getElementById('onlineNextRound'),
+    onlineNextNumber: document.getElementById('onlineNextNumber'),
     onlineResultLeave: document.getElementById('onlineResultLeave'),
     onlineCountdown: document.getElementById('onlineCountdown'),
     onlineCountdownRound: document.getElementById('onlineCountdownRound'),

@@ -229,7 +229,10 @@
                 <p class="result-label">想定解</p>
                 <div class="solution-board" id="onlineSolutionBoard"></div>
                 <!-- 試合の途中：押さなくても、想定解を見せたまま次の問題までカウントダウンする -->
-                <p class="online-next-countdown" id="onlineNextCountdown" aria-live="polite" hidden></p>
+                <div class="online-next-countdown" id="onlineNextCountdown" hidden>
+                    <p class="online-next-round" id="onlineNextRound"></p>
+                    <p class="online-next-number" id="onlineNextNumber" aria-live="polite"></p>
+                </div>
                 <div class="modal-actions">
                     <button id="onlineNext" class="primary-button">部屋に戻る</button>
                     <button id="onlineResultLeave" class="secondary-button">部屋を出る</button>
