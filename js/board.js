@@ -335,14 +335,11 @@ function checkBoardCompletion() {
             return;
         }
 
-        // タイマーを停止
-        stopTimer();
-
         // クリア回数をカウントアップ
         gameState.clearedCount++;
         
         // クリアモーダルの内容を更新（クリア時間とクリア回数を表示）
-        elements.clearTimeDisplay.textContent = gameState.elapsedTime;
+        elements.clearTimeDisplay.textContent = Math.floor((Date.now() - gameState.startTime) / 1000);
         elements.clearCountResultDisplay.textContent = gameState.clearedCount;
         
         // 盤面の波と紙吹雪を見せてから、クリアモーダルを表示

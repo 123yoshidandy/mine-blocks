@@ -37,7 +37,6 @@ function setupTop() {
 }
 
 function showTop() {
-    stopTimer();
     elements.topScreen.hidden = false;
     document.body.classList.add('is-top');
     layoutTopHero();

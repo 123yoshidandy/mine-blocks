@@ -198,7 +198,6 @@ function handleRoomUpdate() {
         generateGame(round.seed);
         onlineState.currentRound = round.number;
     }
-    stopTimer();
     renderOnlineResult();
     if (stage === 'roundEnd') startNextRoundCountdown(getOnlineGame().next);
 }
@@ -276,14 +275,12 @@ function stopCountdown() {
 
 // 盤面がすべて埋まった：サーバーに知らせる（勝敗はサーバーに届いた順で決まる）
 function onOnlinePuzzleSolved() {
-    stopTimer();
     net.send('solved', { round: onlineState.currentRound });
 }
 
 // 降参：この問題ではもう勝てない。ほかの人が解き終わるのを、想定解を見ながら待つ
 function onlineSurrender() {
     if (getOnlineStage() !== 'playing' || onlineState.currentRound === null) return;
-    stopTimer();
     selectBlock(-1);
     clearHoverPreview();
     playSound('surrender');

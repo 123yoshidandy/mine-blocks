@@ -15,10 +15,7 @@ const gameState = {
     notPlaceableCells: [], // 配置不可能なセル
     solution: null, // 想定解
     seed: null, // パズル生成に使ったシード
-    startTime: null, // ゲーム開始時間
-    endTime: null, // ゲーム終了時間
-    elapsedTime: 0, // 経過時間（秒）
-    timerInterval: null // タイマーのインターバルID
+    startTime: null // 問題を出した時刻（エンドレスのクリア時間は、クリアした時刻との差で出す）
 };
 
 // DOM要素の参照
@@ -105,37 +102,6 @@ const elements = {
     feedbackAttach: document.getElementById('feedbackAttach'),
     feedbackContext: document.getElementById('feedbackContext')
 };
-
-// タイマーを開始
-function startTimer() {
-    // 既存のタイマーがあれば停止
-    stopTimer();
-    
-    // 開始時間を記録
-    gameState.startTime = new Date();
-    gameState.elapsedTime = 0;
-    
-    // タイマーを開始（1秒ごとに経過時間を更新、クリア時間の表示に使う）
-    gameState.timerInterval = setInterval(() => {
-        const now = new Date();
-        gameState.elapsedTime = Math.floor((now - gameState.startTime) / 1000);
-    }, 1000);
-}
-
-// タイマーを停止
-function stopTimer() {
-    if (gameState.timerInterval) {
-        clearInterval(gameState.timerInterval);
-        gameState.timerInterval = null;
-    }
-    
-    // 終了時間を記録（タイマーが動いている場合のみ）
-    if (gameState.startTime) {
-        gameState.endTime = new Date();
-        // より正確な経過時間を計算
-        gameState.elapsedTime = Math.floor((gameState.endTime - gameState.startTime) / 1000);
-    }
-}
 
 // ボードとブロックコンテナをクリア
 function clearBoard() {

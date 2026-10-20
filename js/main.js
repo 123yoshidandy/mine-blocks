@@ -30,8 +30,8 @@ function generateGame(seed) {
     // ブロックを描画
     renderBlocks();
     
-    // タイマーをリセットして開始
-    startTimer();
+    // 問題を出した時刻を覚える（クリア時間に使う）
+    gameState.startTime = Date.now();
 }
 
 // ゲーム初期化

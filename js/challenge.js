@@ -85,7 +85,6 @@ function tickChallenge() {
 function finishChallenge() {
     clearInterval(challengeState.intervalId);
     challengeState.intervalId = null;
-    stopTimer();
     selectBlock(-1);
     clearHoverPreview();
 

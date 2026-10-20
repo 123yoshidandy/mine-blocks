@@ -29,7 +29,6 @@ function surrender() {
         return;
     }
 
-    stopTimer();
     selectBlock(-1);
     clearHoverPreview();
 
