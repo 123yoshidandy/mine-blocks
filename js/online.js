@@ -500,7 +500,8 @@ function setOnlineRoomUrl(roomCode) {
 
 // ===== 片付けと保存 =====
 
-// 部屋を出たら、画面を片付けてエンドレスに戻る（2回呼ばれても同じ結果になる）
+// 部屋を出たら、画面を片付けてホーム（トップ画面）に戻る（2回呼ばれても同じ結果になる）
+// 「部屋を出る」ボタン・ヘッダーのホーム・サーバーからの退出の知らせの、どれで出ても同じ
 function cleanupOnline() {
     if (!isOnlineActive() && onlineState.currentRound === null && elements.onlineBar.hidden) return;
     stopCountdown();
@@ -513,7 +514,8 @@ function cleanupOnline() {
     elements.onlineResultModal.classList.remove('active');
     renderOnlineBar();
     net.setRoomUrl(null);
-    generateGame(createRandomSeed()); // 前のエンドレスの問題には戻らず、新しい問題にする
+    generateGame(createRandomSeed()); // 対戦の盤面を片付ける（エンドレスはトップ画面から選んだときに新しい問題を出す）
+    showTop();
 }
 
 function loadOnlineName() {
