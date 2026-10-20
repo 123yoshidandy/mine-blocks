@@ -55,7 +55,11 @@ function setupOnline() {
         if (!connected && isOnlineActive()) showToast('接続が切れました。再接続しています…');
     });
 
-    elements.onlineClose.addEventListener('click', () => elements.onlineModal.classList.remove('active'));
+    // 参加画面を × で閉じたら、ホーム（トップ画面）に戻る（招待URLで開いたときも同じ）
+    elements.onlineClose.addEventListener('click', () => {
+        elements.onlineModal.classList.remove('active');
+        if (!isOnlineActive()) showTop();
+    });
     elements.onlineCreate.addEventListener('click', () => enterRoom(name => net.createRoom(name)));
     elements.onlineJoin.addEventListener('click', () => {
         const roomCode = elements.onlineCode.value.trim();

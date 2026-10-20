@@ -24,10 +24,8 @@ function setupTop() {
         hideTop();
         startChallenge();
     });
-    elements.topOnline.addEventListener('click', () => {
-        hideTop();
-        openOnline();
-    });
+    // 参加画面はトップ画面の上に開く（部屋に入ったらトップ画面を閉じる。× で閉じたらトップ画面のまま）
+    elements.topOnline.addEventListener('click', openOnline);
     elements.topHint.addEventListener('click', openHint);
     elements.logoButton.addEventListener('click', goToTop);
     elements.homeButton.addEventListener('click', goToTop);
