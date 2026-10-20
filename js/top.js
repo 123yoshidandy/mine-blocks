@@ -15,13 +15,10 @@ const TOP_HERO_COLORS = { a: 0, b: 3, c: 1 }; // PIECE_COLORS の番号
 function setupTop() {
     renderTopHero();
 
+    // エンドレスは、トップ画面から始めるたびに新しい問題にする（前の問題は引き継がない）
     elements.topEndless.addEventListener('click', () => {
         hideTop();
-        if (gameState.endlessFinished) {
-            resumeEndless(); // クリア・降参した問題には戻らず、新しい問題にする
-        } else {
-            startTimer(); // 途中の問題に戻る（トップ画面を見ていた時間は数えない）
-        }
+        generateGame(createRandomSeed());
     });
     elements.topChallenge.addEventListener('click', () => {
         hideTop();

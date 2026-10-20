@@ -512,7 +512,7 @@ function cleanupOnline() {
     elements.onlineResultModal.classList.remove('active');
     renderOnlineBar();
     net.setRoomUrl(null);
-    resumeEndless();
+    generateGame(createRandomSeed()); // 前のエンドレスの問題には戻らず、新しい問題にする
 }
 
 function loadOnlineName() {

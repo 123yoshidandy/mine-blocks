@@ -3,13 +3,6 @@
  * ゲームの初期化と全体のフロー管理を行います
  */
 
-// エンドレスに戻る：途中の問題なら作り直して続け、クリア・降参した問題なら新しい問題にする
-// （答えを知っている問題をもう一度解いても意味がないため）
-function resumeEndless() {
-    const seed = gameState.endlessFinished || gameState.endlessSeed === null ? createRandomSeed() : gameState.endlessSeed;
-    generateGame(seed);
-}
-
 // 指定したシードのゲームを生成
 function generateGame(seed) {
     // ボードとブロックをクリア
@@ -17,12 +10,6 @@ function generateGame(seed) {
 
     // シードを設定（同じシードなら同じパズルになる）
     gameState.seed = seed;
-
-    // エンドレスの問題番号を覚えておき、チャレンジやオンライン対戦から戻ったときに再開する
-    if (!challengeState.active && !isOnlineActive()) {
-        gameState.endlessSeed = seed;
-        gameState.endlessFinished = false;
-    }
     setSeed(seed);
 
     // ブロックと想定解（配置不可能なセルを含む）を生成

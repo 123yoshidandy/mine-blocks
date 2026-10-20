@@ -337,7 +337,6 @@ function checkBoardCompletion() {
 
         // タイマーを停止
         stopTimer();
-        gameState.endlessFinished = true; // ホームに戻ってからエンドレスを選んだら、新しい問題にする
 
         // クリア回数をカウントアップ
         gameState.clearedCount++;
