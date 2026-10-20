@@ -17,7 +17,11 @@ function setupTop() {
 
     elements.topEndless.addEventListener('click', () => {
         hideTop();
-        startTimer(); // トップ画面を見ていた時間は数えない
+        if (gameState.endlessFinished) {
+            resumeEndless(); // クリア・降参した問題には戻らず、新しい問題にする
+        } else {
+            startTimer(); // 途中の問題に戻る（トップ画面を見ていた時間は数えない）
+        }
     });
     elements.topChallenge.addEventListener('click', () => {
         hideTop();

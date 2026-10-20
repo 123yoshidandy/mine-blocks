@@ -45,10 +45,10 @@ function stopChallenge() {
     updateModeDisplay();
 }
 
-// チャレンジを終了してエンドレスモードに戻る（チャレンジ開始前の問題から再開）
+// チャレンジを終了してエンドレスモードに戻る（チャレンジ開始前の問題から再開。クリア・降参していたら新しい問題）
 function exitChallenge() {
     stopChallenge();
-    generateGame(gameState.endlessSeed);
+    resumeEndless();
 }
 
 // 1問解いたときの処理：持ち時間を加算して次の問題へ進む

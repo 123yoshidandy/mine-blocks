@@ -16,6 +16,7 @@ const gameState = {
     solution: null, // 想定解
     seed: null, // パズル生成に使ったシード
     endlessSeed: null, // 最後に遊んだエンドレスの問題番号（エンドレスに戻るときに再開する）
+    endlessFinished: false, // そのエンドレスの問題をクリア・降参したか（したなら、戻るときは新しい問題にする）
     startTime: null, // ゲーム開始時間
     endTime: null, // ゲーム終了時間
     elapsedTime: 0, // 経過時間（秒）

@@ -30,6 +30,7 @@ function surrender() {
     }
 
     stopTimer();
+    gameState.endlessFinished = true; // 答えを見たので、ホームに戻ってからエンドレスを選んだら、新しい問題にする
     selectBlock(-1);
     clearHoverPreview();
 
