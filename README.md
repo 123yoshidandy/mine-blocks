@@ -141,6 +141,20 @@ API Gateway（WebSocket）・Lambda・DynamoDB を AWS SAM で作ります（東
 
 ### デプロイ
 
+#### 自動デプロイ（GitHub Actions）
+
+main ブランチに push すると、`.github/workflows/deploy-server.yml` がサーバーを自動でデプロイします。
+
+- 動くのは、`server/` 以下・`package.json`・`package-lock.json`・`netplay-kit.lock.json`・ワークフロー自身が変わったときだけ。GitHub の Actions の画面から手動でも動かせる
+- テスト（`npm test`）が通らなければ、デプロイしない
+- AWS への認証は OIDC で行い、アクセスキーは使わない。デプロイ用のロールの ARN は、GitHub の Secret `AWS_DEPLOY_ROLE_ARN` に入れる
+  ```bash
+  gh secret set AWS_DEPLOY_ROLE_ARN --repo 123yoshidandy/mine-blocks
+  ```
+- リポジトリは公開なので、AWS のアカウント番号はログで伏せる
+
+#### 手元からのデプロイ
+
 AWS SAM CLI と AWS CLI が必要です。プロフィールは環境変数で渡します。
 
 ```bash
