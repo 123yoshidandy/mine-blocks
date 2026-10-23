@@ -147,11 +147,15 @@ main ブランチに push すると、`.github/workflows/deploy-server.yml` が�
 
 - 動くのは、`server/` 以下・`package.json`・`package-lock.json`・`netplay-kit.lock.json`・ワークフロー自身が変わったときだけ。GitHub の Actions の画面から手動でも動かせる
 - テスト（`npm test`）が通らなければ、デプロイしない
-- AWS への認証は OIDC で行い、アクセスキーは使わない。デプロイ用のロールの ARN は、GitHub の Secret `AWS_DEPLOY_ROLE_ARN` に入れる
+- AWS への認証は OIDC で行い、アクセスキーは使わない。ロールは netplay-kit の `template/github-oidc.yaml`・`template/github-deploy.yaml`（`GameName=mine-blocks`）で作る（手順は netplay-kit の README の「GitHub Actions での自動デプロイ」）
+  - `mine-blocks-github-deploy`：GitHub Actions 用。使えるのは、このリポジトリの main だけ。できるのは、`mine-blocks-online` の変更セットを作ることと、成果物を共有のバケットの `mine-blocks-online/` の下に置くことだけ
+  - `mine-blocks-cfn-deploy`：CloudFormation 用（`sam deploy --role-arn` で渡す）。実際にサーバーのリソースを作る
+- GitHub 用のロールの ARN（スタックの出力 `RoleArn`）は、GitHub の Secret `AWS_DEPLOY_ROLE_ARN` に入れる
   ```bash
   gh secret set AWS_DEPLOY_ROLE_ARN --repo 123yoshidandy/mine-blocks
   ```
-- リポジトリは公開なので、AWS のアカウント番号はログで伏せる
+- リポジトリは公開なので、AWS のアカウント番号はリポジトリに書かず、ログでも伏せる
+- 一度自動デプロイすると、`mine-blocks-online` のスタックは以後 `mine-blocks-cfn-deploy` を使う。手元からのデプロイも同じロールで動くので、権限が足りずに失敗したら、エラーに出た操作を netplay-kit のテンプレートに足す
 
 #### 手元からのデプロイ
 

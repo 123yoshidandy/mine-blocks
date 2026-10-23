@@ -63,6 +63,14 @@ jobs:
       - name: サーバーをビルドする
         run: npm run build:server
 
+      # GitHub 用のロールにできるのは、CloudFormation 用のロール（mine-blocks-cfn-deploy）を渡して変更セットを作ることと、
+      # 成果物を共有のバケットの mine-blocks-online/ の下に置くことだけ（ロールは netplay-kit の template/github-deploy.yaml で作る）
+      # ロールの ARN にはアカウント番号が入るので、リポジトリには書かず、ここで組み立てる（番号は前の手順でログから伏せてある）
       - name: デプロイする
         working-directory: server
-        run: sam deploy --no-confirm-changeset --no-fail-on-empty-changeset
+        run: |
+          account_id=$(aws sts get-caller-identity --query Account --output text)
+          sam deploy \
+            --role-arn "arn:aws:iam::${account_id}:role/mine-blocks-cfn-deploy" \
+            --s3-prefix mine-blocks-online \
+            --no-confirm-changeset --no-fail-on-empty-changeset
