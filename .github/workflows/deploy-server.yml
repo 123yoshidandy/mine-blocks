@@ -1,8 +1,10 @@
+# netplay-kit の見本（同期はしない）。各ゲームの .github/workflows/deploy-server.yml に、そのまま置く
 # オンライン対戦のサーバー（AWS SAM）を、main への push で自動デプロイする
 # - AWS への認証は OIDC で行い、アクセスキーは使わない（ロールの ARN は Secret の AWS_DEPLOY_ROLE_ARN）
+# - ゲームの名前はリポジトリの名前から取る（ロール <ゲーム>-cfn-deploy と、成果物の置き場所 <ゲーム>-online/ は netplay-kit の template/github-deploy.yaml で作る）
 # - リポジトリは公開なので、AWS のアカウント番号はログで伏せる
 # - テストが通らなければデプロイしない
-name: サーバーのデプロイ
+name: deploy-server
 
 on:
   push:
@@ -23,6 +25,9 @@ permissions:
 concurrency:
   group: deploy-server
   cancel-in-progress: false
+
+env:
+  GAME: ${{ github.event.repository.name }}
 
 jobs:
   deploy:
@@ -63,14 +68,14 @@ jobs:
       - name: サーバーをビルドする
         run: npm run build:server
 
-      # GitHub 用のロールにできるのは、CloudFormation 用のロール（mine-blocks-cfn-deploy）を渡して変更セットを作ることと、
-      # 成果物を共有のバケットの mine-blocks-online/ の下に置くことだけ（ロールは netplay-kit の template/github-deploy.yaml で作る）
+      # GitHub 用のロールにできるのは、CloudFormation 用のロール（<ゲーム>-cfn-deploy）を渡して変更セットを作ることと、
+      # 成果物を共有のバケットの <ゲーム>-online/ の下に置くことだけ
       # ロールの ARN にはアカウント番号が入るので、リポジトリには書かず、ここで組み立てる（番号は前の手順でログから伏せてある）
       - name: デプロイする
         working-directory: server
         run: |
           account_id=$(aws sts get-caller-identity --query Account --output text)
           sam deploy \
-            --role-arn "arn:aws:iam::${account_id}:role/mine-blocks-cfn-deploy" \
-            --s3-prefix mine-blocks-online \
+            --role-arn "arn:aws:iam::${account_id}:role/${GAME}-cfn-deploy" \
+            --s3-prefix "${GAME}-online" \
             --no-confirm-changeset --no-fail-on-empty-changeset
