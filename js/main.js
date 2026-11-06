@@ -52,3 +52,7 @@ function initGame() {
 
 // DOMContentLoaded イベントでゲームを初期化
 document.addEventListener('DOMContentLoaded', initGame);
+
+// 画面を拡大させない（ふつうは style.css の touch-action で止まる。iOS は viewport の user-scalable を無視するので、2本指の操作を止める）
+// document 全体の touchmove は止めない（passive でない touchmove があると、スクロールの始まりが遅れるため）
+document.addEventListener('gesturestart', event => event.preventDefault());

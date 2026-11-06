@@ -43,6 +43,21 @@
 /* スクロールの端で背景の外が見えても、白く浮かないようにする */
 html {
     background-color: var(--page-base);
+    /* 拡大させない（ピンチ・ダブルタップ）。スクロールは縦横とも許す（古い iOS の2本指の拡大は main.js で止める） */
+    touch-action: pan-x pan-y;
+}
+
+/* 一覧の端まで来ても、スワイプを画面全体に渡さない（iOS で、しばらくスクロールが効かなくなるのを防ぐ） */
+html,
+body {
+    overscroll-behavior: none;
+}
+
+.modal-content,
+.hint-content,
+.feedback-context,
+.top-screen {
+    overscroll-behavior: contain;
 }
 
 /* 全体のスタイリング */
