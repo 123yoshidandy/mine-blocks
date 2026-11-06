@@ -5,4 +5,5 @@ stack_name = "mine-blocks-online"
 region = "ap-northeast-1"
 capabilities = "CAPABILITY_IAM"
 resolve_s3 = true
+s3_prefix = "mine-blocks-online"
 confirm_changeset = true
